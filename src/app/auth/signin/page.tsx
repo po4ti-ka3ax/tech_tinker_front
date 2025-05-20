@@ -5,12 +5,30 @@ import Slider from "../../components/slider/Slider";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-
+import instanceAxios from "@/app/components/axios/instanceAxios";
+import { redirect } from "next/navigation";
+// or
 const Auth = () => {
+    const { register, handleSubmit, watch, formState: { errors } } = useForm({
+        mode:"onSubmit"
+    });
+    const Cookies = require('js-cookie')
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
-    const onSubmit = data => console.log(data);
-    console.log(watch("example"));
+    const onSubmit = data => instanceAxios.post('/login', {
+        "email": watch('email'),
+        "password": watch('password')
+    }).then(res => {
+        let index = res.data.token.indexOf('|')
+        Cookies.set('access_token',res.data.token.substr(index + 1, 49))
+        Cookies.set('user_id',res.data.data.id)
+         if(Cookies.get('access_token')) {
+        redirect('/content')
+    }
+        // console.log()
+    });
+
+   
+
     const [show, setShow] = useState(true);
 
     return (
@@ -23,12 +41,12 @@ const Auth = () => {
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className="mt-[20px]">
                                     <p className="px-[12px] text-[15px] font-regular text-white">Email</p>
-                                    <input className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none" type="email" {...register("Email")} placeholder="Enter your email" />
+                                    <input className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none" type="email" {...register("email")} placeholder="Enter your email" />
                                 </div>
                                 <div className="my-[17px]">
                                     <p className="px-[12px] text-[15px] font-regular text-white">Password</p>
                                     <div className="flex opacity-[100%] mb-[10px] w-[100%] bg-[#434343] rounded-[10px] px-[12px] mt-[7px] py-[10px]">
-                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "text" : "password"} {...register("Password")} placeholder="Enter your password" />
+                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "text" : "password"} {...register("password")} placeholder="Enter your password" />
                                         <Image onClick={() => setShow(!show)} className="" alt="eye" width={30} height={20} src={show ? '/img/hide.png' : '/img/eye.png'} />
                                     </div>
                                     <Link href='/forgot' className="text-[#DCDCDC]  px-[12px] underline">Forgot password</Link>

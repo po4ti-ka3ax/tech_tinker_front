@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google"
 import DiscordProvider from "next-auth/providers/discord"
+import { signOut } from "next-auth/react";
 
 export const authOptions = {
     providers: [
@@ -16,7 +17,8 @@ export const authOptions = {
     pages: {
         signIn:'auth/signin',
     },
-    secret: process.env.NEXTAUTH_SECRET
+    secret: process.env.NEXTAUTH_SECRET,
+   
 }
 
 export const handler = NextAuth(authOptions);

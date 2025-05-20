@@ -10,9 +10,10 @@ interface ProtectedRouteProps {
 export default function ProtectedMiddleware({ children }: ProtectedRouteProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const Cookies = require('js-cookie')
 
   useEffect(() => {
-    if (status === "unauthenticated") {
+    if (status === "unauthenticated" && !Cookies.get('access_token')) {
       router.push("/auth/signin");
     }
   }, [status, router]);
