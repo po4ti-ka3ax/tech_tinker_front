@@ -27,8 +27,6 @@ const Auth = () => {
         // console.log()
     });
 
-   
-
     const [show, setShow] = useState(true);
 
     return (
@@ -46,7 +44,7 @@ const Auth = () => {
                                 <div className="my-[17px]">
                                     <p className="px-[12px] text-[15px] font-regular text-white">Password</p>
                                     <div className="flex opacity-[100%] mb-[10px] w-[100%] bg-[#434343] rounded-[10px] px-[12px] mt-[7px] py-[10px]">
-                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "text" : "password"} {...register("password")} placeholder="Enter your password" />
+                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "password" : "text"} {...register("password")} placeholder="Enter your password" />
                                         <Image onClick={() => setShow(!show)} className="" alt="eye" width={30} height={20} src={show ? '/img/hide.png' : '/img/eye.png'} />
                                     </div>
                                     <Link href='/forgot' className="text-[#DCDCDC]  px-[12px] underline">Forgot password</Link>
@@ -72,7 +70,7 @@ const Auth = () => {
                     </div>
                 </div>
 
-                <div className="">
+                <div className="hidden lg:block">
                     <Slider />
                 </div>
             </div>

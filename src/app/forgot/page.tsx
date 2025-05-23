@@ -1,11 +1,24 @@
 "use client"
 import { useForm } from "react-hook-form";
+import instanceAxios from "../components/axios/instanceAxios";
+import { redirect } from "next/navigation";
 
 
 const ForgotPassword = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
-    const onSubmit = data => console.log(data);
+    const Cookies = require('js-cookie')
 
+   const onSubmit = data => instanceAxios.post('/forgot-password', {
+        "email": watch('email'),
+    }).then(res => {
+        Cookies.set('reset_token', res.data.token)
+        if(res.status === 200) {
+            redirect('/reset')
+        }
+        console.log(res);
+        
+        // console.log()
+    });
     return (
         <>
             <div className="bg-[#3E3E3E] opacity-[90%] rounded-[10px] py-[30px] px-[30px] max-w-[500px] m-auto">

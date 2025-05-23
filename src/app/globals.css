@@ -9,6 +9,26 @@
 body, input, textarea, select {
   font-family: var(--font-k2d), sans-serif;
 }
+#dialog-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+#dialog-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+#dialog-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#dialog-content::-webkit-scrollbar-thumb {
+  background-color: #3C3C3C;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -18,6 +38,25 @@ input:-webkit-autofill:active {
   font-family: var(--font-k2d), sans-serif !important;
   box-shadow: inset 0 0 0px 1000px #434343 !important; 
   transition: background-color 5000s ease-in-out 0s;
+}
+input {
+  background-color: #434343;
+  outline: none;
+  border: none;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0; 
+}
+
+input[type=number] {
+    -moz-appearance:textfield;
+}
+input:-webkit-autofill {
+  background-color: #434343 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #434343 inset;
+  -webkit-text-fill-color: #ffffff; 
 }
 
 .swiper-pagination {
