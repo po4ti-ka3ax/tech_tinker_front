@@ -49,8 +49,8 @@ const Signup = () => {
         <>
         <div className="flex justify-around ">
                 <div className="">
-                    <div className="bg-[#3E3E3E] opacity-[90%] px-[54px] py-[30px] rounded-[20px] mb-[20px]">
-                        <h2 className="text-center  text-[30px] text-[#FFCC70]">Sign up</h2>
+                    <div className="bg-[#3E3E3E] opacity-[90%] px-[20px] md:px-[54px] py-[30px] rounded-[20px] mb-[20px]">
+                        <h2 className="text-center text-[30px] text-[#FFCC70]">Sign up</h2>
                         <div className="">
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className="mt-[20px]">
@@ -75,14 +75,14 @@ const Signup = () => {
                                 <div className="my-[17px]">
                                     <p className="px-[12px] text-[15px] font-regular text-white">Repeat password</p>
                                     <div className="flex opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] px-[12px] mt-[7px] py-[10px]">
-                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "password" : "text"} {...register("repeatPassword", {required:'Password must be at least 8 characters long',minLength:8, validate: validatePassword })} placeholder="Repeat your password" />
-                                        <Image onClick={() => setShow(!show)} className="" alt="eye" width={30} height={20} src={show ? '/img/hide.png' : '/img/eye.png'} />                                           
+                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={showRepeat ? "password" : "text"} {...register("repeatPassword", {required:'Password must be at least 8 characters long',minLength:8, validate: validatePassword })} placeholder="Repeat your password" />
+                                        <Image onClick={() => setShowRepeat(!showRepeat)} className="mr-[30px] sm:mr-[0px]" alt="eye" width={30} height={20} src={showRepeat ? '/img/hide.png' : '/img/eye.png'} />                                           
                                     </div>
                                         {errors.Password && <p className="mt-[10px] text-center text-[#940014]">{errors.Password.message as string}</p>}
 
                                 </div>
                                 <div className="">
-                                    <button className="rounded-[15px] cursor-pointer text-[17px] font-black px-[90px] w-[100%] py-[10px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">Log in</button>
+                                    <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[90px] w-[100%] py-[10px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">Log in</button>
                                 </div>
                             </form>
                         </div>
@@ -102,7 +102,7 @@ const Signup = () => {
                     </div> */}
                 </div>
 
-                <div className="">
+                <div className="hidden lg:block">
                     <Slider />
                 </div>
             </div>

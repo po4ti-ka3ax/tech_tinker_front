@@ -1,6 +1,14 @@
 import { CheckboxInterface } from "../../interfaces/interface"
+import { useFilterStore } from "@/app/state/useFilterStore"
 
-const CheckboxComponent = ({ componentName, componentId }: CheckboxInterface) => {
+const CheckboxComponent = ({ componentName, componentId, componentLabel }: CheckboxInterface) => {
+    const {selectedFilters, toggleFilter} = useFilterStore();
+    const isChecked = selectedFilters[componentName]?.includes(componentId) || false;
+
+    const handleChange = () => {
+        toggleFilter(componentName,componentId);
+    }
+console.log(selectedFilters)
     return (
         <div key={componentName} className="flex ml-[10px] mb-[5px] gap-[10px] items-center">
             <label htmlFor={`processor_${componentId}`} className="relative cursor-pointer">
@@ -8,6 +16,8 @@ const CheckboxComponent = ({ componentName, componentId }: CheckboxInterface) =>
                     id={`processor_${componentName}`}
                     type="checkbox"
                     value={componentId}
+                    checked={isChecked}
+                    onChange={handleChange}
                     name={componentName}
                     className="peer appearance-none w-[25px] h-[25px] bg-[#2D2D2D] rounded-[8px] border border-[#2D2D2D] cursor-pointer"
                 />
@@ -18,7 +28,7 @@ const CheckboxComponent = ({ componentName, componentId }: CheckboxInterface) =>
                 />
             </label>
             <label htmlFor={`processor_${componentName}`} className="text-white cursor-pointer text-[17px]">
-                {componentName}
+                {componentLabel}
             </label>
         </div>
     )

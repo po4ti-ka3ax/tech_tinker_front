@@ -33,7 +33,7 @@ const Auth = () => {
         <>
             <div className="flex justify-around ">
                 <div className="">
-                    <div className="bg-[#3E3E3E] opacity-[90%] px-[54px] py-[30px] rounded-[20px] mb-[20px]">
+                    <div className="bg-[#3E3E3E] opacity-[90%] px-[20px] md:px-[54px] py-[30px] rounded-[20px] mb-[20px]">
                         <h2 className="text-center  text-[30px] text-[#FFCC70]">Sign in</h2>
                         <div className="">
                             <form onSubmit={handleSubmit(onSubmit)}>
@@ -57,10 +57,10 @@ const Auth = () => {
                     </div>
                     <div className="bg-[#3E3E3E] opacity-[90%] px-[54px] py-[30px] rounded-[20px] ">
                         <div className="">
-                            <button onClick={() => signIn('google')} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">Log in with Google <Image className="ml-[7px]" alt="google" width={23} height={23} src="/img/google.svg" /></button>
+                            <button onClick={() => signIn('google')} className="flex whitespace-nowrap cursor-pointer justify-center border-1 border-[#FFCC70] px-[18px] py-[10px] w-[100%] text-[17px] rounded-[15px]">Log in with Google <Image className="ml-[7px]" alt="google" width={23} height={23} src="/img/google.svg" /></button>
                         </div>
                         <div className="mt-[20px]">
-                            <button onClick={() => signIn('discord')} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">Log in with Discord <Image className="ml-[7px]" alt="discord" width={23} height={23} src="/img/discord.svg" /></button>
+                            <button onClick={() => signIn('discord')} className="flex whitespace-nowrap cursor-pointer justify-center border-1 border-[#FFCC70] px-[18px] py-[10px] w-[100%] text-[17px] rounded-[15px]">Log in with Discord <Image className="ml-[7px]" alt="discord" width={23} height={23} src="/img/discord.svg" /></button>
                         </div>
                     </div>
                     <div className="text-center mt-[20px]">

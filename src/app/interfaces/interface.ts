@@ -9,7 +9,9 @@ export interface FiltersProps {
 
 export interface CheckboxInterface {
     componentName: string,
-    componentId:number
+    componentId:number,
+    componentLabel:string
+    
 }
 
 export interface PartInterface {
@@ -24,6 +26,13 @@ export interface LinkInterface {
     path: string
 }
 
+export interface FilterState {
+    selectedFilters: {
+        [key: string]: number[]
+    };
+    toggleFilter: (category: string, id: number) => void;
+    clearAllFilters: () => void
+}
 
 interface NameVendor {
     id: number,

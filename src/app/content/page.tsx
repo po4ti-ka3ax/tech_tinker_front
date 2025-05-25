@@ -89,14 +89,14 @@ useEffect(() => {
         <>
             <div className="">
 
-                <h1 className="text-center text-[50px]">Choose computer for yourself</h1>
+                <h1 className="text-center text-[30px] lg:text-[50px] mb-[50px]">Choose computer for yourself</h1>
                 <div className="">
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger className="bg-[#2D2D2D] rounded-[10px] py-[10px] px-[20px] hover:bg-[#262626] duration-200 ease-in-out">
                             Filters
                         </DialogTrigger>
 
-                        <DialogContent id="dialog-content" className="bg-[#1A1A1A] border-none text-[#ffffff] px-0 max-h-[80vh] overflow-y-auto !max-w-[750px] w-full">
+                        <DialogContent id="dialog-content" className="bg-[#1A1A1A] border-none text-[#ffffff] px-0 max-w-[320px] lg:max-h-[80vh] overflow-y-auto lg:!max-w-[750px] w-full">
                             <DialogHeader className="px-[24px]"> 
                                 <DialogTitle className="text-center text-[30px]">Filters</DialogTitle>
                             </DialogHeader>
