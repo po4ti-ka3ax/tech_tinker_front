@@ -38,7 +38,7 @@ export default async function RootLayout({
         <SessionProvider session={session}>
           <div className="bg-[#1A1A1A] min-h-screen text-[white] py-[20px]">
             <Header/>
-            <div className="mx-auto max-w-[1600px] px-5 ">
+            <div className="mx-auto max-w-[1400px] px-5 ">
               {children}
             </div>
           </div>
