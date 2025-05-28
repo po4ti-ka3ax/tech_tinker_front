@@ -6,6 +6,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
 body, input, textarea, select {
   font-family: var(--font-k2d), sans-serif;
 }

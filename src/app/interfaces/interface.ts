@@ -7,6 +7,10 @@ export interface FiltersProps {
     VideoMemoryVolume?:VideoMemoryVolume[],
 }
 
+export interface ConfigureInterface {
+    nameComponent: string
+}
+
 export interface CheckboxInterface {
     componentName: string,
     componentId:number,

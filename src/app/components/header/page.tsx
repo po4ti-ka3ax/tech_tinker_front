@@ -52,7 +52,7 @@ const Header = () => {
     };
 
     return (
-        <div className="bg-[#2D2D2D] mx-[20px] px-[20px] py-[24px] rounded-[20px] flex justify-between items-center mb-[80px]">
+        <div className="bg-[#2D2D2D] mx-[20px] px-[40px] py-[24px] rounded-[20px] flex justify-between items-center mb-[80px]">
             <div className="">
                 <Link className="flex text-[25px] lg:text-[40px] fw-[700] " href="/">Tech <Image width={70} height={65} className="px-[5px] w-[40px] lg:w-[70px] lg:h-[65px]" src="/img/logo.svg" alt="" />Tinker</Link>
             </div>
