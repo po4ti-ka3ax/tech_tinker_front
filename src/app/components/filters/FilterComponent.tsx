@@ -135,6 +135,7 @@ const FilterComponent = ({ componentName, NameModel, NameVendor, ProcessorSocket
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
+                
             </div>
             <div className="w-full border-b  border-[#FFCC70]" />
 

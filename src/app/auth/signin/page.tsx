@@ -10,22 +10,25 @@ import { redirect } from "next/navigation";
 // or
 const Auth = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm({
-        mode:"onSubmit"
+        mode: "onSubmit"
     });
     const Cookies = require('js-cookie')
+    const [error, setError] = useState("");
 
-    const onSubmit = data => instanceAxios.post('/login', {
+    const onSubmit = () => instanceAxios.post('/login', {
         "email": watch('email'),
         "password": watch('password')
     }).then(res => {
+
         let index = res.data.token.indexOf('|')
-        Cookies.set('access_token',res.data.token.substr(index + 1, 49))
-        Cookies.set('user_id',res.data.data.id)
-         if(Cookies.get('access_token')) {
-        redirect('/content')
-    }
+        setError("")
+        Cookies.set('access_token', res.data.token.substr(index + 1, 49))
+        Cookies.set('user_id', res.data.data.id)
+        if (Cookies.get('access_token')) {
+            redirect('/content')
+        }
         // console.log()
-    });
+    })
 
     const [show, setShow] = useState(true);
 
@@ -39,15 +42,31 @@ const Auth = () => {
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className="mt-[20px]">
                                     <p className="px-[12px] text-[15px] font-regular text-white">Email</p>
-                                    <input className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none" type="email" {...register("email")} placeholder="Enter your email" />
+                                    <input className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none" type="email" {...register("email", { required: "Email is required" })} placeholder="Enter your email" />
                                 </div>
+                                {
+                                    errors.email && (
+                                        <p className="text-[#FF5252] break-normal">{errors.email.message}</p>
+                                    )
+                                }
                                 <div className="my-[17px]">
                                     <p className="px-[12px] text-[15px] font-regular text-white">Password</p>
-                                    <div className="flex opacity-[100%] mb-[10px] w-[100%] bg-[#434343] rounded-[10px] px-[12px] mt-[7px] py-[10px]">
-                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "password" : "text"} {...register("password")} placeholder="Enter your password" />
+                                    <div className="flex opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] px-[12px] mt-[7px] py-[10px]">
+                                        <input className="w-[100%] text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "password" : "text"} {...register("password", { required: 'Password is required', minLength: {value:8, message:"Password must be at least 8 characters long"}, })} placeholder="Enter your password" />
                                         <Image onClick={() => setShow(!show)} className="" alt="eye" width={30} height={20} src={show ? '/img/hide.png' : '/img/eye.png'} />
                                     </div>
                                     <Link href='/forgot' className="text-[#DCDCDC]  px-[12px] underline">Forgot password</Link>
+
+                                    {
+                                        errors.password &&  (
+                                            <p className="text-[#FF5252] break-normal">{errors.password.message}</p>
+                                        )
+                                    }
+                                    {/* {
+                                        error ? (
+                                            <p className="mt-[20px] text-[#FF5252] text-center">{error}</p>
+                                        ) : ""
+                                    } */}
                                 </div>
                                 <div className="">
                                     <button className="rounded-[15px] cursor-pointer text-[17px] font-black px-[90px] w-[100%] py-[10px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">Log in</button>

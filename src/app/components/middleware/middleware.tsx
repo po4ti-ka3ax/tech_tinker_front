@@ -13,10 +13,16 @@ export default function ProtectedMiddleware({ children }: ProtectedRouteProps) {
   const Cookies = require('js-cookie')
 
   useEffect(() => {
-    if (status === "unauthenticated" && !Cookies.get('access_token')) {
-      router.push("/auth/signin");
-    }
-  }, [status, router]);
+    const interval = setInterval(() => {
+    const token = Cookies.get('access_token');
+
+      if (!token) {
+        router.push("/auth/signin");
+        clearInterval(interval)
+      }
+    },1000)
+    return () => clearInterval(interval)
+  }, [router]);
 
   
     return (

@@ -13,7 +13,7 @@ console.log(selectedFilters)
         <div key={componentName} className="flex ml-[10px] mb-[5px] gap-[10px] items-center">
             <label htmlFor={`processor_${componentId}`} className="relative cursor-pointer">
                 <input
-                    id={`processor_${componentName}`}
+                    id={`processor_${componentId}`}
                     type="checkbox"
                     value={componentId}
                     checked={isChecked}
@@ -27,7 +27,7 @@ console.log(selectedFilters)
                     className="w-4 h-4 absolute top-1 left-1 hidden peer-checked:block pointer-events-none"
                 />
             </label>
-            <label htmlFor={`processor_${componentName}`} className="text-white cursor-pointer text-[17px]">
+            <label htmlFor={`processor_${componentId}`} className="text-white cursor-pointer text-[17px]">
                 {componentLabel}
             </label>
         </div>

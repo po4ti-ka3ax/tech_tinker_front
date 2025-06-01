@@ -8,7 +8,16 @@ export interface FiltersProps {
 }
 
 export interface ConfigureInterface {
-    nameComponent: string
+    nameComponent: string,
+    linkName: string,
+}
+
+export interface ProfilePageProps {
+  params: { id: number };
+}
+
+export interface ComputerCardInterface {
+    computerId:number
 }
 
 export interface CheckboxInterface {

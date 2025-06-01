@@ -16,7 +16,8 @@ import { useEffect, useState } from "react";
 
 const Header = () => {
     const pathname = usePathname();
-
+    const Cookie = require('js-cookie')
+    const user_id = Cookie.get('user_id')
     if (!pathname) return null;
 
     const widthResize = () => {
@@ -75,7 +76,7 @@ const Header = () => {
                                                 <NavSmallLink path="/configure" textLink="Configure" />
                                             </DropdownMenuItem>
                                             <DropdownMenuItem>
-                                                <NavSmallLink path="/profile" textLink="Profile" />
+                                                <NavSmallLink path={`/profile`} textLink="Profile" />
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     )
@@ -103,9 +104,9 @@ const Header = () => {
                                 pathname === "/content" || pathname === "/configure" || pathname === "/profile" ?
                                     (
                                         <div className="text-[15px] lg:text-[18px] font-bold">
-                                            <NavLink path="/content" textLink="Home" />
-                                            <NavLink path="/configure" textLink="Configure" />
-                                            <NavLink path="/profile" textLink="Profile" />
+                                            <NavLink path={"/content"} textLink="Home" />
+                                            <NavLink path={"/configure"} textLink="Configure" />
+                                            <NavLink path={`/profile/${user_id}`} textLink="Profile" />
                                         </div>
                                     )
                                     :
