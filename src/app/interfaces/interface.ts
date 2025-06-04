@@ -12,6 +12,11 @@ export interface ConfigureInterface {
     linkName: string,
 }
 
+export interface LinkComponentInterface {
+    path: string,
+    namePath: string
+}
+
 export interface ProfilePageProps {
   params: { id: number };
 }

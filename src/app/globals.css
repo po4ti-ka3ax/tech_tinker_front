@@ -12,7 +12,6 @@ html, body {
   box-sizing: border-box;
 }
 
-
 body, input, textarea, select {
   font-family: var(--font-k2d), sans-serif;
 }
@@ -35,7 +34,6 @@ body, input, textarea, select {
   border: 2px solid transparent;
   background-clip: content-box;
 }
-
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,

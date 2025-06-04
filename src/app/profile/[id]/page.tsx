@@ -7,6 +7,7 @@ import instanceAxios from "../../components/axios/instanceAxios";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ProfilePageProps } from "@/app/interfaces/interface";
+import Link from "next/link";
 const Profile = ({ params }: ProfilePageProps) => {
     const Cookies = require('js-cookie')
     const token = Cookies.get('access_token');
@@ -20,8 +21,10 @@ const Profile = ({ params }: ProfilePageProps) => {
         username: '',
         email: ''
     })
+    const hasEmailChange = Cookies.get('has_email_change');
     const axios = require("axios");
     const [edit, setEdit] = useState(false);
+    const [emailChange, setEmailChange] = useState(false);
     // const handleImageChange = async (e) => {
     //     const file = e.target.files[0];
     //     if (!file) return;
@@ -29,9 +32,18 @@ const Profile = ({ params }: ProfilePageProps) => {
     // }
     useEffect(() => {
         const fetchUser = () => {
-            setLoading(true)
+            // setLoading(true)
+            // const interval = setInterval(() => {
+            //     if (hasEmailChange) {
+            //         setEmailChange(true)
+            //     } else {
+            //         setEmailChange(false)
+            //     }
+            // }, 1000)
             try {
+
                 instanceAxios.get(`/users/${urlUserId}`).then(res => {
+                    Cookies.set('email_user', res.data.data.email)
                     setUserInfo(res.data.data)
                     setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${res.data.data.profile_img}`)
                 })
@@ -39,6 +51,7 @@ const Profile = ({ params }: ProfilePageProps) => {
                 console.error(err)
             } finally {
                 setLoading(false)
+                // clearInterval(interval)
             }
         }
 
@@ -47,7 +60,6 @@ const Profile = ({ params }: ProfilePageProps) => {
     }, [userId])
 
     useEffect(() => {
-
         if (userInfo) {
             setEditData({
                 username: userInfo?.username || "",
@@ -57,6 +69,8 @@ const Profile = ({ params }: ProfilePageProps) => {
     }, [userInfo])
 
     const handleSignOut = async () => {
+        Cookies.remove("has_email_change");
+        Cookies.remove("email_user");
         instanceAxios.post('/logout', {}).then(res => {
             if (res.status === 200) {
                 Cookies.remove('access_token')
@@ -69,6 +83,10 @@ const Profile = ({ params }: ProfilePageProps) => {
         const formData = new FormData();
         let hasChanges = false;
         let changes = {};
+
+        if (hasEmailChange) {
+            Cookies.set('email_user', editData.email)
+        }
 
         if (editData.username !== userInfo?.username) {
             formData.append("username", editData.username)
@@ -85,7 +103,8 @@ const Profile = ({ params }: ProfilePageProps) => {
             // changes.username = editData.username;
             hasChanges = true;
         }
-
+        Cookies.remove("user_id");
+        Cookies.remove("has_email_change");
         try {
             instanceAxios.post('/users/edit', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -122,7 +141,9 @@ const Profile = ({ params }: ProfilePageProps) => {
                                 </div>
                                 <div className="flex flex-col text-[17px] md:text-[25px] text-right gap-[10px]">
                                     <input className="px-[10px] py-[5px] rounded-[10px]" onChange={(e) => setEditData({ ...editData, username: e.target.value })} value={editData.username} placeholder="Unknown" type="text" />
-                                    <input className="px-[10px] py-[5px] rounded-[10px]" onChange={(e) => setEditData({ ...editData, email: e.target.value })} value={editData.email} placeholder="Unknown" type="email" />
+                                    <input className="px-[10px] py-[5px] rounded-[10px]" readOnly={hasEmailChange ? false : true} onChange={(e) => setEditData({ ...editData, email: e.target.value })} value={editData.email} placeholder="Unknown" type="email" />
+                                    <Link href="/change_email" className="text-left"><button className="px-[10px] mt-[10px] py-[10px] bg-[#FFCC70] text-[17px] text-black cursor-pointer rounded-[10px]">Change Email</button></Link>
+
                                     {/* <input className="px-[10px] py-[5px] rounded-[10px]" readonly="readonly" value={userInfo?.role?.slug} placeholder="Unknown" type="text" /> */}
                                 </div>
 
@@ -202,8 +223,24 @@ const Profile = ({ params }: ProfilePageProps) => {
                                     ) : ""
                                 }
                             </div>
+
                         </div>
                 }
+
+                {
+                    userInfo.role_id === 2 ? (
+                        <>
+                            <div className="text-center mt-[20px]">
+                                <Link href={'/admin'}>
+                                    <button className="px-[10px] py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]">Go to admin panel</button>
+                                </Link>
+                            </div>
+                        </>
+                    ) : ""
+                }
+
+
+
 
                 <div className="text-center mt-[30px]">
                     <button className="text-center cursor-pointer text-[#C82323] border-[#C82323] hover:bg-[#C82323] hover:text-[#ffffff] duration-300 border-1 rounded-[10px] px-[10px] py-[10px]" onClick={() => handleSignOut()}>Sign out</button>

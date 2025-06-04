@@ -4,6 +4,8 @@ import { LinkInterface } from "@/app/interfaces/interface";
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,16 +15,30 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useEffect, useState } from "react";
-
+import instanceAxios from "../axios/instanceAxios";
+import useUserData from "@/app/state/useDataStore";
 const Header = () => {
+
+    // const { userData,setUserData} = useUserData();
     const pathname = usePathname();
     const Cookie = require('js-cookie')
+    const [userData, setUserData] = useState([])
+    const [image, setImage] = useState("");
     const user_id = Cookie.get('user_id')
+    const isAdmin = userData?.role_id === 2;
+    useEffect(() => {
+        if (user_id) {
+            instanceAxios.get(`/users/${user_id}`).then((res) => {
+                setUserData(res.data.data)
+                setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${res.data.data.profile_img}`)
+                // console.log(userData)
+            });
+        }
+    }, [])
     if (!pathname) return null;
-
+    const isProfileWithId = /^\/profile\/\d+$/.test(pathname);
     const widthResize = () => {
         const [width, setWidth] = useState(window.innerWidth);
-
         useEffect(() => {
             const handleResize = () => setWidth(window.innerWidth)
             window.addEventListener('resize', handleResize)
@@ -31,12 +47,12 @@ const Header = () => {
 
         return width
     }
-    const screenWidth = widthResize(); 
+    const screenWidth = widthResize();
 
     const NavLink = ({ textLink, path }: LinkInterface) => {
         return (
             <>
-                <Link className={`${pathname === path ? "bg-[#FFCC70] px-[25px] py-[10] lg:px-[45px] lg:py-[10px] text-[#1A1A1A] rounded-[15px] ml-[50px]" : "ml-[50px]"}`} href={path}>
+                <Link className={`${pathname.includes(path) ? "bg-[#FFCC70] px-[25px] py-[10] lg:px-[45px] lg:py-[10px] text-[#1A1A1A] rounded-[15px] mx-[25px]" : "mx-[25px]"}`} href={path}>
                     {textLink}
                 </Link>
             </>
@@ -45,7 +61,7 @@ const Header = () => {
     const NavSmallLink = ({ textLink, path }: LinkInterface) => {
         return (
             <>
-                <Link className={`${pathname === path ? "bg-[#FFCC70] px-[25px] py-[7px] lg:px-[45px] lg:py-[10px] text-[#1A1A1A]  rounded-[15px]" : "text-[17px]"}`} href={path}>
+                <Link className={`${pathname.includes(path) ? "bg-[#FFCC70] px-[25px] py-[7px] lg:px-[45px] lg:py-[10px] text-[#1A1A1A]  rounded-[15px]" : "text-[17px]"}`} href={path}>
                     {textLink}
                 </Link>
             </>
@@ -66,7 +82,7 @@ const Header = () => {
                                 <Image width={35} height={35} src="/img/menu.svg" alt="" />
                             </DropdownMenuTrigger>
                             {
-                                pathname === "/content" || pathname === "/configure" || pathname === "/profile" ?
+                                pathname === "/content" || pathname === "/configure" || pathname === "/profile" || isProfileWithId ?
                                     (
                                         <DropdownMenuContent className="bg-[#1A1A1A] mt-[10px] text-[17px] border-0 ring-0 outline-none shadow-none flex flex-col text-white items-center" style={{ border: 'none' }}>
                                             <DropdownMenuItem>
@@ -76,8 +92,32 @@ const Header = () => {
                                                 <NavSmallLink path="/configure" textLink="Configure" />
                                             </DropdownMenuItem>
                                             <DropdownMenuItem>
-                                                <NavSmallLink path={`/profile`} textLink="Profile" />
+                                                {
+                                                    user_id ? (
+                                                        <>
+                                                            <Link href={`/profile/${user_id}`}>
+
+                                                                <Avatar className="w-[50px] cursor-pointer h-[50px]">
+                                                                    <AvatarImage className="object-cover" src={image} />
+                                                                    <AvatarFallback className="text-[#000000] text-[30px] uppercase">{userData.username?.slice(0, 2)}</AvatarFallback>
+                                                                </Avatar>
+                                                            </Link>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <NavSmallLink path={`/auth/signin`} textLink="Profile" />
+
+                                                        </>
+                                                    )
+                                                }
                                             </DropdownMenuItem>
+                                            {
+                                                isAdmin ? (
+                                                    <DropdownMenuItem>
+                                                        <NavSmallLink path="/admin" textLink="Admin" />
+                                                    </DropdownMenuItem>
+                                                ) : ""
+                                            }
                                         </DropdownMenuContent>
                                     )
                                     :
@@ -101,12 +141,35 @@ const Header = () => {
                     (
                         <>
                             {
-                                pathname === "/content" || pathname === "/configure" || pathname === "/profile" ?
+                                pathname === "/content" || pathname === "/configure" || pathname === "/profile" || isProfileWithId || isAdmin ?
                                     (
-                                        <div className="text-[15px] lg:text-[18px] font-bold">
+                                        <div className="text-[15px] items-center flex lg:text-[18px] font-bold">
                                             <NavLink path={"/content"} textLink="Home" />
                                             <NavLink path={"/configure"} textLink="Configure" />
-                                            <NavLink path={`/profile/${user_id}`} textLink="Profile" />
+                                            {
+                                                user_id ? (
+                                                    <>
+                                                        <Link href={`/profile/${user_id}`}>
+
+                                                            <Avatar className="w-[50px] cursor-pointer h-[50px] ">
+                                                                <AvatarImage className="object-cover" src={image} />
+                                                                <AvatarFallback className="text-[#000000] text-[20px] uppercase">{userData.username?.slice(0, 2)}</AvatarFallback>
+                                                                {/* {userInfo.username?.slice(0, 2)} */}
+                                                            </Avatar>
+
+                                                        </Link>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <NavLink path={`/auth/signin`} textLink="Profile" />
+                                                    </>
+                                                )
+                                            }
+                                            {
+                                                isAdmin ? (
+                                                        <NavLink path={"/admin"} textLink="Admin" />
+                                                ) : ""
+                                            }
                                         </div>
                                     )
                                     :

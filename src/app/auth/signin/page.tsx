@@ -19,11 +19,11 @@ const Auth = () => {
         "email": watch('email'),
         "password": watch('password')
     }).then(res => {
-
         let index = res.data.token.indexOf('|')
         setError("")
         Cookies.set('access_token', res.data.token.substr(index + 1, 49))
         Cookies.set('user_id', res.data.data.id)
+        Cookies.set('email_user', res.data.data.email)
         if (Cookies.get('access_token')) {
             redirect('/content')
         }
