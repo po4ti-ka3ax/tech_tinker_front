@@ -17,6 +17,18 @@ export interface LinkComponentInterface {
     namePath: string
 }
 
+export interface ComponentInnerInterface {
+    componentKeys:[], 
+    componentValues:[], 
+    name:string, 
+    editOpen:boolean, 
+    setEditOpen:() => void, 
+    deleteOpen:boolean, 
+    setDeleteOpen:() => void, 
+    addOpen:boolean, 
+    setAddOpen:() => void
+}
+
 export interface ProfilePageProps {
   params: { id: number };
 }

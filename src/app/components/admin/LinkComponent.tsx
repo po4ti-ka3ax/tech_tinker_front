@@ -16,7 +16,7 @@ const LinkComponent = ({path, namePath}:LinkComponentInterface) => {
 
     return (
         <>
-            <Link href={`admin/${path}`}><button className={`px-[10px] mt-[10px] py-[10px]  ${isActive ? "bg-[#FFCC70] text-black border-0" : "border-[#FFCC70] border-1 text-white"} text-[24px] cursor-pointer rounded-[10px]`}>{namePath}</button></Link>
+            <Link href={`/admin/${path}`}><button className={`px-[10px] mt-[10px] py-[10px]  ${isActive ? "bg-[#FFCC70] text-black border-0" : "border-[#FFCC70] border-1 text-white"} text-[24px] cursor-pointer rounded-[10px]`}>{namePath}</button></Link>
         </>
     )
 }
