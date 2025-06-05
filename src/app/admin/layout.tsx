@@ -7,12 +7,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <>
             <h1 className="text-center text-[30px] lg:text-[50px] mb-[50px]">Admin panel</h1>
 
-            <div className="grid grid-cols-[2fr_1fr] ">
+            <div className="grid grid-cols-[1fr_3fr] overflow-y-hidden">
                 <div className="flex flex-col">
                     <LinkComponent path="users" namePath="Users"/>
                     <LinkComponent path="processors" namePath="Processors"/>
                 </div>
-                <div className="ml-[20px] ">{children}</div>
+                <div className="ml-[20px] overflow-y-hidden">{children}</div>
             </div>
         </>
     )
