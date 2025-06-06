@@ -19,10 +19,10 @@ import instanceAxios from "../axios/instanceAxios";
 import useUserData from "@/app/state/useDataStore";
 const Header = () => {
 
-    // const { userData,setUserData} = useUserData();
+    const {userData, setUserData} = useUserData();
     const pathname = usePathname();
     const Cookie = require('js-cookie')
-    const [userData, setUserData] = useState([])
+    // const [userData, setUserData] = useState([])
     const [image, setImage] = useState("");
     const user_id = Cookie.get('user_id')
     const isAdmin = userData?.role_id === 2;
@@ -34,6 +34,7 @@ const Header = () => {
                 // console.log(userData)
             });
         }
+        console.log(userData)
     }, [])
     if (!pathname) return null;
     const isProfileWithId = /^\/profile\/\d+$/.test(pathname);

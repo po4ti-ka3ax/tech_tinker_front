@@ -8,7 +8,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ProfilePageProps } from "@/app/interfaces/interface";
 import Link from "next/link";
+import useUserData from "@/app/state/useDataStore";
 const Profile = ({ params }: ProfilePageProps) => {
+    const { userData } = useUserData();
     const Cookies = require('js-cookie')
     const token = Cookies.get('access_token');
     const userId = Cookies.get('user_id')
@@ -25,39 +27,41 @@ const Profile = ({ params }: ProfilePageProps) => {
     const axios = require("axios");
     const [edit, setEdit] = useState(false);
     const [emailChange, setEmailChange] = useState(false);
-    // const handleImageChange = async (e) => {
-    //     const file = e.target.files[0];
-    //     if (!file) return;
-    //     formData.append('upload', file)
-    // }
+    
     useEffect(() => {
         const fetchUser = () => {
-            // setLoading(true)
-            // const interval = setInterval(() => {
-            //     if (hasEmailChange) {
-            //         setEmailChange(true)
-            //     } else {
-            //         setEmailChange(false)
-            //     }
-            // }, 1000)
-            try {
+                // setLoading(true)
+                // const interval = setInterval(() => {
+                //     if (hasEmailChange) {
+                //         setEmailChange(true)
+                //     } else {
+                //         setEmailChange(false)
+                //     }
+                // }, 1000)
+                try {
 
-                instanceAxios.get(`/users/${urlUserId}`).then(res => {
-                    Cookies.set('email_user', res.data.data.email)
-                    setUserInfo(res.data.data)
-                    setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${res.data.data.profile_img}`)
-                })
-            } catch (err) {
-                console.error(err)
-            } finally {
-                setLoading(false)
-                // clearInterval(interval)
+                    instanceAxios.get(`/users/${urlUserId}`).then(res => {
+                        Cookies.set('email_user', res.data.data.email)
+                        setUserInfo(res.data.data)
+                        setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${res.data.data.profile_img}`)
+                    })
+                } catch (err) {
+                    console.error(err)
+                } finally {
+                    setLoading(false)
+                    // clearInterval(interval)
+                }
             }
+
+        if (!userData.hasOwnProperty('id')) {
+            // fetchUser()
+        } 
+        if(userData) {
+            setUserInfo(userData)
+            setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${userData.profile_img}`)
         }
 
-
-        fetchUser()
-    }, [userId])
+    }, [userId,userData])
 
     useEffect(() => {
         if (userInfo) {
@@ -103,7 +107,7 @@ const Profile = ({ params }: ProfilePageProps) => {
             // changes.username = editData.username;
             hasChanges = true;
         }
-        Cookies.remove("user_id");
+        // Cookies.remove("user_id");
         Cookies.remove("has_email_change");
         try {
             instanceAxios.post('/users/edit', formData, {

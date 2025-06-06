@@ -2,7 +2,7 @@ import {create} from 'zustand'
 
 const useUserData = create((set) => ({
         userData: {},
-        setUserData: () => set((state) => ({userData: state})),
+        setUserData: (data) => set(() => ({userData: data})),
         unsetUserData: () => set(() => ({userData:{}}))
 }))
 
