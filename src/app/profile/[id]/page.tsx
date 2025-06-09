@@ -10,7 +10,7 @@ import { ProfilePageProps } from "@/app/interfaces/interface";
 import Link from "next/link";
 import useUserData from "@/app/state/useDataStore";
 const Profile = ({ params }: ProfilePageProps) => {
-    const { userData } = useUserData();
+    const { setUserData, userData } = useUserData();
     const Cookies = require('js-cookie')
     const token = Cookies.get('access_token');
     const userId = Cookies.get('user_id')
@@ -27,41 +27,41 @@ const Profile = ({ params }: ProfilePageProps) => {
     const axios = require("axios");
     const [edit, setEdit] = useState(false);
     const [emailChange, setEmailChange] = useState(false);
-    
+
     useEffect(() => {
         const fetchUser = () => {
-                // setLoading(true)
-                // const interval = setInterval(() => {
-                //     if (hasEmailChange) {
-                //         setEmailChange(true)
-                //     } else {
-                //         setEmailChange(false)
-                //     }
-                // }, 1000)
-                try {
+            // setLoading(true)
+            // const interval = setInterval(() => {
+            //     if (hasEmailChange) {
+            //         setEmailChange(true)
+            //     } else {
+            //         setEmailChange(false)
+            //     }
+            // }, 1000)
+            try {
 
-                    instanceAxios.get(`/users/${urlUserId}`).then(res => {
-                        Cookies.set('email_user', res.data.data.email)
-                        setUserInfo(res.data.data)
-                        setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${res.data.data.profile_img}`)
-                    })
-                } catch (err) {
-                    console.error(err)
-                } finally {
-                    setLoading(false)
-                    // clearInterval(interval)
-                }
+                instanceAxios.get(`/users/${urlUserId}`).then(res => {
+                    Cookies.set('email_user', res.data.data.email)
+                    setUserData(res.data.data)
+                    setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${res.data.data.profile_img}`)
+                })
+            } catch (err) {
+                console.error(err)
+            } finally {
+                setLoading(false)
+                // clearInterval(interval)
             }
+        }
 
         if (!userData.hasOwnProperty('id')) {
-            // fetchUser()
-        } 
-        if(userData) {
+            fetchUser()
+        }
+        if (userData) {
             setUserInfo(userData)
             setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${userData.profile_img}`)
         }
 
-    }, [userId,userData])
+    }, [userId, userData])
 
     useEffect(() => {
         if (userInfo) {
@@ -138,15 +138,23 @@ const Profile = ({ params }: ProfilePageProps) => {
                         <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto px-[20px] py-[80px] rounded-[10px] md:flex md:justify-around md:items-center">
                             <div className="flex justify-center gap-[20px]">
                                 <div className=" flex flex-col text-[17px] md:text-[25px] text-right gap-[10px]">
-                                    <p className="">Username: </p>
-                                    <p className="">Email: </p>
+                                    <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Username: </p>
+                                    <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Email: </p>
 
                                     {/* <p className="text-[25px]">Role: </p> */}
                                 </div>
                                 <div className="flex flex-col text-[17px] md:text-[25px] text-right gap-[10px]">
-                                    <input className="px-[10px] py-[5px] rounded-[10px]" onChange={(e) => setEditData({ ...editData, username: e.target.value })} value={editData.username} placeholder="Unknown" type="text" />
-                                    <input className="px-[10px] py-[5px] rounded-[10px]" readOnly={hasEmailChange ? false : true} onChange={(e) => setEditData({ ...editData, email: e.target.value })} value={editData.email} placeholder="Unknown" type="email" />
-                                    <Link href="/change_email" className="text-left"><button className="px-[10px] mt-[10px] py-[10px] bg-[#FFCC70] text-[17px] text-black cursor-pointer rounded-[10px]">Change Email</button></Link>
+                                    <input className="px-[10px] bg-[#434343] py-[5px] rounded-[10px]" onChange={(e) => setEditData({ ...editData, username: e.target.value })} value={editData.username} placeholder="Unknown" type="text" />
+                                    <input className="px-[10px] bg-[#434343] py-[5px] rounded-[10px]" readOnly={hasEmailChange ? false : true} onChange={(e) => setEditData({ ...editData, email: e.target.value })} value={editData.email} placeholder="Unknown" type="email" />
+                                    <Link
+                                        href="/change_email"
+                                        className={`md:w-[40%] text-left px-[10px] mt-[10px] py-[10px] text-[17px] rounded-[10px] ${hasEmailChange
+                                                ? "bg-[#E5CA98] text-[#3E3E3E] cursor-not-allowed pointer-events-none"
+                                                : "bg-[#FFCC70] text-black cursor-pointer"
+                                            }`}
+                                    >
+                                        Change Email
+                                    </Link>
 
                                     {/* <input className="px-[10px] py-[5px] rounded-[10px]" readonly="readonly" value={userInfo?.role?.slug} placeholder="Unknown" type="text" /> */}
                                 </div>
@@ -174,7 +182,10 @@ const Profile = ({ params }: ProfilePageProps) => {
                                 }}/> */}
 
                                 <div className="">
-                                    <button className="px-[10px] mr-[30px] mb-[10px] py-[10px] bg-[#FFCC70] text-[17px] text-black cursor-pointer rounded-[10px]" onClick={() => setEdit(!edit)}>Cancel</button>
+                                    <button className="px-[10px] mr-[30px] mb-[10px] py-[10px] bg-[#FFCC70] text-[17px] text-black cursor-pointer rounded-[10px]" onClick={() => {
+                                        setEdit(!edit)
+                                        Cookies.remove('has_email_change')
+                                        }}>Cancel</button>
                                     <button className="px-[10px] mb-[10px] py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]" onClick={handleChange}>Save changes</button>
                                 </div>
                             </div>
@@ -184,10 +195,10 @@ const Profile = ({ params }: ProfilePageProps) => {
                         <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto px-[20px] py-[80px] rounded-[10px] md:flex md:justify-around md:items-center">
                             <div className="flex justify-center gap-[20px] mb-[20px]">
                                 <div className="flex flex-col text-[17px] md:text-[25px] text-right gap-[10px]">
-                                    <p className="">Username: </p>
+                                    <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Username: </p>
                                     {
                                         urlUserId === userId ? (
-                                            <p className="">Email: </p>
+                                            <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Email: </p>
                                         ) : ""
                                     }
                                     {/* <p className="text-[25px]">Role: </p> */}
@@ -203,11 +214,11 @@ const Profile = ({ params }: ProfilePageProps) => {
                                         ""
                                     )} */}
                                     <div className="flex flex-col text-[17px] md:text-[25px] text-left gap-[10px]">
-                                        <p className="">{userInfo.username}</p>
+                                        <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">{userInfo.username}</p>
 
                                         {
                                             urlUserId === userId ? (
-                                                <p className="">{userInfo.email}</p>
+                                                <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">{userInfo.email}</p>
                                             ) : ""
                                         }
                                     </div>

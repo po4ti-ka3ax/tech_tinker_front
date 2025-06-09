@@ -60,9 +60,9 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 input {
-  background-color: #434343;
+  /* background-color: #434343; */
   outline: none;
-  border: none;
+  /* border: none; */
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

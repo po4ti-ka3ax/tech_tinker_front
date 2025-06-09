@@ -11,6 +11,25 @@ export interface ConfigureInterface {
     nameComponent: string,
     linkName: string,
 }
+export interface CommentInterface {
+    userData: object,
+    image: string,
+    commentText: string,
+    
+}
+
+export interface LongCharacteristicInterface {
+    brandComponent:string, 
+    nameComponent:string, 
+    modelComponent:string,
+    price:number
+    
+}
+export interface ShortCharacteristicInterface {
+    brandComponent:string, 
+    nameComponent:string, 
+    modelComponent:string
+}
 
 export interface LinkComponentInterface {
     path: string,

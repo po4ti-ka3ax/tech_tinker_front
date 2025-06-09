@@ -35,7 +35,7 @@ const Header = () => {
             });
         }
         console.log(userData)
-    }, [])
+    }, [user_id])
     if (!pathname) return null;
     const isProfileWithId = /^\/profile\/\d+$/.test(pathname);
     const widthResize = () => {

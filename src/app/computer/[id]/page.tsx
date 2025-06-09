@@ -1,0 +1,128 @@
+'use client'
+
+import LongCharacteristicComponent from "@/app/components/computer/LongCharacteristicComponent"
+import ShortCharacteristic from "@/app/components/computer/ShortCharacteristic"
+import useUserData from "@/app/state/useDataStore";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Image from "next/image"
+import { useEffect, useState } from "react";
+import { Textarea } from "@/components/ui/textarea"
+import Comment from "@/app/components/computer/Comment";
+const Computer = () => {
+    const { setUserData, userData } = useUserData();
+    const [image, setImage] = useState('');
+    // console.log(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${userData?.profile_img}`)
+    useEffect(() => {
+        if (userData) {
+            setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${userData?.profile_img}`)
+        }
+    }, [userData])
+    const text="It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a computer. It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a computer.";
+    return (
+        <>
+            <div className="">
+
+                <div className="flex justify-around">
+                    <div className="">
+                        <Image src={"/img/pc1.png"} width={500} height={500} alt="Photo PC" />
+                        <div className="bg-[#2D2D2D] text-center m-auto w-[300px] p-[20px] rounded-[10px]">
+                            <p className="text-[23px] mb-[10px]">Grades</p>
+                            <div className="flex justify-between px-[30px]  bg-[#3E3E3E] p-[5px] rounded-[10px]">
+                                <p className="text-[#FFCC70] text-[19px]">Reliability:</p>
+                                <p className="text-[17px]">8.6</p>
+                            </div>
+                            <div className="flex  justify-between px-[30px]  my-[10px] bg-[#3E3E3E] p-[5px] rounded-[10px]">
+                                <p className="text-[#FF5252] text-[19px]">Performance:</p>
+                                <p className="text-[17px]">3</p>
+                            </div>
+                            <div className="flex justify-between px-[30px]  bg-[#3E3E3E] p-[5px] rounded-[10px]">
+                                <p className=" text-[19px]">Compatibility:</p>
+                                <p className="text-[17px]">6.7</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#2D2D2D] w-[400px] py-[30px] flex flex-col items-center rounded-[10px]">
+                        <p className="text-[25px]">Name PC</p>
+                        <div className="w-full border-b  border-[#FFCC70]" />
+                        <div className="py-[20px]">
+                            <ShortCharacteristic nameComponent="CPU" brandComponent="Intel" modelComponent="Xeon e5 228" />
+                            <ShortCharacteristic nameComponent="GPU" brandComponent="Palit" modelComponent="GameRock RTX 5020" />
+                            <ShortCharacteristic nameComponent="Motherboard" brandComponent="Asrock" modelComponent="Z170 pro" />
+                            <ShortCharacteristic nameComponent="RAM" brandComponent="GSKILL" modelComponent="TridentZ 32GB" />
+                        </div>
+                        <div className="">
+                            <p className="text-[#DCDCDC] text-[25px]">Price: 2000$</p>
+                        </div>
+                        <div className=" mt-[15px]">
+                            <button className="bg-[#1A1A1A] w-[100%] text-[25px] py-[7px] px-[70px] rounded-[20px]">Save Configure</button>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-[#2D2D2D] w-[100%] m-auto py-[5px] mt-[30px] rounded-[10px]">
+                    <p className="text-[30px] text-center">Description</p>
+                    <div className="w-full border-b  border-[#FFCC70]" />
+                    <div className="px-[20px] my-[10px] mb-[70px]">
+                        <p className="text-[22px] ">
+                            It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a computer. It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a computer.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-[#2D2D2D] w-full m-auto py-[5px] mt-[30px] rounded-[10px]">
+                    <p className="text-[30px] text-center text-white">Components</p>
+
+                    <div className="w-full border-b border-[#FFCC70] my-2" />
+
+                    <div className="px-[20px] py-[20px]">
+                        <div className="grid grid-cols-3 w-full  text-white">
+                            <p className="text-[22px]">List components:</p>
+                            <p className="text-[22px] text-center">Model components:</p>
+                            <p className="text-[22px] text-right">Price:</p>
+                        </div>
+                        <LongCharacteristicComponent nameComponent="Processor" brandComponent="Intel" modelComponent="Xeon e5 228" price={150} />
+                        <LongCharacteristicComponent nameComponent="Videocard" brandComponent="Palit" modelComponent="GameRock RTX 5020" price={250} />
+                        <LongCharacteristicComponent nameComponent="Motherboard" brandComponent="Asrock" modelComponent="Z170 pro" price={100} />
+                        <LongCharacteristicComponent nameComponent="RAM" brandComponent="GSKILL" modelComponent="TridentZ 32GB" price={90} />
+                        <LongCharacteristicComponent nameComponent="Storage" brandComponent="Western Digital" modelComponent="Blue 1TB" price={50} />
+                        <LongCharacteristicComponent nameComponent="Power supply unit" brandComponent="BeQuite" modelComponent="1000W" price={250} />
+                        <LongCharacteristicComponent nameComponent="Case" brandComponent="NZXT" modelComponent="Case" price={250} />
+
+                        <p className="text-center mt-[50px] text-[25px]">Total: 2000$</p>
+                    </div>
+                </div>
+
+                <div className="bg-[#2D2D2D] w-full m-auto py-[5px] mt-[30px] rounded-[10px]">
+                    <p className="text-[30px] text-center text-white">Comments</p>
+
+                    <div className="w-full border-b border-[#FFCC70] my-2" />
+
+                    <div className="p-[20px]">
+                        <div className="flex items-center">
+                            <div className="mr-[20px]">
+                                <Avatar className="w-[50px] cursor-pointer h-[50px] mb-[10px]">
+                                    <AvatarImage className="object-cover" src={image} />
+                                    <AvatarFallback className="text-[#000000] text-[40px] uppercase">{userData.username?.slice(0, 2)}</AvatarFallback>
+                                </Avatar>
+                            </div>
+                            <div className="w-[100%] border-b-[2px] border-b-[#6D6C6C] rounded-[2px]">
+                               
+                                <Textarea 
+                                    className="resize-none w-full bg-transparent outline-none border-none  text-white px-4 py-2 leading-[1.5rem] text-[16px] focus-visible:ring-0 focus-visible:ring-offset-0"
+                                    placeholder="Write your comment"
+                                    rows={1}
+                                />
+                            </div>
+                        </div>
+                        <div className="">
+                            <Comment userData={userData} image={image} commentText={text}/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </>
+    )
+}
+
+export default Computer
