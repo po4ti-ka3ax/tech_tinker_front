@@ -8,15 +8,41 @@ import Image from "next/image"
 import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea"
 import Comment from "@/app/components/computer/Comment";
+import { SetColorInterface } from "@/app/interfaces/interface";
 const Computer = () => {
     const { setUserData, userData } = useUserData();
     const [image, setImage] = useState('');
+    const [reliability, setReliability] = useState(8);
+    const [performance, setPerformance] = useState(5);
+    const [compatibility, setCompatibility] = useState(0);
+    const [reliabilityColor, setReliabilityColor] = useState("");
+    const [performanceColor, setPerformanceColor] = useState("");
+    const [compatibilityColor, setCompatibilityColor] = useState("");
     // console.log(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${userData?.profile_img}`)
+    
     useEffect(() => {
         if (userData) {
             setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${userData?.profile_img}`)
         }
-    }, [userData])
+
+        const setColor = ({setterColor, param}: SetColorInterface) => {
+            if(param >= 7){
+                setterColor("text-white")
+            } 
+            if(param <= 6.8) {
+                setterColor("text-[#FFCC70]")
+            } 
+            if(param <= 4.9) {
+                setterColor("text-[#FF5252]")
+            }
+        }
+
+        setColor({setterColor: setReliabilityColor, param:reliability});
+        setColor({setterColor: setPerformanceColor, param:performance});
+        setColor({setterColor: setCompatibilityColor, param:compatibility});
+        
+    }, [userData,reliability,performance,compatibility])
+   
     const text="It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a computer. It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a computer.";
     return (
         <>
@@ -27,17 +53,17 @@ const Computer = () => {
                         <Image src={"/img/pc1.png"} width={500} height={500} alt="Photo PC" />
                         <div className="bg-[#2D2D2D] text-center m-auto w-[300px] p-[20px] rounded-[10px]">
                             <p className="text-[23px] mb-[10px]">Grades</p>
-                            <div className="flex justify-between px-[30px]  bg-[#3E3E3E] p-[5px] rounded-[10px]">
-                                <p className="text-[#FFCC70] text-[19px]">Reliability:</p>
-                                <p className="text-[17px]">8.6</p>
+                            <div className={`flex justify-between px-[30px]  bg-[#3E3E3E] p-[5px] rounded-[10px]`}>
+                                <p className="text-[19px]">Reliability:</p>
+                                <p className={`text-[17px] ${reliabilityColor}`}>{reliability}</p>
                             </div>
                             <div className="flex  justify-between px-[30px]  my-[10px] bg-[#3E3E3E] p-[5px] rounded-[10px]">
-                                <p className="text-[#FF5252] text-[19px]">Performance:</p>
-                                <p className="text-[17px]">3</p>
+                                <p className=" text-[19px]">Performance:</p>
+                                <p className={`text-[17px] ${performanceColor}`}>{performance}</p>
                             </div>
                             <div className="flex justify-between px-[30px]  bg-[#3E3E3E] p-[5px] rounded-[10px]">
                                 <p className=" text-[19px]">Compatibility:</p>
-                                <p className="text-[17px]">6.7</p>
+                                <p className={`text-[17px] ${compatibilityColor}`}>{compatibility}</p>
                             </div>
                         </div>
                     </div>
@@ -59,7 +85,7 @@ const Computer = () => {
                         </div>
                     </div>
                 </div>
-                <div className="bg-[#2D2D2D] w-[100%] m-auto py-[5px] mt-[30px] rounded-[10px]">
+                <div className="bg-[#2D2D2D] w-[85%] m-auto py-[5px] mt-[30px] rounded-[10px]">
                     <p className="text-[30px] text-center">Description</p>
                     <div className="w-full border-b  border-[#FFCC70]" />
                     <div className="px-[20px] my-[10px] mb-[70px]">
@@ -69,7 +95,7 @@ const Computer = () => {
                     </div>
                 </div>
 
-                <div className="bg-[#2D2D2D] w-full m-auto py-[5px] mt-[30px] rounded-[10px]">
+                <div className="bg-[#2D2D2D] w-[85%] m-auto py-[5px] mt-[30px] rounded-[10px]">
                     <p className="text-[30px] text-center text-white">Components</p>
 
                     <div className="w-full border-b border-[#FFCC70] my-2" />
@@ -92,7 +118,7 @@ const Computer = () => {
                     </div>
                 </div>
 
-                <div className="bg-[#2D2D2D] w-full m-auto py-[5px] mt-[30px] rounded-[10px]">
+                <div className="bg-[#2D2D2D] w-[85%] m-auto py-[5px] mt-[30px] rounded-[10px]">
                     <p className="text-[30px] text-center text-white">Comments</p>
 
                     <div className="w-full border-b border-[#FFCC70] my-2" />
@@ -105,13 +131,24 @@ const Computer = () => {
                                     <AvatarFallback className="text-[#000000] text-[40px] uppercase">{userData.username?.slice(0, 2)}</AvatarFallback>
                                 </Avatar>
                             </div>
-                            <div className="w-[100%] border-b-[2px] border-b-[#6D6C6C] rounded-[2px]">
-                               
+                            <div className="w-[100%] border-b-[2px] border-b-[#6D6C6C] pb-[10px] rounded-[2px]">
                                 <Textarea 
                                     className="resize-none w-full bg-transparent outline-none border-none  text-white px-4 py-2 leading-[1.5rem] text-[16px] focus-visible:ring-0 focus-visible:ring-offset-0"
                                     placeholder="Write your comment"
                                     rows={1}
                                 />
+                                <div className="flex gap-[5px] px-4">
+                                    
+                                    <div className="">
+                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Reliability"/>
+                                    </div>
+                                    <div >
+                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Performance"/>
+                                    </div>
+                                    <div className="">
+                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Compatibility"/>
+                                    </div>
+                               </div>
                             </div>
                         </div>
                         <div className="">

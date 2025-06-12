@@ -7,6 +7,16 @@ export interface FiltersProps {
     VideoMemoryVolume?:VideoMemoryVolume[],
 }
 
+export interface StatePriceInterface {
+    price: Record<string, number>; 
+    totalPrice: number;
+    setPriceStore: (component: string, price: number) => void;
+    unsetCurrentComponent: (componentName: string) => void;
+    unsetPriceStore: () => void;
+    recalculateTotal: () => void;
+}
+
+
 export interface ConfigureInterface {
     nameComponent: string,
     linkName: string,
@@ -16,6 +26,11 @@ export interface CommentInterface {
     image: string,
     commentText: string,
     
+}
+
+export interface SetColorInterface {
+    setterColor: (string) => void,
+    param: number
 }
 
 export interface LongCharacteristicInterface {
@@ -75,13 +90,23 @@ export interface LinkInterface {
     path: string
 }
 
+export interface StateConfigureInterface {
+    configureStore: {
+        [key: string]: any;
+    };
+    setConfigureStore: (component: string, data: object) => void;
+    deleteConfigureObject: (key: string) => void;
+    unsetConfigureStore: () => void;
+}
 export interface FilterState {
     selectedFilters: {
-        [key: string]: number[]
+        [key: string]: any;
     };
-    toggleFilter: (category: string, id: number) => void;
-    clearAllFilters: () => void
+    toggleFilter: (category: string, id: string) => void;
+    setFilterValue: (category: string, value: any) => void;
+    clearAllFilters: () => void;
 }
+
 
 interface NameVendor {
     id: number,

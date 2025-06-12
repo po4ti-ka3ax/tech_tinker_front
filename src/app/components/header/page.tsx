@@ -38,6 +38,7 @@ const Header = () => {
     }, [user_id])
     if (!pathname) return null;
     const isProfileWithId = /^\/profile\/\d+$/.test(pathname);
+    const isPC = /^\/computer\/\d+$/.test(pathname);
     const widthResize = () => {
         const [width, setWidth] = useState(window.innerWidth);
         useEffect(() => {
@@ -83,7 +84,7 @@ const Header = () => {
                                 <Image width={35} height={35} src="/img/menu.svg" alt="" />
                             </DropdownMenuTrigger>
                             {
-                                pathname === "/content" || pathname === "/configure" || pathname === "/profile" || isProfileWithId ?
+                                pathname === "/content" || pathname === "/configure" || pathname === "/profile" || isProfileWithId || isPC ?
                                     (
                                         <DropdownMenuContent className="bg-[#1A1A1A] mt-[10px] text-[17px] border-0 ring-0 outline-none shadow-none flex flex-col text-white items-center" style={{ border: 'none' }}>
                                             <DropdownMenuItem>
@@ -142,7 +143,7 @@ const Header = () => {
                     (
                         <>
                             {
-                                pathname === "/content" || pathname === "/configure" || pathname === "/profile" || isProfileWithId || isAdmin ?
+                                pathname === "/content" || pathname === "/configure" || pathname === "/profile" || isProfileWithId || isAdmin || isPC ?
                                     (
                                         <div className="text-[15px] items-center flex lg:text-[18px] font-bold">
                                             <NavLink path={"/content"} textLink="Home" />
