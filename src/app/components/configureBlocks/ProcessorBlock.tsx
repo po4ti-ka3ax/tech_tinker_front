@@ -323,7 +323,7 @@ const ProcessorBlock = () => {
                                                     </div>
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
-                                                    <button onClick={() => handleAddComponent(el)} className="text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
+                                                    <button onClick={() => handleAddComponent(el)} disabled={hasMotherboard && el.socket.id !== socket ? true : false} className="disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
                                                     <p className="mt-[20px]">{el.price}$</p>
                                                 </div>
                                             </div>
