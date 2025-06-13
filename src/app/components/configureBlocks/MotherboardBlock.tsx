@@ -16,6 +16,11 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 import CheckboxComponent from "../filters/CheckboxComponent"
 import instanceAxios from "../axios/instanceAxios"
 import { useEffect, useState } from "react"
@@ -23,22 +28,24 @@ import { filterConfig } from "@/app/config/filterConfig"
 import { useFilterStore } from "@/app/state/useFilterStore"
 import { useConfigureStore } from "@/app/state/useConfigureStore"
 import { usePriceStore } from "@/app/state/usePriceStore"
-
+import { BadgeInfo } from 'lucide-react';
+import { usePowerStore } from "@/app/state/usePowerStore"
 const MotherboardBlock = () => {
     const { selectedFilters, setFilterValue, clearAllFilters } = useFilterStore();
     const { configureStore, setConfigureStore, deleteConfigureObject } = useConfigureStore();
     const { price, setPriceStore, totalPrice, unsetCurrentComponent, unsetPriceStore, recalculateTotal } = usePriceStore()
+    const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
+    
     const [components, setComponents] = useState([]);
     const [open, setOpen] = useState(false)
     const [filters, setFilters] = useState({});
     const Cookies = require('js-cookie')
     const token = Cookies.get('access_token')
+    const [hasFilterComponent, setHasFilterComponent] = useState(false);
+    const [compatible, setCompatible] = useState(false);
     const [currentComponent, setCurrentComponent] = useState({})
     const [remove, setRemove] = useState(false);
-    // console.log('before:', configureStore);
-    // const updateFilter = (name, value) => {
-    //     setFilters(prev => ({ ...prev, [name]: value }));
-    // };
+    const [incompatibilityReason, setIncompatibilityReason] = useState('');
 
     const handleRangeChange = (name: string, key: 'from' | 'to', value: number | null) => {
         const current = selectedFilters[name] || {};
@@ -47,25 +54,33 @@ const MotherboardBlock = () => {
 
     const deleteComponent = (key) => {
         unsetCurrentComponent(key)
+        unsetPowerCurrentComponent(key)
         setTimeout(() => recalculateTotal(), 0)
+        setTimeout(() => recalculateTotalPower(), 0)
         setCurrentComponent({})
         deleteConfigureObject(key)
     };
-
+    const hasProcessor = configureStore.processor
+    const socket = configureStore?.processor?.socket[0]?.id
 
     useEffect(() => {
-        console.log(configureStore)
-    }, [configureStore])
+        if (hasProcessor && socket) {
+            setHasFilterComponent(true)
+            handleComponentClick();
+        } else {
+            setHasFilterComponent(false)
+        }
+    }, [hasProcessor, open])
 
     useEffect(() => {
         try {
-            // instanceAxios.get(`/brands`).then(res => {
-            //     if (filterConfig['motherboards'][0].options && filterConfig['motherboards'][2].options.length === 0) {
-            //         res.data.data.forEach(el => {
-            //             filterConfig['motherboards'][0].options?.push({ value: el.id, label: el.title })
-            //         });
-            //     }
-            // })
+            instanceAxios.get(`/brands?category_id=3`).then(res => {
+                if (filterConfig['motherboards'][0].options && filterConfig['motherboards'][0].options.length === 0) {
+                    res.data.data.forEach(el => {
+                        filterConfig['motherboards'][0].options?.push({ value: el.id, label: el.title })
+                    });
+                }
+            })
             instanceAxios.get(`/form-factors`).then(res => {
                 if (filterConfig['motherboards'][1].options && filterConfig['motherboards'][1].options.length === 0) {
                     res.data.data.forEach(el => {
@@ -153,8 +168,19 @@ const MotherboardBlock = () => {
         }
     }
 
-    const hasProcessor = configureStore.processor
-    const socket = configureStore?.processor?.socket[0]?.id
+    const isCompatible = (componentA, componentB) => {
+        if (!componentA || !componentB) return false;
+        return componentA.socket[0]?.id === componentB.socket?.id;
+    };
+
+    useEffect(() => {
+       if(!configureStore.processor || !currentComponent) return;
+       if(currentComponent.socket?.id !== configureStore.processor.socket[0]?.id) {
+            setCompatible(false)
+            setIncompatibilityReason("Socket doesn't match")
+       }
+    }, [configureStore.processor, currentComponent]);
+
 
     const handleRemoveFilters = async () => {
         try {
@@ -171,8 +197,10 @@ const MotherboardBlock = () => {
 
     const handleAddComponent = (el) => {
         setOpen(false)
+
         setConfigureStore('motherboard', el);
         setPriceStore('motherboard_id', el.price)
+        setPowerStore('motherboard_id',el.power_wattage)
         setCurrentComponent(el);
     }
 
@@ -185,7 +213,35 @@ const MotherboardBlock = () => {
                         <div className="text-center">
                             <p className="text-[25px] text-[#fffffff]">{currentComponent?.brand?.title}</p>
                             <p className="">{currentComponent.motherboard_model}</p>
-                            <p className="text-[#626262]">Unknown</p>
+                            {
+                                hasProcessor && isCompatible(configureStore.processor, currentComponent) ? (
+                                    <>
+                                        <Tooltip>
+                                            <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Compatible</div></TooltipTrigger>
+                                            <TooltipContent className="bg-[#3E3E3E] p-[20px]">
+                                                <p className="text-[17px]">
+                                                    Your motherboard: {currentComponent.motherboard_model}
+                                                    <br />
+                                                    compatible with
+                                                    <br />
+                                                    your processor: {configureStore.processor.processor_model}
+                                                </p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Tooltip>
+                                            <TooltipTrigger className="text-[#FF5252]  mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Uncompatible</div></TooltipTrigger>
+                                            <TooltipContent className="bg-[#3E3E3E] p-[20px]">
+                                                <p className="text-[17px]">
+                                                   {incompatibilityReason}
+                                                </p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </>
+                                )
+                            }
 
                         </div>
                         <div className="md:mx-[40px] my-[20px] flex justify-center">
@@ -334,7 +390,7 @@ const MotherboardBlock = () => {
                                                     </div>
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
-                                                    <button  disabled={hasProcessor && el.socket.id !== socket ? true : false} onClick={() => handleAddComponent(el)} className="disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
+                                                    <button disabled={hasProcessor && el.socket.id !== socket ? true : false} onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
                                                     <p className="mt-[20px]">{el.price}$</p>
                                                 </div>
                                             </div>
@@ -356,7 +412,7 @@ const MotherboardBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('motherboard_id')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
+                <button onClick={() => deleteComponent('motherboard')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
             </div>
         </div >
     )

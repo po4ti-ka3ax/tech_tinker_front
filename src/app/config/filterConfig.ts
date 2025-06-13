@@ -130,5 +130,116 @@ export const filterConfig = {
       label: "Number per Page",
       type: "number"
     }
-  ]
+  ],
+  videocards: [
+  {
+    name: "brand_id",
+    label: "Brand",
+    type: "select",
+    options: [
+    
+    ]
+  },
+  {
+    name: "memory_generation_id",
+    label: "Memory Generation",
+    type: "select",
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "price",
+    label: "Price",
+    type: "range"
+  },
+  {
+    name: "power",
+    label: "Power (Wt)",
+    type: "range"
+  },
+  // {
+  //   name: "frequency",
+  //   label: "Frequency (GHz)",
+  //   type: "number"
+  // },
+  {
+    name: "memory_volume",
+    label: "Memory Volume (GB)",
+    type: "number"
+  },
+  {
+    name: "height",
+    label: "Height (mm)",
+    type: "range"
+  },
+  {
+    name: "width",
+    label: "Width (mm)",
+    type: "range"
+  },
+  {
+    name: "price_sort",
+    label: "Sort by Price",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "power_sort",
+    label: "Sort by Power",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "per_page",
+    label: "Number per Page",
+    type: "number"
+  }
+  ],
+  ram: [
+  {
+    name: "brand_id",
+    label: "Brand",
+    type: "select",
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "memory_generation_id",
+    label: "Memory Generation",
+    type: "select",
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "memory_volume",
+    label: "Memory Volume (GB)",
+    type: "number"
+  },
+  {
+    name: "frequency",
+    label: "Frequency (MHz)",
+    type: "number"
+  },
+  {
+    name: "price",
+    label: "Price",
+    type: "range"
+  },
+  {
+    name: "price_sort",
+    label: "Sort by Price",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "frequency_sort",
+    label: "Sort by Frequency",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "per_page",
+    label: "Number per Page",
+    type: "number"
+  }
+]
+
+
 };

@@ -6,8 +6,12 @@ import { Textarea } from "@/components/ui/textarea"
 import ProcessorBlock from "../components/configureBlocks/ProcessorBlock"
 import { usePriceStore } from "../state/usePriceStore"
 import MotherboardBlock from "../components/configureBlocks/MotherboardBlock"
+import VideocardBlock from "../components/configureBlocks/VideocardBlock"
+import { usePowerStore } from "../state/usePowerStore"
+import SystemMemoryBlock from "../components/configureBlocks/SystemMemoryBlock"
 const Configure = () => {
     const {price, setPriceStore,totalPrice, unsetCurrentComponent, unsetPriceStore} = usePriceStore()
+    // const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
     
     return (
         <>
@@ -24,14 +28,18 @@ const Configure = () => {
                     <input type="text" placeholder="PC name" className="text-center rounded-[20px] py-[10px] px-[50px] bg-[#242424]"/>
                     <Textarea className="my-[20px] w-[80%] text-[25px] md:text-[20px] resize-none bg-[#242424] border-none" placeholder="Write description about your PC"/>
                     <p className="my-[20px]">Total price: {totalPrice}₸</p>
+                    {/* <p className="my-[20px]">Total power: {totalPower}</p> */}
+
                     <button className="bg-[#FFCC70] py-[10px] px-[70px] text-[#1A1A1A] rounded-[10px]">Save configure</button>
                 </div>
                 <div className="">
                     <ProcessorBlock/>
                     <MotherboardBlock/>
+                    <VideocardBlock/>
+                    <SystemMemoryBlock/>
                     {/* <ConfigureBlock linkName="motherboards" nameComponent="Motherboard"/> */}
-                    <ConfigureBlock linkName="graphic-cards" nameComponent="Videocard"/>
-                    <ConfigureBlock linkName="" nameComponent="Memory"/>
+                    {/* <ConfigureBlock linkName="graphic-cards" nameComponent="Videocard"/> */}
+                    {/* <ConfigureBlock linkName="" nameComponent="Memory"/> */}
                     <ConfigureBlock linkName="" nameComponent="Hard disk"/>
                     <ConfigureBlock linkName="" nameComponent="SSD disk"/>
                     <ConfigureBlock linkName="computer-cases" nameComponent="Case"/>

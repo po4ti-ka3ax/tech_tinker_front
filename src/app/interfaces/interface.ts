@@ -7,6 +7,15 @@ export interface FiltersProps {
     VideoMemoryVolume?:VideoMemoryVolume[],
 }
 
+export interface StatePowerInterface {
+    power:Record<string, number>; 
+    totalPower: number;
+    setPowerStore: (component: string, price: number) => void;
+    unsetPowerCurrentComponent: (componentName: string) => void;
+    unsetPowerStore: () => void;
+    recalculateTotalPower: () => void;
+}
+
 export interface StatePriceInterface {
     price: Record<string, number>; 
     totalPrice: number;

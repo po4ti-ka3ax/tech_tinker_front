@@ -30,27 +30,21 @@ import { useConfigureStore } from "@/app/state/useConfigureStore"
 import { usePriceStore } from "@/app/state/usePriceStore"
 import { BadgeInfo } from 'lucide-react';
 import { usePowerStore } from "@/app/state/usePowerStore"
-
-const ProcessorBlock = () => {
+const SystemMemoryBlock = () => {
     const { selectedFilters, setFilterValue, clearAllFilters } = useFilterStore();
     const { configureStore, setConfigureStore, deleteConfigureObject } = useConfigureStore();
     const { price, setPriceStore, totalPrice, unsetCurrentComponent, unsetPriceStore, recalculateTotal } = usePriceStore()
-    const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
+    // const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
     const [components, setComponents] = useState([]);
-    const [hasFilterComponent, setHasFilterComponent] = useState(false);
     const [open, setOpen] = useState(false)
     const [filters, setFilters] = useState({});
     const Cookies = require('js-cookie')
     const token = Cookies.get('access_token')
+    const [hasFilterComponent, setHasFilterComponent] = useState(false);
+    const [compatible, setCompatible] = useState(false);
     const [currentComponent, setCurrentComponent] = useState({})
     const [remove, setRemove] = useState(false);
-    console.log('before:', configureStore);
-    const [compatible, setCompatible] = useState(false);
     const [incompatibilityReason, setIncompatibilityReason] = useState('');
-
-    // const updateFilter = (name, value) => {
-    //     setFilters(prev => ({ ...prev, [name]: value }));
-    // };
 
     const handleRangeChange = (name: string, key: 'from' | 'to', value: number | null) => {
         const current = selectedFilters[name] || {};
@@ -59,50 +53,43 @@ const ProcessorBlock = () => {
 
     const deleteComponent = (key) => {
         unsetCurrentComponent(key)
-        unsetPowerCurrentComponent(key)
+        // unsetPowerCurrentComponent(key)
         setTimeout(() => recalculateTotal(), 0)
-        setTimeout(() => recalculateTotalPower(), 0)
+        // setTimeout(() => recalculateTotalPower(), 0)
         setCurrentComponent({})
         deleteConfigureObject(key)
     };
     const hasMotherboard = configureStore.motherboard
-    const socket = configureStore?.motherboard?.socket.id
+    const memoryGenerationMotherboard = configureStore?.motherboard?.memory_generation?.id
+    const memoryGenerationProcessor = configureStore?.processor?.memory_generation?.id
+
     useEffect(() => {
-        if(hasMotherboard && socket) {
+        if (hasMotherboard && memoryGenerationMotherboard && memoryGenerationProcessor) {
             setHasFilterComponent(true)
             handleComponentClick();
         } else {
             setHasFilterComponent(false)
         }
-    }, [hasMotherboard,open])
-    console.log(` has filter - ${hasFilterComponent} \n socket - ${socket}`)
+    }, [hasMotherboard, open])
+
     useEffect(() => {
         try {
-            instanceAxios.get(`/brands?category_id=1`).then(res => {
-                if (filterConfig['processors'][0].options && filterConfig['processors'][0].options.length === 0) {
+            instanceAxios.get(`/brands?category_id=5 `).then(res => {
+                if (filterConfig['ram'][0].options && filterConfig['ram'][0].options.length === 0) {
                     res.data.data.forEach(el => {
-                        filterConfig['processors'][0].options?.push({ value: el.id, label: el.title })
+                        filterConfig['ram'][0].options?.push({ value: el.id, label: el.title })
                     });
                 }
             })
+            
             instanceAxios.get(`/memory-generations`).then(res => {
-                if (filterConfig['processors'][2].options && filterConfig['processors'][2].options.length === 0) {
+                if (filterConfig['ram'][1].options && filterConfig['ram'][1].options.length === 0) {
                     res.data.data.forEach(el => {
-                        filterConfig['processors'][2].options?.push({ value: el.id, label: el.title })
+                        filterConfig['ram'][1].options?.push({ value: el.id, label: el.title })
                     });
                 }
-                // filterConfig['processors'][2].options?.push(res.data.data)
-                // console.log(filterConfig['processors'][2].options)
             })
-            instanceAxios.get(`/sockets`).then(res => {
-                if (filterConfig['processors'][1].options && filterConfig['processors'][1].options.length === 0) {
-                    res.data.data.forEach(el => {
-                        filterConfig['processors'][1].options?.push({ value: el.id, label: el.model })
-                    });
-                }
-                // filterConfig['processors'][2].options?.push(res.data.data)
-                console.log(filterConfig['processors'][1].options)
-            })
+
         } catch (error) {
             console.error(error)
         }
@@ -121,6 +108,13 @@ const ProcessorBlock = () => {
                     if (value.to !== undefined && value.to !== null) {
                         if (value.to) params.append(`${key}_max`, Number(value.to).toFixed(2))
                     }
+                } else if(key === "height" || key === "width") {
+                    if (value.from !== undefined && value.from !== null) {
+                        if (value.from) params.append(`${key}_min`, Number(value.from).toFixed(1))
+                    }
+                    if (value.to !== undefined && value.to !== null) {
+                        if (value.to) params.append(`${key}_max`, Number(value.to).toFixed(1))
+                    }
                 } else {
                     if (value.from !== undefined && value.from !== null) {
                         if (value.from) params.append(`${key}_min`, value.from)
@@ -129,6 +123,7 @@ const ProcessorBlock = () => {
                         if (value.to) params.append(`${key}_max`, value.to)
                     }
                 }
+                
 
             } else if (value !== undefined && value !== "") {
                 params.append(key, value)
@@ -142,70 +137,57 @@ const ProcessorBlock = () => {
 
     const onApplyFilters = async () => {
         const query = buildQuery();
-        const response = await instanceAxios.get(`/processors?${query}`);
+        const response = await instanceAxios.get(`/system-memories?${query}`);
         // console.log(selectedFilters)
         setComponents(response.data.data);
     };
 
 
-
-
     const handleComponentClick = async () => {
         try {
-            if (hasMotherboard) {
-                await instanceAxios.get(`/processors${hasMotherboard ? `?socket_id=${socket}` : ""}`).then(res => {
-                    setComponents(res.data.data)
-                })
-            } else {
-                await instanceAxios.get(`/processors`).then(res => {
-                    setComponents(res.data.data)
-                })
-            }
+            await instanceAxios.get(`/system-memories${hasMotherboard ? `?memory_generation_id=${memoryGenerationMotherboard}` : ""}`).then(res => {
+                setComponents(res.data.data)
+            })
         } catch (error) {
             console.error(error)
         }
     }
 
-    const handleRemove = async () => {
+    const isCompatible = (componentA, componentB) => {
+        if (!componentA || !componentB) return false;
+        return componentA.memory_generation.id === componentB.memory_generation.id;
+    };
+
+    useEffect(() => {
+       if(!configureStore.motherboard || !currentComponent) return;
+       if(currentComponent?.memory_generation?.id !== configureStore.motherboard.memory_generation.id) {
+            setCompatible(false)
+            setIncompatibilityReason("Memory generation doesn't match")
+       }
+    }, [configureStore.motherboard, currentComponent]);
+
+
+    const handleRemoveFilters = async () => {
         try {
             clearAllFilters()
             setRemove(!remove)
-            if (hasMotherboard) {
-                await instanceAxios.get(`/processors${hasMotherboard ? `?socket_id=${socket}` : ""}`).then(res => {
-                    setComponents(res.data.data)
-                })
-            } else {
-                await instanceAxios.get(`/processors`).then(res => {
-                    setComponents(res.data.data)
-                })
-            }
+            await instanceAxios.get(`/system-memories${hasMotherboard ? `?memory_generation_id=${memoryGenerationMotherboard}` : ""}`).then(res => {
+                setComponents(res.data.data)
+            })
         } catch (err) {
             console.error(err)
         }
     }
 
-    const isCompatible = (componentA, componentB) => {
-        if (!componentA || !componentB) return false;
-        return componentA.socket[0]?.id === componentB.socket?.id;
-    };
-
-    useEffect(() => {
-       if(!configureStore.processor || !currentComponent) return;
-       if(currentComponent.socket?.id !== configureStore.processor.socket[0]?.id) {
-            setCompatible(false)
-            setIncompatibilityReason("Socket doesn't match")
-       }
-    }, [configureStore.processor, currentComponent]);
-
     const handleAddComponent = (el) => {
         setOpen(false)
-        
-        setConfigureStore('processor', el);
-        setPriceStore('processor_id', el.price)
-        setPowerStore('processor_id',el.power_wattage)
+
+        setConfigureStore('system_memory', el);
+        setPriceStore('system_memory', el.price)
+        // setPowerStore('system_memory_id', el.power_wattage)
         setCurrentComponent(el);
     }
-    // console.log(compatible)
+
     return (
         <div className="md:grid flex flex-col m-auto items-center md:grid-cols-4 max-w-[450px] md:max-w-[900px] bg-[#242424] px-[5px] py-[35px] my-[20px] rounded-[10px]">
 
@@ -214,18 +196,18 @@ const ProcessorBlock = () => {
                     <>
                         <div className="text-center">
                             <p className="text-[25px] text-[#fffffff]">{currentComponent?.brand?.title}</p>
-                            <p className="">{currentComponent.processor_model}</p>
-                             {
-                                hasMotherboard && isCompatible(currentComponent, configureStore.motherboard ) ? (
+                            <p className="">{currentComponent.memory_model}</p>
+                            {
+                                hasMotherboard && isCompatible(configureStore.motherboard, currentComponent) ? (
                                     <>
                                         <Tooltip>
                                             <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Compatible</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
-                                                    Your processor: {currentComponent.processor_model} 
-                                                    <br /> 
+                                                    Your ram: {currentComponent.memory_model}
+                                                    <br />
                                                     compatible with
-                                                    <br /> 
+                                                    <br />
                                                     your motherboard: {configureStore.motherboard.motherboard_model}
                                                 </p>
                                             </TooltipContent>
@@ -233,15 +215,15 @@ const ProcessorBlock = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <Tooltip>
-                                            <TooltipTrigger className="text-[#FF5252] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Uncompatible</div></TooltipTrigger>
+                                        {/* <Tooltip>
+                                            <TooltipTrigger className="text-[#FF5252]  mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Uncompatible</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
-                                                    {incompatibilityReason}
+                                                   {incompatibilityReason}
                                                 </p>
                                             </TooltipContent>
-                                        </Tooltip>
-                                        {/* <p className="text-[#626262]">Unknown</p> */}
+                                        </Tooltip> */}
+                                    <p className="text-[#626262]">Unknown</p>
                                     </>
                                 )
                             }
@@ -251,15 +233,15 @@ const ProcessorBlock = () => {
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Socket: {currentComponent?.socket[0].model}</p>
-                            <p className="">Cores: {currentComponent.core}</p>
+                            <p className="text-[25px] text-[#fffffff]">Volume: {currentComponent?.memory_volume}</p>
+                            <p className="">Chipset: {currentComponent?.chipset?.model}</p>
                             <p className="">Price: {currentComponent.price}$</p>
                         </div>
                     </>
                 ) : (
                     <>
                         <div className="text-center">
-                            <p className="text-[25px] text-[#fffffff]">Processors</p>
+                            <p className="text-[25px] text-[#fffffff]">System memory</p>
                             <p className="text-[#626262]">Unknown</p>
                         </div >
                         <div className="md:mx-[40px] my-[20px] flex justify-center">
@@ -281,20 +263,20 @@ const ProcessorBlock = () => {
                     </DialogTrigger>
                     <DialogContent id="dialog-content" className="bg-[#1A1A1A] border-none text-[#ffffff] px-0 max-w-[320px] lg:max-h-[80vh] overflow-y-auto lg:!max-w-[850px] w-full">
                         <DialogHeader className="px-[24px]">
-                            <DialogTitle className="text-center text-[30px]">Processors</DialogTitle>
+                            <DialogTitle className="text-center text-[30px]">System memory</DialogTitle>
                         </DialogHeader>
                         <div className="px-[24px] py-[16px]">
                             <Accordion type="single" collapsible>
                                 <AccordionItem value="item-1">
-                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Processors filters</AccordionTrigger>
+                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">System memory filters</AccordionTrigger>
                                     <AccordionContent>
-                                        {filterConfig["processors"].map((filter) => (
+                                        {filterConfig["ram"].map((filter) => (
                                             <div key={filter.name} className="mb-4">
                                                 <label className="text-white block mb-1">{filter.label}</label>
 
                                                 {filter.type === "select" && (
                                                     <div className="flex bg-[#3C3C3C] rounded-[10px] px-[10px] py-[20px] flex-col gap-[5px]">
-                                                        {filter.options.map((opt) => (
+                                                        {filter?.options.map((opt) => (
                                                             <CheckboxComponent
                                                                 key={opt.value}
                                                                 componentName={filter.name}
@@ -363,7 +345,7 @@ const ProcessorBlock = () => {
                                         ))}
                                         <div className="flex justify-center gap-[10px]">
                                             <button onClick={onApplyFilters} className="text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Apply</button>
-                                            <button onClick={handleRemove} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove filters</button>
+                                            <button onClick={handleRemoveFilters} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove filters</button>
                                         </div>
                                     </AccordionContent>
 
@@ -378,7 +360,7 @@ const ProcessorBlock = () => {
                                             <div className="md:grid grid-cols-4 items-center my-[20px]">
                                                 <div className="text-center">
                                                     <p className="text-[20px] text-[#fffffff]">{el.brand.title}</p>
-                                                    <p className="text-[20px] text-[#fffffff]">{el.processor_model}</p>
+                                                    <p className="text-[20px] text-[#fffffff]">{el.memory_model}</p>
                                                 </div>
                                                 <div className="mx-[40px] my-[20px] flex justify-center">
                                                     <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
@@ -386,15 +368,16 @@ const ProcessorBlock = () => {
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
                                                     <p className="text-[18px] text-[#fffffff]">Characteristics:</p>
                                                     <div className="text-[#626262] whitespace-nowrap">
-                                                        <p className="">Frequency: {el.frequency}GHz</p>
-                                                        <p className="">Power wattage: {el.power_wattage}Wt</p>
-                                                        <p className="">Socket: {el.socket[0].model}</p>
+                                                        {/* <p className="">Chipset: {el.chipset.model}</p> */}
+                                                        <p className="">Volume: {el.memory_volume}GB</p>
+                                                        <p className="">Frequency: {el.frequency}Mhz</p>
+                                                        {/* <p className="">Socket: {el.socket.model}</p> */}
                                                         <p className="">Memory generation: {el.memory_generation.title}</p>
                                                     </div>
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
-                                                    
-                                                    <button onClick={() => handleAddComponent(el)} disabled={hasFilterComponent && el.socket[0].id !== socket ? true : false} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
+                                                    {/* disabled={hasProcessor && el.socket.id !== socket ? true : false} */}
+                                                    <button  onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
                                                     <p className="mt-[20px]">{el.price}$</p>
                                                 </div>
                                             </div>
@@ -416,10 +399,10 @@ const ProcessorBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('processor')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
+                <button onClick={() => deleteComponent('system_memory')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
             </div>
         </div >
     )
 }
 
-export default ProcessorBlock
+export default SystemMemoryBlock
