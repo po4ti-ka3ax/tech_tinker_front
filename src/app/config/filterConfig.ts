@@ -334,7 +334,115 @@ storages: [
     label: "Number per Page",
     type: "number"
   }
+],
+cases: [
+  {
+    name: "brand_id",
+    label: "Brand",
+    type: "select",
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "form_factors_id",
+    label: "Form Factors",
+    type: "select", 
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "price",
+    label: "Price",
+    type: "range"
+  },
+  {
+    name: "height",
+    label: "Case Height (mm)",
+    type: "range"
+  },
+  {
+    name: "width",
+    label: "Case Width (mm)",
+    type: "range"
+  },
+  {
+    name: "gpu_height",
+    label: "GPU Height (mm)",
+    type: "range"
+  },
+  {
+    name: "gpu_width",
+    label: "GPU Width (mm)",
+    type: "range"
+  },
+  {
+    name: "cooling_height",
+    label: "Cooling Height (mm)",
+    type: "range"
+  },
+  {
+    name: "cooling_width",
+    label: "Cooling Width (mm)",
+    type: "range"
+  },
+  {
+    name: "price_sort",
+    label: "Sort by Price",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "per_page",
+    label: "Number per Page",
+    type: "number"
+  }
+],
+power_supplies: [
+  {
+    name: "brand_id",
+    label: "Brand",
+    type: "select",
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "connect_interfaces_id",
+    label: "Connect Interface",
+    type: "select", // предполагается множественный выбор
+    options: [/* подгружается с API */]
+  },
+  // {
+  //   name: "power_protect_type_id",
+  //   label: "Power Protection Types",
+  //   type: "select", // предполагается множественный выбор
+  //   options: [/* подгружается с API */]
+  // },
+  {
+    name: "power",
+    label: "Power (W)",
+    type: "range"
+  },
+  {
+    name: "price",
+    label: "Price",
+    type: "range"
+  },
+  {
+    name: "power_sort",
+    label: "Sort by Power",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "price_sort",
+    label: "Sort by Price",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "per_page",
+    label: "Number per Page",
+    type: "number"
+  }
 ]
+
 
 
 

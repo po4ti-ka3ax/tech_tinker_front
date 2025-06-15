@@ -77,7 +77,7 @@ export interface ProfilePageProps {
 }
 
 export interface ComputerCardInterface {
-    computerId:number
+    computer:object
 }
 
 export interface CheckboxInterface {

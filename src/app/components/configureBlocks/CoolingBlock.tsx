@@ -217,8 +217,8 @@ const CoolingBlock = () => {
     const handleAddComponent = (el) => {
         setOpen(false)
 
-        setConfigureStore('cooling', el);
-        setPriceStore('cooling', el.price)
+        setConfigureStore('cooling_spec', el);
+        setPriceStore('cooling_spec', el.price)
         // setPowerStore('system_memory_id', el.power_wattage)
         setCurrentComponent(el);
     }
@@ -435,7 +435,7 @@ const CoolingBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('cooling')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
+                <button onClick={() => deleteComponent('cooling_spec')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
             </div>
         </div >
     )

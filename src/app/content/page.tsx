@@ -18,8 +18,10 @@ import {
 import { useEffect, useState } from "react"
 import { useFilterStore } from '../state/useFilterStore'
 import ComputerCard from "../components/ComputerCard/ComputerCard"
+import instanceAxios from "../components/axios/instanceAxios"
 
 const Content = () => {
+    const [pc, setPC] = useState([]);
     const ProcessorSocket = [
         { id: 1, name: "LGA1151" },
         { id: 2, name: "LGA1200" },
@@ -80,6 +82,11 @@ const Content = () => {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
+        try {
+            instanceAxios.get('/builds').then(res => setPC(res.data.data))
+        } catch(err) {
+            console.error(err)
+        }
         if (open) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -132,7 +139,13 @@ const Content = () => {
                     <button className="px-[20px]  py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]" >Search</button>
                 </div>
                 <div className=" flex wrap ">
-                    <ComputerCard computerId={1}/>
+                    {
+                        pc.map(el => (
+                            <>
+                                <ComputerCard computer={el}/>
+                            </>
+                        ))
+                    }
                 </div>
             </div>
         </>

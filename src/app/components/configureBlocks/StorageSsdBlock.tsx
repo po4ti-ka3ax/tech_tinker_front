@@ -31,7 +31,7 @@ import { usePriceStore } from "@/app/state/usePriceStore"
 import { BadgeInfo } from 'lucide-react';
 import { usePowerStore } from "@/app/state/usePowerStore"
 
-const StorageBlock = () => {
+const StorageSsdBlock = () => {
     const { selectedFilters, setFilterValue, clearAllFilters } = useFilterStore();
     const { configureStore, setConfigureStore, deleteConfigureObject } = useConfigureStore();
     const { price, setPriceStore, totalPrice, unsetCurrentComponent, unsetPriceStore, recalculateTotal } = usePriceStore()
@@ -69,13 +69,13 @@ const StorageBlock = () => {
     const socket = configureStore?.motherboard?.socket.id
     const storageInterface = configureStore?.motherboard?.connect_interface[0]?.id
     useEffect(() => {
-        if(hasMotherboard && socket) {
+        if (hasMotherboard && storageInterface) {
             setHasFilterComponent(true)
             handleComponentClick();
         } else {
             setHasFilterComponent(false)
         }
-    }, [hasMotherboard,open])
+    }, [hasMotherboard, open])
     useEffect(() => {
         try {
             instanceAxios.get(`/brands?category_id=6`).then(res => {
@@ -141,15 +141,14 @@ const StorageBlock = () => {
 
     const handleComponentClick = async () => {
         try {
-            if (hasMotherboard) {
-                await instanceAxios.get(`/storages${hasMotherboard ? `?connect_interface_id=${storageInterface}` : ""}`).then(res => {
-                    setComponents(res.data.data)
-                })
-            } else {
-                await instanceAxios.get(`/storages`).then(res => {
-                    setComponents(res.data.data)
+            let url = `/storages?storage_type_id=1`;
+            if (hasMotherboard && Array.isArray(storageInterface)) {
+                storageInterface.forEach((id, index) => {
+                    url += `&connect_interfaces_id[${index}]=${id}`
                 })
             }
+            const res = await instanceAxios.get(url)
+            setComponents(res.data.data)
         } catch (error) {
             console.error(error)
         }
@@ -160,11 +159,11 @@ const StorageBlock = () => {
             clearAllFilters()
             setRemove(!remove)
             if (hasMotherboard) {
-                await instanceAxios.get(`/storages${hasMotherboard ? `?connect_interface_id=${storageInterface}` : ""}`).then(res => {
+                await instanceAxios.get(`/storages?storage_type_id=1${hasMotherboard ? `&connect_interfaces_id[0]=${storageInterface}` : ""}`).then(res => {
                     setComponents(res.data.data)
                 })
             } else {
-                await instanceAxios.get(`/storages`).then(res => {
+                await instanceAxios.get(`/storages?storage_type_id=1`).then(res => {
                     setComponents(res.data.data)
                 })
             }
@@ -173,13 +172,17 @@ const StorageBlock = () => {
         }
     }
 
-    const isCompatible = (componentA, componentB) => {
-        if (!componentA || !componentB) return false;
-        return componentA.connect_interface[0]?.id === componentB.connect_interface[0]?.id;
+    const isCompatible = (component) => {
+        if (!component) return false;
+        const motherboardInterfacesIds = (configureStore?.motherboard?.connect_interface || []).map(el => el.id);
+        const componentInterfaceIds = (component?.connect_interface || []).map(el => el.id);
+        return componentInterfaceIds.some(id => motherboardInterfacesIds.includes(id));
     };
 
+
+
     useEffect(() => {
-       if(!configureStore.processor || !currentComponent) return;
+        if (!configureStore.processor || !currentComponent) return;
         const motherboardInterfaces = configureStore?.motherboard?.connect_interface || [];
         const motherboardInterfacesIds = motherboardInterfaces.map(el => el.id);
 
@@ -190,10 +193,10 @@ const StorageBlock = () => {
             const hasMatch = componentInterfaceIds.some(id => motherboardInterfacesIds.includes(id))
             return !hasMatch;
         })
-       if(incompatible) {
+        if (incompatible) {
             setCompatible(false)
             setIncompatibilityReason("Connect interface doesn't match")
-       } else {
+        } else {
             setCompatible(true);
             setIncompatibilityReason(null);
         }
@@ -201,9 +204,9 @@ const StorageBlock = () => {
 
     const handleAddComponent = (el) => {
         setOpen(false)
-        setConfigureStore('storage', el);
+        setConfigureStore('storageSsd', el);
         setPriceStore('storage_id', el.price)
-        setPowerStore('storage_id',el.power_wattage)
+        // setPowerStore('storage_id', el.power_wattage)
         setCurrentComponent(el);
     }
     // console.log(compatible)
@@ -216,17 +219,17 @@ const StorageBlock = () => {
                         <div className="text-center">
                             <p className="text-[25px] text-[#fffffff]">{currentComponent?.brand?.title}</p>
                             <p className="">{currentComponent.storage_model}</p>
-                             {
-                                hasMotherboard && isCompatible(currentComponent, configureStore.motherboard ) ? (
+                            {
+                                hasMotherboard && compatible ? (
                                     <>
                                         <Tooltip>
                                             <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Compatible</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
-                                                    Your {currentComponent.storage_type.title}: {currentComponent.storage_model} 
-                                                    <br /> 
+                                                    Your {currentComponent.storage_type.title}: {currentComponent.storage_model}
+                                                    <br />
                                                     compatible with
-                                                    <br /> 
+                                                    <br />
                                                     your motherboard: {configureStore.motherboard.motherboard_model}
                                                 </p>
                                             </TooltipContent>
@@ -252,15 +255,16 @@ const StorageBlock = () => {
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Volume: {currentComponent.volume}</p>
+                            <p className="text-[25px] text-[#fffffff] whitespace-nowrap">Volume: {currentComponent.volume}GB</p>
                             <p className="">Type: {currentComponent.storage_type.title}</p>
+                            <p className="whitespace-nowrap">Connect interface: {currentComponent.connect_interface[0].title}</p>
                             <p className="">Price: {currentComponent.price}$</p>
                         </div>
                     </>
                 ) : (
                     <>
                         <div className="text-center">
-                            <p className="text-[25px] text-[#fffffff]">Storage</p>
+                            <p className="text-[25px] text-[#fffffff]">SSD</p>
                             <p className="text-[#626262]">Unknown</p>
                         </div >
                         <div className="md:mx-[40px] my-[20px] flex justify-center">
@@ -394,8 +398,15 @@ const StorageBlock = () => {
                                                     </div>
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
-                                                    
-                                                    <button onClick={() => handleAddComponent(el)} disabled={hasFilterComponent && el.connect_interface[0].id !== storageInterface ? true : false} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
+
+                                                    <button
+                                                        onClick={() => handleAddComponent(el)}
+                                                        disabled={!isCompatible(el)}
+                                                        className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer"
+                                                    >
+                                                        Add
+                                                    </button>
+
                                                     <p className="mt-[20px]">{el.price}$</p>
                                                 </div>
                                             </div>
@@ -423,4 +434,4 @@ const StorageBlock = () => {
     )
 }
 
-export default StorageBlock
+export default StorageSsdBlock

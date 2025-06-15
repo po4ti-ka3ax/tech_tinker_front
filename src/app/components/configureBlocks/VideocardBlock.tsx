@@ -183,9 +183,9 @@ const VideocardBlock = () => {
     const handleAddComponent = (el) => {
         setOpen(false)
 
-        setConfigureStore('videocard', el);
-        setPriceStore('videocard_id', el.price)
-        setPowerStore('videocard_id', el.power_wattage)
+        setConfigureStore('graphic_card', el);
+        setPriceStore('graphic_card_id', el.price)
+        setPowerStore('graphic_card_id', el.power_wattage)
         setCurrentComponent(el);
     }
 
@@ -401,7 +401,7 @@ const VideocardBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('motherboard')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
+                <button onClick={() => deleteComponent('graphic_card')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
             </div>
         </div >
     )
