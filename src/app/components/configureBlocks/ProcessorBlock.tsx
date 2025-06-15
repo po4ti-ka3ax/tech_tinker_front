@@ -191,6 +191,7 @@ const ProcessorBlock = () => {
 
     useEffect(() => {
        if(!configureStore.processor || !currentComponent) return;
+       console.log(currentComponent)
        if(currentComponent.socket?.id !== configureStore.processor.socket[0]?.id) {
             setCompatible(false)
             setIncompatibilityReason("Socket doesn't match")

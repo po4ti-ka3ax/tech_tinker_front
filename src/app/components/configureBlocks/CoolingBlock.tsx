@@ -30,12 +30,11 @@ import { useConfigureStore } from "@/app/state/useConfigureStore"
 import { usePriceStore } from "@/app/state/usePriceStore"
 import { BadgeInfo } from 'lucide-react';
 import { usePowerStore } from "@/app/state/usePowerStore"
-const MotherboardBlock = () => {
+const CoolingBlock = () => {
     const { selectedFilters, setFilterValue, clearAllFilters } = useFilterStore();
     const { configureStore, setConfigureStore, deleteConfigureObject } = useConfigureStore();
     const { price, setPriceStore, totalPrice, unsetCurrentComponent, unsetPriceStore, recalculateTotal } = usePriceStore()
-    const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
-    
+    // const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
     const [components, setComponents] = useState([]);
     const [open, setOpen] = useState(false)
     const [filters, setFilters] = useState({});
@@ -54,64 +53,47 @@ const MotherboardBlock = () => {
 
     const deleteComponent = (key) => {
         unsetCurrentComponent(key)
-        unsetPowerCurrentComponent(key)
+        // unsetPowerCurrentComponent(key)
         setTimeout(() => recalculateTotal(), 0)
-        setTimeout(() => recalculateTotalPower(), 0)
+        // setTimeout(() => recalculateTotalPower(), 0)
         setCurrentComponent({})
         deleteConfigureObject(key)
     };
-    const hasProcessor = configureStore.processor
-    const socket = configureStore?.processor?.socket[0]?.id
-    const hasStorage = configureStore.storage;
-    const storageInterface = hasStorage ? configureStore?.storage?.connect_interface[0]?.id : '';
+    const hasMotherboard = configureStore.motherboard
+    const socket = configureStore?.processor?.socket[0].id
+
     useEffect(() => {
-        if (hasProcessor && socket) {
+        if (hasMotherboard && socket) {
             setHasFilterComponent(true)
             handleComponentClick();
         } else {
             setHasFilterComponent(false)
         }
-    }, [hasProcessor, open])
+    }, [hasMotherboard, open])
 
     useEffect(() => {
         try {
-            instanceAxios.get(`/brands?category_id=3`).then(res => {
-                if (filterConfig['motherboards'][0].options && filterConfig['motherboards'][0].options.length === 0) {
+            instanceAxios.get(`/brands?category_id=4`).then(res => {
+                if (filterConfig['cooling'][0].options && filterConfig['cooling'][0].options.length === 0) {
                     res.data.data.forEach(el => {
-                        filterConfig['motherboards'][0].options?.push({ value: el.id, label: el.title })
+                        filterConfig['cooling'][0].options?.push({ value: el.id, label: el.title })
                     });
                 }
             })
-            instanceAxios.get(`/form-factors`).then(res => {
-                if (filterConfig['motherboards'][1].options && filterConfig['motherboards'][1].options.length === 0) {
+            instanceAxios.get(`/cooling-types`).then(res => {
+                if (filterConfig['cooling'][1].options && filterConfig['cooling'][1].options.length === 0) {
                     res.data.data.forEach(el => {
-                        filterConfig['motherboards'][1].options?.push({ value: el.id, label: el.title })
+                        filterConfig['cooling'][1].options?.push({ value: el.id, label: el.title })
                     });
                 }
             })
             instanceAxios.get(`/sockets`).then(res => {
-                if (filterConfig['motherboards'][2].options && filterConfig['motherboards'][2].options.length === 0) {
+                if (filterConfig['cooling'][2].options && filterConfig['cooling'][2].options.length === 0) {
                     res.data.data.forEach(el => {
-                        filterConfig['motherboards'][2].options?.push({ value: el.id, label: el.model })
-                    });
-                }
-                // console.log(filterConfig['motherboards'][1].options)
-            })
-            instanceAxios.get(`/memory-generations`).then(res => {
-                if (filterConfig['motherboards'][3].options && filterConfig['motherboards'][3].options.length === 0) {
-                    res.data.data.forEach(el => {
-                        filterConfig['motherboards'][3].options?.push({ value: el.id, label: el.title })
+                        filterConfig['cooling'][2].options?.push({ value: el.id, label: el.model })
                     });
                 }
             })
-            instanceAxios.get(`/chipsets`).then(res => {
-                if (filterConfig['motherboards'][4].options && filterConfig['motherboards'][4].options.length === 0) {
-                    res.data.data.forEach(el => {
-                        filterConfig['motherboards'][4].options?.push({ value: el.id, label: el.model })
-                    });
-                }
-            })
-
 
         } catch (error) {
             console.error(error)
@@ -131,6 +113,13 @@ const MotherboardBlock = () => {
                     if (value.to !== undefined && value.to !== null) {
                         if (value.to) params.append(`${key}_max`, Number(value.to).toFixed(2))
                     }
+                } else if (key === "height" || key === "width") {
+                    if (value.from !== undefined && value.from !== null) {
+                        if (value.from) params.append(`${key}_min`, Number(value.from).toFixed(1))
+                    }
+                    if (value.to !== undefined && value.to !== null) {
+                        if (value.to) params.append(`${key}_max`, Number(value.to).toFixed(1))
+                    }
                 } else {
                     if (value.from !== undefined && value.from !== null) {
                         if (value.from) params.append(`${key}_min`, value.from)
@@ -139,6 +128,7 @@ const MotherboardBlock = () => {
                         if (value.to) params.append(`${key}_max`, value.to)
                     }
                 }
+
 
             } else if (value !== undefined && value !== "") {
                 params.append(key, value)
@@ -152,7 +142,7 @@ const MotherboardBlock = () => {
 
     const onApplyFilters = async () => {
         const query = buildQuery();
-        const response = await instanceAxios.get(`/motherboards?${query}`);
+        const response = await instanceAxios.get(`/cooling-specs?${query}`);
         // console.log(selectedFilters)
         setComponents(response.data.data);
     };
@@ -160,8 +150,7 @@ const MotherboardBlock = () => {
 
     const handleComponentClick = async () => {
         try {
-            console.log(socket)
-            await instanceAxios.get(`/motherboards${hasProcessor ? `?socket_id=${socket}` : ""}${hasStorage ? `?connect_interfaces_id[0]=${storageInterface}` : ''}`).then(res => {
+            await instanceAxios.get(`/cooling-specs${hasMotherboard ? `?socket_id=${socket}` : ""}`).then(res => {
                 setComponents(res.data.data)
             })
         } catch (error) {
@@ -169,26 +158,55 @@ const MotherboardBlock = () => {
         }
     }
 
-    const isCompatible = (componentA, componentB) => {
-        if (!componentA || !componentB) return false;
-        return componentA.socket[0]?.id === componentB.socket?.id;
-    };
+   const isCompatible = (componentA, componentB) => {
+    if (!componentA || !componentB) return false;
+
+    if (componentA.cooling_capacity && componentB.tdp) {
+        if (componentA.cooling_capacity < componentB.tdp) {
+            return false;
+        }
+    }
+
+    const socketsA = componentA.socket || [];
+    const socketsB = componentB.socket || [];
+
+    const socketIdsA = Array.isArray(socketsA) ? socketsA.map(s => s.id) : [socketsA.id];
+    const socketIdsB = Array.isArray(socketsB) ? socketsB.map(s => s.id) : [socketsB.id];
+
+    return socketIdsA.some(id => socketIdsB.includes(id));
+};
+
+
 
     useEffect(() => {
-       if(!configureStore.processor || !currentComponent) return;
-       if(currentComponent.socket?.id !== configureStore.processor.socket[0]?.id) {
-            setCompatible(false)
-            setIncompatibilityReason("Socket doesn't match")
-       }
+        if (!configureStore.processor || !currentComponent) return;
+        const processorSockets = configureStore.processor.socket || [];
+        const processorSocketIds = processorSockets.map(s => s.id);
+
+        const components = Array.isArray(currentComponent) ? currentComponent : [currentComponent];
+
+        const incompatible = components.some(component => {
+            const componentSocketIds = (component.socket || []).map(s => s.id);
+            const hasMatch = componentSocketIds.some(id => processorSocketIds.includes(id));
+            return !hasMatch; 
+        });
+
+        if (incompatible) {
+            setCompatible(false);
+            setIncompatibilityReason("Socket doesn't match");
+        } else {
+            setCompatible(true);
+            setIncompatibilityReason(null);
+        }
     }, [configureStore.processor, currentComponent]);
+
 
 
     const handleRemoveFilters = async () => {
         try {
-            console.log(socket)
             clearAllFilters()
             setRemove(!remove)
-            await instanceAxios.get(`/motherboards${hasProcessor ? `?socket_id=${socket}` : ""}`).then(res => {
+            await instanceAxios.get(`/cooling-specs${hasMotherboard ? `?socket_id=${socket}` : ""}`).then(res => {
                 setComponents(res.data.data)
             })
         } catch (err) {
@@ -199,9 +217,9 @@ const MotherboardBlock = () => {
     const handleAddComponent = (el) => {
         setOpen(false)
 
-        setConfigureStore('motherboard', el);
-        setPriceStore('motherboard_id', el.price)
-        setPowerStore('motherboard_id',el.power_wattage)
+        setConfigureStore('cooling', el);
+        setPriceStore('cooling', el.price)
+        // setPowerStore('system_memory_id', el.power_wattage)
         setCurrentComponent(el);
     }
 
@@ -213,15 +231,15 @@ const MotherboardBlock = () => {
                     <>
                         <div className="text-center">
                             <p className="text-[25px] text-[#fffffff]">{currentComponent?.brand?.title}</p>
-                            <p className="">{currentComponent.motherboard_model}</p>
+                            <p className="">{currentComponent.cooling_model}</p>
                             {
-                                hasProcessor && isCompatible(configureStore.processor, currentComponent) ? (
+                                hasMotherboard && isCompatible(currentComponent, configureStore.processor) ? (
                                     <>
                                         <Tooltip>
                                             <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Compatible</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
-                                                    Your motherboard: {currentComponent.motherboard_model}
+                                                    Your ram: {currentComponent.cooling_model}
                                                     <br />
                                                     compatible with
                                                     <br />
@@ -232,14 +250,15 @@ const MotherboardBlock = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <Tooltip>
+                                        {/* <Tooltip>
                                             <TooltipTrigger className="text-[#FF5252]  mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Uncompatible</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
                                                    {incompatibilityReason}
                                                 </p>
                                             </TooltipContent>
-                                        </Tooltip>
+                                        </Tooltip> */}
+                                        <p className="text-[#626262]">Unknown</p>
                                     </>
                                 )
                             }
@@ -249,15 +268,15 @@ const MotherboardBlock = () => {
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Chipset: {currentComponent?.chipset?.model}</p>
-                            <p className="">Socket: {currentComponent?.socket?.model}</p>
+                            <p className="text-[25px] text-[#fffffff]">Type cooling: {currentComponent?.cooling_type.title}</p>
+                            <p className="">Socket: {currentComponent?.socket?.map(el => <>{el.model} <br /></>)}</p>
                             <p className="">Price: {currentComponent.price}$</p>
                         </div>
                     </>
                 ) : (
                     <>
                         <div className="text-center">
-                            <p className="text-[25px] text-[#fffffff]">Motherboard</p>
+                            <p className="text-[25px] text-[#fffffff]">Cooling</p>
                             <p className="text-[#626262]">Unknown</p>
                         </div >
                         <div className="md:mx-[40px] my-[20px] flex justify-center">
@@ -279,14 +298,14 @@ const MotherboardBlock = () => {
                     </DialogTrigger>
                     <DialogContent id="dialog-content" className="bg-[#1A1A1A] border-none text-[#ffffff] px-0 max-w-[320px] lg:max-h-[80vh] overflow-y-auto lg:!max-w-[850px] w-full">
                         <DialogHeader className="px-[24px]">
-                            <DialogTitle className="text-center text-[30px]">Motherboards</DialogTitle>
+                            <DialogTitle className="text-center text-[30px]">Cooling</DialogTitle>
                         </DialogHeader>
                         <div className="px-[24px] py-[16px]">
                             <Accordion type="single" collapsible>
                                 <AccordionItem value="item-1">
-                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Motherboards filters</AccordionTrigger>
+                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Cooling filters</AccordionTrigger>
                                     <AccordionContent>
-                                        {filterConfig["motherboards"].map((filter) => (
+                                        {filterConfig["cooling"].map((filter) => (
                                             <div key={filter.name} className="mb-4">
                                                 <label className="text-white block mb-1">{filter.label}</label>
 
@@ -376,7 +395,7 @@ const MotherboardBlock = () => {
                                             <div className="md:grid grid-cols-4 items-center my-[20px]">
                                                 <div className="text-center">
                                                     <p className="text-[20px] text-[#fffffff]">{el.brand.title}</p>
-                                                    <p className="text-[20px] text-[#fffffff]">{el.motherboard_model}</p>
+                                                    <p className="text-[20px] text-[#fffffff]">{el.cooling_model}</p>
                                                 </div>
                                                 <div className="mx-[40px] my-[20px] flex justify-center">
                                                     <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
@@ -384,14 +403,17 @@ const MotherboardBlock = () => {
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
                                                     <p className="text-[18px] text-[#fffffff]">Characteristics:</p>
                                                     <div className="text-[#626262] whitespace-nowrap">
-                                                        <p className="">Chipset: {el.chipset.model}</p>
-                                                        <p className="">Form factor: {el.form_factor.title}Wt</p>
-                                                        <p className="">Socket: {el.socket.model}</p>
-                                                        <p className="">Memory generation: {el.memory_generation.title}</p>
+                                                        {/* <p className="">Chipset: {el.chipset.model}</p> */}
+                                                        <p className="">Height: {el.height}Mm</p>
+                                                        <p className="">Width: {el.width}Mm</p>
+                                                        {/* <p className="">Socket: {el.socket.model}</p> */}
+                                                        <p className="">Socket: {el?.socket?.map(el => <>{el.model} <br /></>)}</p>
+
                                                     </div>
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
-                                                    <button disabled={hasProcessor && el.socket.id !== socket ? true : false} onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
+                                                    {/* disabled={hasProcessor && el.socket.id !== socket ? true : false} */}
+                                                    <button onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
                                                     <p className="mt-[20px]">{el.price}$</p>
                                                 </div>
                                             </div>
@@ -413,10 +435,10 @@ const MotherboardBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('motherboard')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
+                <button onClick={() => deleteComponent('cooling')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
             </div>
         </div >
     )
 }
 
-export default MotherboardBlock
+export default CoolingBlock

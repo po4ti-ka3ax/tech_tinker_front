@@ -8,8 +8,7 @@ export const filterConfig = {
       label: "Brand",
       type: "select",
       options: [ // Можно получать из API при монтировании
-        { label: "Intel", value: 2 },
-        { label: "AMD", value: 1 }
+        
       ]
     },
     {
@@ -239,7 +238,105 @@ export const filterConfig = {
     label: "Number per Page",
     type: "number"
   }
+],
+cooling: [
+  {
+    name: "brand_id",
+    label: "Brand",
+    type: "select",
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "cooling_type",
+    label: "Cooling Type",
+    type: "select",
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "socket_id",
+    label: "Socket Compatibility",
+    type: "select",
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "height",
+    label: "Height (mm)",
+    type: "range"
+  },
+  {
+    name: "width",
+    label: "Width (mm)",
+    type: "range"
+  },
+  {
+    name: "price",
+    label: "Price",
+    type: "range"
+  },
+  {
+    name: "price_sort",
+    label: "Sort by Price",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "per_page",
+    label: "Number per Page",
+    type: "number"
+  }
+],
+storages: [
+  {
+    name: "brand_id",
+    label: "Brand",
+    type: "select",
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "connect_interfaces_id",
+    label: "Connect Interface",
+    type: "select", // потому что может быть массив интерфейсов
+    options: [
+      { label: "M2", value: 6 },
+      { label: "SATA", value: 5 },
+    ]
+  },
+  {
+    name: "storage_type_id",
+    label: "Storage Type",
+    type: "select",
+    options: [/* подгружается с API */]
+  },
+  {
+    name: "volume",
+    label: "Volume (GB)",
+    type: "select",
+    options: [
+      { label: "128GB", value: 128 },
+      { label: "512GB", value: 512 },
+      { label: "1TB", value: 1000 },
+      { label: "2TB", value: 2000 },
+    ]
+  },
+  {
+    name: "price",
+    label: "Price",
+    type: "range"
+  },
+  {
+    name: "price_sort",
+    label: "Sort by Price",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "per_page",
+    label: "Number per Page",
+    type: "number"
+  }
 ]
+
+
 
 
 };

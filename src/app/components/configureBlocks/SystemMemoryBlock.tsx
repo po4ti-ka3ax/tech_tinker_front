@@ -204,7 +204,7 @@ const SystemMemoryBlock = () => {
                                             <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Compatible</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
-                                                    Your ram: {currentComponent.memory_model}
+                                                    Your ram: {currentComponent?.brand?.title} {currentComponent.memory_model}
                                                     <br />
                                                     compatible with
                                                     <br />
@@ -233,8 +233,8 @@ const SystemMemoryBlock = () => {
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Volume: {currentComponent?.memory_volume}</p>
-                            <p className="">Chipset: {currentComponent?.chipset?.model}</p>
+                            <p className="text-[25px] text-[#fffffff]">Volume: {currentComponent?.memory_volume}GB</p>
+                            {/* <p className="">Chipset: {currentComponent?.chipset?.model}</p> */}
                             <p className="">Price: {currentComponent.price}$</p>
                         </div>
                     </>

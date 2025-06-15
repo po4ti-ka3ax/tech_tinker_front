@@ -30,22 +30,27 @@ import { useConfigureStore } from "@/app/state/useConfigureStore"
 import { usePriceStore } from "@/app/state/usePriceStore"
 import { BadgeInfo } from 'lucide-react';
 import { usePowerStore } from "@/app/state/usePowerStore"
-const MotherboardBlock = () => {
+
+const StorageBlock = () => {
     const { selectedFilters, setFilterValue, clearAllFilters } = useFilterStore();
     const { configureStore, setConfigureStore, deleteConfigureObject } = useConfigureStore();
     const { price, setPriceStore, totalPrice, unsetCurrentComponent, unsetPriceStore, recalculateTotal } = usePriceStore()
     const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
-    
     const [components, setComponents] = useState([]);
+    const [hasFilterComponent, setHasFilterComponent] = useState(false);
     const [open, setOpen] = useState(false)
     const [filters, setFilters] = useState({});
     const Cookies = require('js-cookie')
     const token = Cookies.get('access_token')
-    const [hasFilterComponent, setHasFilterComponent] = useState(false);
-    const [compatible, setCompatible] = useState(false);
     const [currentComponent, setCurrentComponent] = useState({})
     const [remove, setRemove] = useState(false);
+    // console.log('before:', configureStore);
+    const [compatible, setCompatible] = useState(false);
     const [incompatibilityReason, setIncompatibilityReason] = useState('');
+
+    // const updateFilter = (name, value) => {
+    //     setFilters(prev => ({ ...prev, [name]: value }));
+    // };
 
     const handleRangeChange = (name: string, key: 'from' | 'to', value: number | null) => {
         const current = selectedFilters[name] || {};
@@ -60,59 +65,33 @@ const MotherboardBlock = () => {
         setCurrentComponent({})
         deleteConfigureObject(key)
     };
-    const hasProcessor = configureStore.processor
-    const socket = configureStore?.processor?.socket[0]?.id
-    const hasStorage = configureStore.storage;
-    const storageInterface = hasStorage ? configureStore?.storage?.connect_interface[0]?.id : '';
+    const hasMotherboard = configureStore.motherboard
+    const socket = configureStore?.motherboard?.socket.id
+    const storageInterface = configureStore?.motherboard?.connect_interface[0]?.id
     useEffect(() => {
-        if (hasProcessor && socket) {
+        if(hasMotherboard && socket) {
             setHasFilterComponent(true)
             handleComponentClick();
         } else {
             setHasFilterComponent(false)
         }
-    }, [hasProcessor, open])
-
+    }, [hasMotherboard,open])
     useEffect(() => {
         try {
-            instanceAxios.get(`/brands?category_id=3`).then(res => {
-                if (filterConfig['motherboards'][0].options && filterConfig['motherboards'][0].options.length === 0) {
+            instanceAxios.get(`/brands?category_id=6`).then(res => {
+                if (filterConfig['storages'][0].options && filterConfig['storages'][0].options.length === 0) {
                     res.data.data.forEach(el => {
-                        filterConfig['motherboards'][0].options?.push({ value: el.id, label: el.title })
+                        filterConfig['storages'][0].options?.push({ value: el.id, label: el.title })
                     });
                 }
             })
-            instanceAxios.get(`/form-factors`).then(res => {
-                if (filterConfig['motherboards'][1].options && filterConfig['motherboards'][1].options.length === 0) {
+            instanceAxios.get(`/storage-types`).then(res => {
+                if (filterConfig['storages'][2].options && filterConfig['storages'][2].options.length === 0) {
                     res.data.data.forEach(el => {
-                        filterConfig['motherboards'][1].options?.push({ value: el.id, label: el.title })
+                        filterConfig['storages'][2].options?.push({ value: el.id, label: el.title })
                     });
                 }
             })
-            instanceAxios.get(`/sockets`).then(res => {
-                if (filterConfig['motherboards'][2].options && filterConfig['motherboards'][2].options.length === 0) {
-                    res.data.data.forEach(el => {
-                        filterConfig['motherboards'][2].options?.push({ value: el.id, label: el.model })
-                    });
-                }
-                // console.log(filterConfig['motherboards'][1].options)
-            })
-            instanceAxios.get(`/memory-generations`).then(res => {
-                if (filterConfig['motherboards'][3].options && filterConfig['motherboards'][3].options.length === 0) {
-                    res.data.data.forEach(el => {
-                        filterConfig['motherboards'][3].options?.push({ value: el.id, label: el.title })
-                    });
-                }
-            })
-            instanceAxios.get(`/chipsets`).then(res => {
-                if (filterConfig['motherboards'][4].options && filterConfig['motherboards'][4].options.length === 0) {
-                    res.data.data.forEach(el => {
-                        filterConfig['motherboards'][4].options?.push({ value: el.id, label: el.model })
-                    });
-                }
-            })
-
-
         } catch (error) {
             console.error(error)
         }
@@ -152,59 +131,82 @@ const MotherboardBlock = () => {
 
     const onApplyFilters = async () => {
         const query = buildQuery();
-        const response = await instanceAxios.get(`/motherboards?${query}`);
+        const response = await instanceAxios.get(`/storages?${query}`);
         // console.log(selectedFilters)
         setComponents(response.data.data);
     };
 
 
+
+
     const handleComponentClick = async () => {
         try {
-            console.log(socket)
-            await instanceAxios.get(`/motherboards${hasProcessor ? `?socket_id=${socket}` : ""}${hasStorage ? `?connect_interfaces_id[0]=${storageInterface}` : ''}`).then(res => {
-                setComponents(res.data.data)
-            })
+            if (hasMotherboard) {
+                await instanceAxios.get(`/storages${hasMotherboard ? `?connect_interface_id=${storageInterface}` : ""}`).then(res => {
+                    setComponents(res.data.data)
+                })
+            } else {
+                await instanceAxios.get(`/storages`).then(res => {
+                    setComponents(res.data.data)
+                })
+            }
         } catch (error) {
             console.error(error)
         }
     }
 
-    const isCompatible = (componentA, componentB) => {
-        if (!componentA || !componentB) return false;
-        return componentA.socket[0]?.id === componentB.socket?.id;
-    };
-
-    useEffect(() => {
-       if(!configureStore.processor || !currentComponent) return;
-       if(currentComponent.socket?.id !== configureStore.processor.socket[0]?.id) {
-            setCompatible(false)
-            setIncompatibilityReason("Socket doesn't match")
-       }
-    }, [configureStore.processor, currentComponent]);
-
-
-    const handleRemoveFilters = async () => {
+    const handleRemove = async () => {
         try {
-            console.log(socket)
             clearAllFilters()
             setRemove(!remove)
-            await instanceAxios.get(`/motherboards${hasProcessor ? `?socket_id=${socket}` : ""}`).then(res => {
-                setComponents(res.data.data)
-            })
+            if (hasMotherboard) {
+                await instanceAxios.get(`/storages${hasMotherboard ? `?connect_interface_id=${storageInterface}` : ""}`).then(res => {
+                    setComponents(res.data.data)
+                })
+            } else {
+                await instanceAxios.get(`/storages`).then(res => {
+                    setComponents(res.data.data)
+                })
+            }
         } catch (err) {
             console.error(err)
         }
     }
 
+    const isCompatible = (componentA, componentB) => {
+        if (!componentA || !componentB) return false;
+        return componentA.connect_interface[0]?.id === componentB.connect_interface[0]?.id;
+    };
+
+    useEffect(() => {
+       if(!configureStore.processor || !currentComponent) return;
+        const motherboardInterfaces = configureStore?.motherboard?.connect_interface || [];
+        const motherboardInterfacesIds = motherboardInterfaces.map(el => el.id);
+
+        const components = Array.isArray(currentComponent) ? currentComponent : [currentComponent]
+
+        const incompatible = components.some(component => {
+            const componentInterfaceIds = (component.connect_interface || []).map(el => el.id);
+            const hasMatch = componentInterfaceIds.some(id => motherboardInterfacesIds.includes(id))
+            return !hasMatch;
+        })
+       if(incompatible) {
+            setCompatible(false)
+            setIncompatibilityReason("Connect interface doesn't match")
+       } else {
+            setCompatible(true);
+            setIncompatibilityReason(null);
+        }
+    }, [configureStore.motherboard, currentComponent]);
+
     const handleAddComponent = (el) => {
         setOpen(false)
-
-        setConfigureStore('motherboard', el);
-        setPriceStore('motherboard_id', el.price)
-        setPowerStore('motherboard_id',el.power_wattage)
+        setConfigureStore('storage', el);
+        setPriceStore('storage_id', el.price)
+        setPowerStore('storage_id',el.power_wattage)
         setCurrentComponent(el);
     }
-
+    // console.log(compatible)
     return (
         <div className="md:grid flex flex-col m-auto items-center md:grid-cols-4 max-w-[450px] md:max-w-[900px] bg-[#242424] px-[5px] py-[35px] my-[20px] rounded-[10px]">
 
@@ -213,19 +215,19 @@ const MotherboardBlock = () => {
                     <>
                         <div className="text-center">
                             <p className="text-[25px] text-[#fffffff]">{currentComponent?.brand?.title}</p>
-                            <p className="">{currentComponent.motherboard_model}</p>
-                            {
-                                hasProcessor && isCompatible(configureStore.processor, currentComponent) ? (
+                            <p className="">{currentComponent.storage_model}</p>
+                             {
+                                hasMotherboard && isCompatible(currentComponent, configureStore.motherboard ) ? (
                                     <>
                                         <Tooltip>
                                             <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Compatible</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
-                                                    Your motherboard: {currentComponent.motherboard_model}
-                                                    <br />
+                                                    Your {currentComponent.storage_type.title}: {currentComponent.storage_model} 
+                                                    <br /> 
                                                     compatible with
-                                                    <br />
-                                                    your processor: {configureStore.processor.processor_model}
+                                                    <br /> 
+                                                    your motherboard: {configureStore.motherboard.motherboard_model}
                                                 </p>
                                             </TooltipContent>
                                         </Tooltip>
@@ -233,13 +235,14 @@ const MotherboardBlock = () => {
                                 ) : (
                                     <>
                                         <Tooltip>
-                                            <TooltipTrigger className="text-[#FF5252]  mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Uncompatible</div></TooltipTrigger>
+                                            <TooltipTrigger className="text-[#FF5252] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Uncompatible</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
-                                                   {incompatibilityReason}
+                                                    {incompatibilityReason}
                                                 </p>
                                             </TooltipContent>
                                         </Tooltip>
+                                        {/* <p className="text-[#626262]">Unknown</p> */}
                                     </>
                                 )
                             }
@@ -249,15 +252,15 @@ const MotherboardBlock = () => {
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Chipset: {currentComponent?.chipset?.model}</p>
-                            <p className="">Socket: {currentComponent?.socket?.model}</p>
+                            <p className="text-[25px] text-[#fffffff]">Volume: {currentComponent.volume}</p>
+                            <p className="">Type: {currentComponent.storage_type.title}</p>
                             <p className="">Price: {currentComponent.price}$</p>
                         </div>
                     </>
                 ) : (
                     <>
                         <div className="text-center">
-                            <p className="text-[25px] text-[#fffffff]">Motherboard</p>
+                            <p className="text-[25px] text-[#fffffff]">Storage</p>
                             <p className="text-[#626262]">Unknown</p>
                         </div >
                         <div className="md:mx-[40px] my-[20px] flex justify-center">
@@ -279,20 +282,20 @@ const MotherboardBlock = () => {
                     </DialogTrigger>
                     <DialogContent id="dialog-content" className="bg-[#1A1A1A] border-none text-[#ffffff] px-0 max-w-[320px] lg:max-h-[80vh] overflow-y-auto lg:!max-w-[850px] w-full">
                         <DialogHeader className="px-[24px]">
-                            <DialogTitle className="text-center text-[30px]">Motherboards</DialogTitle>
+                            <DialogTitle className="text-center text-[30px]">Storage</DialogTitle>
                         </DialogHeader>
                         <div className="px-[24px] py-[16px]">
                             <Accordion type="single" collapsible>
                                 <AccordionItem value="item-1">
-                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Motherboards filters</AccordionTrigger>
+                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Storages filters</AccordionTrigger>
                                     <AccordionContent>
-                                        {filterConfig["motherboards"].map((filter) => (
+                                        {filterConfig["storages"].map((filter) => (
                                             <div key={filter.name} className="mb-4">
                                                 <label className="text-white block mb-1">{filter.label}</label>
 
                                                 {filter.type === "select" && (
                                                     <div className="flex bg-[#3C3C3C] rounded-[10px] px-[10px] py-[20px] flex-col gap-[5px]">
-                                                        {filter?.options.map((opt) => (
+                                                        {filter.options.map((opt) => (
                                                             <CheckboxComponent
                                                                 key={opt.value}
                                                                 componentName={filter.name}
@@ -361,7 +364,7 @@ const MotherboardBlock = () => {
                                         ))}
                                         <div className="flex justify-center gap-[10px]">
                                             <button onClick={onApplyFilters} className="text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Apply</button>
-                                            <button onClick={handleRemoveFilters} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove filters</button>
+                                            <button onClick={handleRemove} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove filters</button>
                                         </div>
                                     </AccordionContent>
 
@@ -376,7 +379,7 @@ const MotherboardBlock = () => {
                                             <div className="md:grid grid-cols-4 items-center my-[20px]">
                                                 <div className="text-center">
                                                     <p className="text-[20px] text-[#fffffff]">{el.brand.title}</p>
-                                                    <p className="text-[20px] text-[#fffffff]">{el.motherboard_model}</p>
+                                                    <p className="text-[20px] text-[#fffffff]">{el.storage_model}</p>
                                                 </div>
                                                 <div className="mx-[40px] my-[20px] flex justify-center">
                                                     <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
@@ -384,14 +387,15 @@ const MotherboardBlock = () => {
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
                                                     <p className="text-[18px] text-[#fffffff]">Characteristics:</p>
                                                     <div className="text-[#626262] whitespace-nowrap">
-                                                        <p className="">Chipset: {el.chipset.model}</p>
-                                                        <p className="">Form factor: {el.form_factor.title}Wt</p>
-                                                        <p className="">Socket: {el.socket.model}</p>
-                                                        <p className="">Memory generation: {el.memory_generation.title}</p>
+                                                        <p className="">Volume: {el.volume}GB</p>
+                                                        <p className="">Type: {el.storage_type.title}</p>
+                                                        <p className="">Connect interface: {el.connect_interface[0].title}</p>
+                                                        {/* <p className="">Memory generation: {el.memory_generation.title}</p> */}
                                                     </div>
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
-                                                    <button disabled={hasProcessor && el.socket.id !== socket ? true : false} onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
+                                                    
+                                                    <button onClick={() => handleAddComponent(el)} disabled={hasFilterComponent && el.connect_interface[0].id !== storageInterface ? true : false} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
                                                     <p className="mt-[20px]">{el.price}$</p>
                                                 </div>
                                             </div>
@@ -413,10 +417,10 @@ const MotherboardBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('motherboard')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
+                <button onClick={() => deleteComponent('storage')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
             </div>
         </div >
     )
 }
 
-export default MotherboardBlock
+export default StorageBlock

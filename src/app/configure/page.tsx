@@ -9,6 +9,8 @@ import MotherboardBlock from "../components/configureBlocks/MotherboardBlock"
 import VideocardBlock from "../components/configureBlocks/VideocardBlock"
 import { usePowerStore } from "../state/usePowerStore"
 import SystemMemoryBlock from "../components/configureBlocks/SystemMemoryBlock"
+import CoolingBlock from "../components/configureBlocks/CoolingBlock"
+import StorageBlock from "../components/configureBlocks/StorageBlock"
 const Configure = () => {
     const {price, setPriceStore,totalPrice, unsetCurrentComponent, unsetPriceStore} = usePriceStore()
     // const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
@@ -37,10 +39,12 @@ const Configure = () => {
                     <MotherboardBlock/>
                     <VideocardBlock/>
                     <SystemMemoryBlock/>
+                    <CoolingBlock/>
+                    <StorageBlock/>
                     {/* <ConfigureBlock linkName="motherboards" nameComponent="Motherboard"/> */}
                     {/* <ConfigureBlock linkName="graphic-cards" nameComponent="Videocard"/> */}
                     {/* <ConfigureBlock linkName="" nameComponent="Memory"/> */}
-                    <ConfigureBlock linkName="" nameComponent="Hard disk"/>
+                    {/* <ConfigureBlock linkName="" nameComponent="Hard disk"/> */}
                     <ConfigureBlock linkName="" nameComponent="SSD disk"/>
                     <ConfigureBlock linkName="computer-cases" nameComponent="Case"/>
                     <ConfigureBlock linkName="" nameComponent="PSU"/>

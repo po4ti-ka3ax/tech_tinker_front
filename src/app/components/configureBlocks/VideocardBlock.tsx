@@ -235,8 +235,9 @@ const VideocardBlock = () => {
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Socket: {currentComponent?.socket?.model}</p>
-                            <p className="">Chipset: {currentComponent?.chipset?.model}</p>
+                            <p className="text-[25px] text-[#fffffff]">Video memory: {currentComponent.memory_volume}GB</p>
+                            <p className="">Width: {currentComponent?.width}Mm</p>
+                            <p className="">Height: {currentComponent?.height}Mm</p>
                             <p className="">Price: {currentComponent.price}$</p>
                         </div>
                     </>
@@ -371,7 +372,7 @@ const VideocardBlock = () => {
                                                     <p className="text-[18px] text-[#fffffff]">Characteristics:</p>
                                                     <div className="text-[#626262] whitespace-nowrap">
                                                         {/* <p className="">Chipset: {el.chipset.model}</p> */}
-                                                        <p className="">Frequency: {el.frequency}Wt</p>
+                                                        <p className="">Frequency: {el.frequency}Ghz</p>
                                                         {/* <p className="">Socket: {el.socket.model}</p> */}
                                                         <p className="">Memory generation: {el.memory_generation.title}</p>
                                                     </div>
