@@ -17,9 +17,19 @@ import {
 import { useEffect, useState } from "react";
 import instanceAxios from "../axios/instanceAxios";
 import useUserData from "@/app/state/useDataStore";
+import { useTranslation } from 'react-i18next';
+import "@/lib/i18n";
+import { Globe } from "lucide-react";
 const Header = () => {
+    const { i18n } = useTranslation();
 
-    const {userData, setUserData} = useUserData();
+    const changeLanguage = (lng: string) => {
+        i18n.changeLanguage(lng);
+        Cookie.set('i18next', lng); // сохраняем в куку
+    };
+
+    const { t } = useTranslation('common');
+    const { userData, setUserData } = useUserData();
     const pathname = usePathname();
     const Cookie = require('js-cookie')
     // const [userData, setUserData] = useState([])
@@ -50,7 +60,6 @@ const Header = () => {
         return width
     }
     const screenWidth = widthResize();
-
     const NavLink = ({ textLink, path }: LinkInterface) => {
         return (
             <>
@@ -73,7 +82,8 @@ const Header = () => {
     return (
         <div className="bg-[#2D2D2D] mx-[20px] px-[40px] py-[24px] rounded-[20px] flex justify-between items-center mb-[80px]">
             <div className="">
-                <Link className="flex text-[25px] lg:text-[40px] fw-[700] " href="/">Tech <Image width={70} height={65} className="px-[5px] w-[40px] lg:w-[70px] lg:h-[65px]" src="/img/logo.svg" alt="" />Tinker</Link>
+                <Link className="flex text-[25px] lg:text-[40px] fw-[700] " href="/content">Tech <Image width={70} height={65} className="px-[5px] w-[40px] lg:w-[70px] lg:h-[65px]" src="/img/logo.svg" alt="" />Tinker</Link>
+
             </div>
 
             {
@@ -87,11 +97,22 @@ const Header = () => {
                                 pathname === "/content" || pathname === "/configure" || pathname === "/profile" || isProfileWithId || isPC ?
                                     (
                                         <DropdownMenuContent className="bg-[#1A1A1A] mt-[10px] text-[17px] border-0 ring-0 outline-none shadow-none flex flex-col text-white items-center" style={{ border: 'none' }}>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger className=" outline-none">
+                                                    <Globe className="w-5 h-5 text-white" />
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="bg-[#1A1A1A] text-white text-sm">
+                                                    <DropdownMenuItem onClick={() => changeLanguage('en')}>English</DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => changeLanguage('ru')}>Русский</DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => changeLanguage('kk')}>Қазақша</DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+
                                             <DropdownMenuItem>
-                                                <NavSmallLink path="/content" textLink="Home" />
+                                                <NavSmallLink path="/content" textLink={t('home')} />
                                             </DropdownMenuItem>
                                             <DropdownMenuItem>
-                                                <NavSmallLink path="/configure" textLink="Configure" />
+                                                <NavSmallLink path="/configure" textLink={t('configure')} />
                                             </DropdownMenuItem>
                                             <DropdownMenuItem>
                                                 {
@@ -107,7 +128,7 @@ const Header = () => {
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <NavSmallLink path={`/auth/signin`} textLink="Profile" />
+                                                            <NavSmallLink path={`/auth/signin`} textLink={t('profile')} />
 
                                                         </>
                                                     )
@@ -116,7 +137,7 @@ const Header = () => {
                                             {
                                                 isAdmin ? (
                                                     <DropdownMenuItem>
-                                                        <NavSmallLink path="/admin" textLink="Admin" />
+                                                        <NavSmallLink path="/admin" textLink={t('admin')} />
                                                     </DropdownMenuItem>
                                                 ) : ""
                                             }
@@ -127,10 +148,10 @@ const Header = () => {
                                         <DropdownMenuContent className="bg-[#1A1A1A] mt-[10px] border-0 flex flex-col text-white items-center">
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem>
-                                                <NavSmallLink path="/auth/signin" textLink="Sign In" />
+                                                <NavSmallLink path="/auth/signin" textLink={t('signIn')} />
                                             </DropdownMenuItem>
                                             <DropdownMenuItem>
-                                                <NavSmallLink path="/auth/signup" textLink="Sign Up" />
+                                                <NavSmallLink path="/auth/signup" textLink={t('signUp')} />
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     )
@@ -146,8 +167,19 @@ const Header = () => {
                                 pathname === "/content" || pathname === "/configure" || pathname === "/profile" || isProfileWithId || isAdmin || isPC ?
                                     (
                                         <div className="text-[15px] items-center flex lg:text-[18px] font-bold">
-                                            <NavLink path={"/content"} textLink="Home" />
-                                            <NavLink path={"/configure"} textLink="Configure" />
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger className="ml-4 outline-none">
+                                                    <Globe className="w-5 h-5 text-white" />
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="bg-[#1A1A1A] text-white text-sm">
+                                                    <DropdownMenuItem onClick={() => changeLanguage('en')}>English</DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => changeLanguage('ru')}>Русский</DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => changeLanguage('kk')}>Қазақша</DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+
+                                            <NavLink path={"/content"} textLink={t('home')} />
+                                            <NavLink path={"/configure"} textLink={t('configure')} />
                                             {
                                                 user_id ? (
                                                     <>
@@ -163,13 +195,13 @@ const Header = () => {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <NavLink path={`/auth/signin`} textLink="Profile" />
+                                                        <NavLink path={`/auth/signin`} textLink={t('profile')} />
                                                     </>
                                                 )
                                             }
                                             {
                                                 isAdmin ? (
-                                                        <NavLink path={"/admin"} textLink="Admin" />
+                                                    <NavLink path={"/admin"} textLink={t('admin')} />
                                                 ) : ""
                                             }
                                         </div>
@@ -177,8 +209,8 @@ const Header = () => {
                                     :
                                     (
                                         <div className="text-[15px] lg:text-[18px] font-bold">
-                                            <NavLink path="/auth/signin" textLink="Sign In" />
-                                            <NavLink path="/auth/signup" textLink="Sign Up" />
+                                            <NavLink path="/auth/signin" textLink={t('signIn')} />
+                                            <NavLink path="/auth/signup" textLink={t('signUp')} />
                                         </div>
                                     )
                             }

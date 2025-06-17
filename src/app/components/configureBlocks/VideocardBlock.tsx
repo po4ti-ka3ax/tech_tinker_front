@@ -30,7 +30,11 @@ import { useConfigureStore } from "@/app/state/useConfigureStore"
 import { usePriceStore } from "@/app/state/usePriceStore"
 import { BadgeInfo } from 'lucide-react';
 import { usePowerStore } from "@/app/state/usePowerStore"
+import { useTranslation } from 'react-i18next';
+import "@/lib/i18n"; 
 const VideocardBlock = () => {
+    const { t } = useTranslation('common');
+
     const { selectedFilters, setFilterValue, clearAllFilters } = useFilterStore();
     const { configureStore, setConfigureStore, deleteConfigureObject } = useConfigureStore();
     const { price, setPriceStore, totalPrice, unsetCurrentComponent, unsetPriceStore, recalculateTotal } = usePriceStore()
@@ -203,14 +207,14 @@ const VideocardBlock = () => {
                                 hasProcessor  ? (
                                     <>
                                         <Tooltip>
-                                            <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Compatible</div></TooltipTrigger>
+                                            <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />{t('compatible')}</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
-                                                    Your Videocard: {currentComponent.gpu_model}
+                                                    {t('your')} {t('videocard')}: {currentComponent.gpu_model}
                                                     <br />
-                                                    compatible with
+                                                    {t('compatibleWith')}
                                                     <br />
-                                                    your processor: {configureStore.processor.processor_model}
+                                                    {t('your')} {t('processors')}: {configureStore.processor.processor_model}
                                                 </p>
                                             </TooltipContent>
                                         </Tooltip>
@@ -225,7 +229,7 @@ const VideocardBlock = () => {
                                                 </p>
                                             </TooltipContent>
                                         </Tooltip> */}
-                                    <p className="text-[#626262]">Unknown</p>
+                                    <p className="text-[#626262]">{t('unknown')}</p>
                                     </>
                                 )
                             }
@@ -235,24 +239,24 @@ const VideocardBlock = () => {
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Video memory: {currentComponent.memory_volume}GB</p>
-                            <p className="">Width: {currentComponent?.width}Mm</p>
-                            <p className="">Height: {currentComponent?.height}Mm</p>
-                            <p className="">Price: {currentComponent.price}$</p>
+                            <p className="text-[25px] text-[#fffffff]">{t('videoMemory')} {currentComponent.memory_volume}{t('gb')}</p>
+                            <p className="">{t('width')}: {currentComponent?.width}{t('mm')}</p>
+                            <p className="">{t('height')}: {currentComponent?.height}{t('mm')}</p>
+                            <p className="">{t('price')}: {currentComponent.price}$</p>
                         </div>
                     </>
                 ) : (
                     <>
                         <div className="text-center">
-                            <p className="text-[25px] text-[#fffffff]">Videocard</p>
-                            <p className="text-[#626262]">Unknown</p>
+                            <p className="text-[25px] text-[#fffffff]">{t('videocard')}</p>
+                            <p className="text-[#626262]">{t('unknown')}</p>
                         </div >
                         <div className="md:mx-[40px] my-[20px] flex justify-center">
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Model</p>
-                            <p className="text-[#626262]">Description under name</p>
+                            <p className="text-[25px] text-[#fffffff]">{t('model')}</p>
+                            <p className="text-[#626262]">{t('descriptionComponent')}</p>
                         </div>
                     </>
                 )
@@ -266,12 +270,12 @@ const VideocardBlock = () => {
                     </DialogTrigger>
                     <DialogContent id="dialog-content" className="bg-[#1A1A1A] border-none text-[#ffffff] px-0 max-w-[320px] lg:max-h-[80vh] overflow-y-auto lg:!max-w-[850px] w-full">
                         <DialogHeader className="px-[24px]">
-                            <DialogTitle className="text-center text-[30px]">Videocard</DialogTitle>
+                            <DialogTitle className="text-center text-[30px]">{t('videocard')}</DialogTitle>
                         </DialogHeader>
                         <div className="px-[24px] py-[16px]">
                             <Accordion type="single" collapsible>
                                 <AccordionItem value="item-1">
-                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Videocard filters</AccordionTrigger>
+                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">{t('videocard')} {t('filters')}</AccordionTrigger>
                                     <AccordionContent>
                                         {filterConfig["videocards"].map((filter) => (
                                             <div key={filter.name} className="mb-4">
@@ -294,7 +298,7 @@ const VideocardBlock = () => {
                                                     <div className="flex space-x-2">
                                                         <input
                                                             type="number"
-                                                            placeholder="From"
+                                                            placeholder={t('from')}
                                                             value={selectedFilters[filter.name]?.from ?? ""}
                                                             onChange={(e) =>
                                                                 handleRangeChange(filter.name, "from", Number(e.target.value))
@@ -304,7 +308,7 @@ const VideocardBlock = () => {
                                                         />
                                                         <input
                                                             type="number"
-                                                            placeholder="To"
+                                                            placeholder={t('to')}
                                                             value={selectedFilters[filter.name]?.to ?? ""}
                                                             onChange={(e) => {
                                                                 handleRangeChange(filter.name, "to", Number(e.target.value))
@@ -336,7 +340,7 @@ const VideocardBlock = () => {
                                                         onChange={(e) => setFilterValue(filter.name, e.target.value)}
                                                         className="bg-[#3E3E3E] text-white rounded p-2 w-full"
                                                     >
-                                                        <option value="">Without sort</option>
+                                                        <option value="">{t('withoutSort')}</option>
                                                         {filter.options.map((option) => (
                                                             <option key={option} value={option}>
                                                                 {option === "asc" ? "ASC" : "DESC"}
@@ -347,8 +351,8 @@ const VideocardBlock = () => {
                                             </div>
                                         ))}
                                         <div className="flex justify-center gap-[10px]">
-                                            <button onClick={onApplyFilters} className="text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Apply</button>
-                                            <button onClick={handleRemoveFilters} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove filters</button>
+                                            <button onClick={onApplyFilters} className="text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">{t('apply')}</button>
+                                            <button onClick={handleRemoveFilters} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('removeFilters')}</button>
                                         </div>
                                     </AccordionContent>
 
@@ -369,17 +373,17 @@ const VideocardBlock = () => {
                                                     <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
-                                                    <p className="text-[18px] text-[#fffffff]">Characteristics:</p>
+                                                    <p className="text-[18px] text-[#fffffff]">{t('characteristics')}:</p>
                                                     <div className="text-[#626262] whitespace-nowrap">
                                                         {/* <p className="">Chipset: {el.chipset.model}</p> */}
-                                                        <p className="">Frequency: {el.frequency}Ghz</p>
+                                                        <p className="">{t('frequency')}: {el.frequency}Ghz</p>
                                                         {/* <p className="">Socket: {el.socket.model}</p> */}
-                                                        <p className="">Memory generation: {el.memory_generation.title}</p>
+                                                        <p className="">{t('memoryGeneration')}: {el.memory_generation.title}</p>
                                                     </div>
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
                                                     {/* disabled={hasProcessor && el.socket.id !== socket ? true : false} */}
-                                                    <button  onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
+                                                    <button  onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">{t('add')}</button>
                                                     <p className="mt-[20px]">{el.price}$</p>
                                                 </div>
                                             </div>
@@ -390,7 +394,7 @@ const VideocardBlock = () => {
                                 {
                                     !token ? (
                                         <>
-                                            <h1 className="text-center text-[30px]">To start the configuration you need to log in\register</h1>
+                                            <h1 className="text-center text-[30px]">{t('configurationRegister')}</h1>
                                         </>
                                     ) : ""
                                 }
@@ -401,7 +405,7 @@ const VideocardBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('graphic_card')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
+                <button onClick={() => deleteComponent('graphic_card')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('remove')}</button>
             </div>
         </div >
     )

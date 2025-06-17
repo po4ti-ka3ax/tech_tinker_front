@@ -7,8 +7,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import instanceAxios from "@/app/components/axios/instanceAxios";
 import { redirect } from "next/navigation";
-
+import { useTranslation } from 'react-i18next';
+import "@/lib/i18n";
 const Signup = () => {
+    const { t } = useTranslation('common');
+
     const { register, handleSubmit, watch, formState: { errors } } = useForm({
         mode: "onSubmit"
     });
@@ -50,62 +53,62 @@ const Signup = () => {
             <div className="flex justify-around ">
                 <div className="">
                     <div className="bg-[#3E3E3E] opacity-[90%] px-[20px] md:px-[54px] py-[30px] rounded-[20px] mb-[20px]">
-                        <h2 className="text-center text-[30px] text-[#FFCC70]">Sign up</h2>
+                        <h2 className="text-center text-[30px] text-[#FFCC70]">{t('signUp')}</h2>
                         <div className="">
                             <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
                                 <div className="mt-[20px]">
-                                    <p className="px-[12px] text-[15px] font-regular text-white">Username</p>
+                                    <p className="px-[12px] text-[15px] font-regular text-white">{t('username')}</p>
                                     <input
                                         autoComplete="username"
                                         className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none"
                                         type="text"
-                                        {...register("username", { required: "Username is required" })}
-                                        placeholder="Enter your username"
+                                        {...register("username", { required: t('usernameRequired') })}
+                                        placeholder={t('usernameEnter')}
                                     />
                                     {errors.username && <p>{errors.username.message}</p>}
                                 </div>
 
                                 <div className="mt-[20px]">
-                                    <p className="px-[12px] text-[15px] font-regular text-white">Email</p>
+                                    <p className="px-[12px] text-[15px] font-regular text-white">{t('email')}</p>
                                     <input
                                         autoComplete="email"
                                         className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none"
                                         type="email"
-                                        {...register("email", { required: "Email is required" })}
-                                        placeholder="Enter your email"
+                                        {...register("email", { required: t('emailIsRequired') })}
+                                        placeholder={t('emailEnter')}
                                     />
                                     {errors.email && <p>{errors.email.message}</p>}
                                 </div>
                                 <div className="my-[17px]">
-                                    <p className="px-[12px] text-[15px] font-regular text-white">Password</p>
+                                    <p className="px-[12px] text-[15px] font-regular text-white">{t('password')}</p>
                                     <div className="flex opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] px-[12px] mt-[7px] py-[10px]">
-                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "password" : "text"} {...register("password", { required: 'Password must be at least 8 characters long', minLength: 8, validate: validatePassword })} placeholder="Enter your password" />
+                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "password" : "text"} {...register("password", { required: t('passwordRequire'), minLength: 8, validate: validatePassword })} placeholder={t('passwordEnter')} />
                                         <Image onClick={() => setShow(!show)} className="" alt="eye" width={30} height={20} src={show ? '/img/hide.png' : '/img/eye.png'} />
                                     </div>
                                     {errors.Password && <p className="mt-[10px] text-center text-[#940014]">{errors.Password.message as string}</p>}
 
                                 </div>
                                 <div className="my-[17px]">
-                                    <p className="px-[12px] text-[15px] font-regular text-white">Repeat password</p>
+                                    <p className="px-[12px] text-[15px] font-regular text-white">{t('repeatPassword')}</p>
                                     <div className="flex opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] px-[12px] mt-[7px] py-[10px]">
-                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={showRepeat ? "password" : "text"} {...register("repeatPassword", { required: 'Password must be at least 8 characters long', minLength: 8, validate: validatePassword })} placeholder="Repeat your password" />
+                                        <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={showRepeat ? "password" : "text"} {...register("repeatPassword", { required: t('passwordRequire'), minLength: 8, validate: validatePassword })} placeholder={t('passwordEnter')} />
                                         <Image onClick={() => setShowRepeat(!showRepeat)} className="mr-[30px] sm:mr-[0px]" alt="eye" width={30} height={20} src={showRepeat ? '/img/hide.png' : '/img/eye.png'} />
                                     </div>
                                     {errors.Password && <p className="mt-[10px] text-center text-[#940014]">{errors.Password.message as string}</p>}
 
                                 </div>
                                 <div className="">
-                                    <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[90px] w-[100%] py-[10px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">Log in</button>
+                                    <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[90px] w-[100%] py-[10px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">{t('signUp')}</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                     <div className="bg-[#3E3E3E] opacity-[90%] px-[54px] py-[30px] rounded-[20px] font-bold">
                         <div className="">
-                            <button onClick={() => signIn('google')} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">Sign up with Google <Image className="ml-[7px]" alt="google" width={23} height={23} src="/img/google.svg" /></button>
+                            <button onClick={() => signIn('google')} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('signUp')} with Google <Image className="ml-[7px]" alt="google" width={23} height={23} src="/img/google.svg" /></button>
                         </div>
                         <div className="mt-[20px]">
-                            <button onClick={() => signIn('discord')} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">Sign up with Discord <Image className="ml-[7px]" alt="discord" width={23} height={23} src="/img/discord.svg" /></button>
+                            <button onClick={() => signIn('discord')} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('signUp')} with Discord <Image className="ml-[7px]" alt="discord" width={23} height={23} src="/img/discord.svg" /></button>
                         </div>
                     </div>
                     {/* <div className="text-center mt-[20px]">

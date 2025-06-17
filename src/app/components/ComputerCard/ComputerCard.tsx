@@ -6,7 +6,7 @@ const ComputerCard = ({ computer }: ComputerCardInterface) => {
     return (
         <>
 
-            <div className="bg-[#2D2D2D] opacity-95 rounded-[15px]  mt-[20px] relative">
+            <div className="bg-[#2D2D2D] opacity-95 rounded-[15px] mx-[20px] mt-[20px] relative">
                 <Link href={`/computer/${computer?.id}`}>
 
                     <div className="p-[10px]">

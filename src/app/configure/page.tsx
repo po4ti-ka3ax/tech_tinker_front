@@ -18,9 +18,10 @@ import { useConfigureStore } from "../state/useConfigureStore"
 import instanceAxios from "../components/axios/instanceAxios"
 import { useState } from "react"
 import { redirect } from "next/navigation"
-
+import { useTranslation } from 'react-i18next';
+import "@/lib/i18n"; 
 const Configure = () => {
-
+    const { t } = useTranslation('common');
     const [pcName, setPcName] = useState("")
     const [pcDescription, setPcDescription] = useState("")
     const [pcImage, setPcImage] = useState<File | null>(null)
@@ -113,7 +114,7 @@ const Configure = () => {
 
     return (
         <>
-            <h1 className="text-center text-[30px] lg:text-[50px] mb-[50px]">Choose computer for yourself</h1>
+            <h1 className="text-center text-[30px] lg:text-[50px] mb-[50px]">{t('chooseComputer')}</h1>
             <div className="md:flex justify-around md:relative">
                 <div className="text-center mb-[80px] flex flex-col items-center md:sticky md:mr-[20px] top-[20px] self-start">
                     <div className="">
@@ -124,19 +125,19 @@ const Configure = () => {
                         }} id="real-input" hidden />
                         <label htmlFor="real-input">
                             <Image alt="add photo" className="cursor-pointer w-[200px] md:w-[300px] md:h-[300px]" src={'/img/addPhoto.svg'} width={300} height={300} />
-                            <p className="my-[20px] cursor-pointer">Upload photo PC</p>
+                            <p className="my-[20px] cursor-pointer">{t('uploadPhoto')}</p>
                         </label>
                     </div>
-                    <input type="text" value={pcName} onChange={e => setPcName(e.target.value)} placeholder="PC name" className="text-center rounded-[20px] py-[10px] px-[50px] bg-[#242424]" />
-                    <Textarea value={pcDescription} onChange={e => setPcDescription(e.target.value)} className="my-[20px] w-[80%] text-[25px] md:text-[20px] resize-none bg-[#242424] border-none" placeholder="Write description about your PC" />
-                    <p className="my-[20px]">Total price: {totalPrice}₸</p>
+                    <input type="text" value={pcName} onChange={e => setPcName(e.target.value)} placeholder={t('pcName')} className="text-center rounded-[20px] py-[10px] px-[50px] bg-[#242424]" />
+                    <Textarea value={pcDescription} onChange={e => setPcDescription(e.target.value)} className="my-[20px] w-[80%] text-[25px] md:text-[20px] resize-none bg-[#242424] border-none" placeholder={t('pcDescription')} />
+                    <p className="my-[20px]">{t('totalPrice')} {totalPrice}₸</p>
                     {/* <p className="my-[20px]">Total power: {totalPower}</p> */}
 
                     <button
                         onClick={handleSubmit}
                         className="bg-[#FFCC70] py-[10px] px-[70px] text-[#1A1A1A] rounded-[10px]"
                     >
-                        Save configure
+                        {t('saveConfigure')}
                     </button>
 
                 </div>

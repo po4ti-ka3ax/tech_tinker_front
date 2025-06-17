@@ -30,7 +30,11 @@ import { useConfigureStore } from "@/app/state/useConfigureStore"
 import { usePriceStore } from "@/app/state/usePriceStore"
 import { BadgeInfo } from 'lucide-react';
 import { usePowerStore } from "@/app/state/usePowerStore"
+import { useTranslation } from 'react-i18next';
+import "@/lib/i18n"; 
 const CaseBlock = () => {
+    const { t } = useTranslation('common');
+
     const { selectedFilters, setFilterValue, clearAllFilters } = useFilterStore();
     const { configureStore, setConfigureStore, deleteConfigureObject } = useConfigureStore();
     const { price, setPriceStore, totalPrice, unsetCurrentComponent, unsetPriceStore, recalculateTotal } = usePriceStore()
@@ -238,18 +242,18 @@ const CaseBlock = () => {
                                 hasMotherboard  ? (
                                     <>
                                         <Tooltip>
-                                            <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Compatible</div></TooltipTrigger>
+                                            <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />{t('compatible')}</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
-                                                    Your case: {currentComponent.case_model}
+                                                    {t('your')} {t('case')}: {currentComponent.case_model}
                                                     <br />
-                                                    compatible with
+                                                    {t('compatibleWith')}
                                                     <br />
-                                                    your motherboard: {configureStore?.motherboard?.motherboard_model}
+                                                    {t('your')} {t('motherboard')}: {configureStore?.motherboard?.motherboard_model}
                                                     <br />
-                                                    and
+                                                    {t('and')}
                                                     <br />
-                                                    your videocard: {configureStore?.videocard?.gpu_model}
+                                                    {t('your')} {t('videocard')}: {configureStore?.videocard?.gpu_model}
                                                 </p>
                                             </TooltipContent>
                                         </Tooltip>
@@ -264,7 +268,7 @@ const CaseBlock = () => {
                                                 </p>
                                             </TooltipContent>
                                         </Tooltip> */}
-                                    <p className="text-[#626262]">Unknown</p>
+                                    <p className="text-[#626262]">{t('unknown')}</p>
                                     </>
                                 )
                             }
@@ -274,24 +278,24 @@ const CaseBlock = () => {
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Form factor: {currentComponent.form_factor[0].title}</p>
+                            <p className="text-[25px] text-[#fffffff]">{t('formFactor')}: {currentComponent.form_factor[0].title}</p>
                             {/* <p className="">Width: {currentComponent?.width}Mm</p> */}
                             {/* <p className="">Height: {currentComponent?.height}Mm</p> */}
-                            <p className="">Price: {currentComponent.price}$</p>
+                            <p className="">{t('price')}: {currentComponent.price}$</p>
                         </div>
                     </>
                 ) : (
                     <>
                         <div className="text-center">
-                            <p className="text-[25px] text-[#fffffff]">Case</p>
-                            <p className="text-[#626262]">Unknown</p>
+                            <p className="text-[25px] text-[#fffffff]">{t('case')}</p>
+                            <p className="text-[#626262]">{t('unknown')}</p>
                         </div >
                         <div className="md:mx-[40px] my-[20px] flex justify-center">
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Model</p>
-                            <p className="text-[#626262]">Description under name</p>
+                            <p className="text-[25px] text-[#fffffff]">{t('model')}</p>
+                            <p className="text-[#626262]">{t('descriptionComponent')}</p>
                         </div>
                     </>
                 )
@@ -301,16 +305,16 @@ const CaseBlock = () => {
             <div className="flex flex-col">
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger onClick={() => handleComponentClick()} className="text-[#1A1A1A] py-[8px] px-[25px] rounded-[10px] mb-[20px] md:mb-[10px] bg-[#FFCC70] cursor-pointer">
-                        Add
+                        {t('add')}
                     </DialogTrigger>
                     <DialogContent id="dialog-content" className="bg-[#1A1A1A] border-none text-[#ffffff] px-0 max-w-[320px] lg:max-h-[80vh] overflow-y-auto lg:!max-w-[850px] w-full">
                         <DialogHeader className="px-[24px]">
-                            <DialogTitle className="text-center text-[30px]">Case</DialogTitle>
+                            <DialogTitle className="text-center text-[30px]">{t('case')}</DialogTitle>
                         </DialogHeader>
                         <div className="px-[24px] py-[16px]">
                             <Accordion type="single" collapsible>
                                 <AccordionItem value="item-1">
-                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Case filters</AccordionTrigger>
+                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">{t('case')} {t('filters')}</AccordionTrigger>
                                     <AccordionContent>
                                         {filterConfig["cases"].map((filter) => (
                                             <div key={filter.name} className="mb-4">
@@ -333,7 +337,7 @@ const CaseBlock = () => {
                                                     <div className="flex space-x-2">
                                                         <input
                                                             type="number"
-                                                            placeholder="From"
+                                                            placeholder={t('from')}
                                                             value={selectedFilters[filter.name]?.from ?? ""}
                                                             onChange={(e) =>
                                                                 handleRangeChange(filter.name, "from", Number(e.target.value))
@@ -343,7 +347,7 @@ const CaseBlock = () => {
                                                         />
                                                         <input
                                                             type="number"
-                                                            placeholder="To"
+                                                            placeholder={t('to')}
                                                             value={selectedFilters[filter.name]?.to ?? ""}
                                                             onChange={(e) => {
                                                                 handleRangeChange(filter.name, "to", Number(e.target.value))
@@ -386,8 +390,8 @@ const CaseBlock = () => {
                                             </div>
                                         ))}
                                         <div className="flex justify-center gap-[10px]">
-                                            <button onClick={onApplyFilters} className="text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Apply</button>
-                                            <button onClick={handleRemoveFilters} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove filters</button>
+                                            <button onClick={onApplyFilters} className="text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">{t('apply')}</button>
+                                            <button onClick={handleRemoveFilters} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('removeFilters')}</button>
                                         </div>
                                     </AccordionContent>
 
@@ -411,15 +415,15 @@ const CaseBlock = () => {
                                                     <p className="text-[18px] text-[#fffffff]">Characteristics:</p>
                                                     <div className="text-[#626262] whitespace-nowrap">
                                                         {/* <p className="">Form factor: {el?.form_factor[0].title}</p> */}
-                                                        <p className="">GPU max width: {el.gpu_width}Mm</p>
-                                                        <p className="">GPU max height: {el.gpu_height}Mm</p>
+                                                        <p className="">{t('gpuMaxWidth')}: {el.gpu_width}{t('mm')}</p>
+                                                        <p className="">{t('gpuMaxHeight')}: {el.gpu_height}{t('mm')}</p>
                                                         {/* <p className="">Socket: {el.socket.model}</p> */}
                                                         {/* <p className="">Memory generation: {el.memory_generation.title}</p> */}
                                                     </div>
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
                                                     {/* disabled={hasProcessor && el.socket.id !== socket ? true : false} */}
-                                                    <button  onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
+                                                    <button  onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">{t('add')}</button>
                                                     <p className="mt-[20px]">{el.price}$</p>
                                                 </div>
                                             </div>
@@ -430,7 +434,7 @@ const CaseBlock = () => {
                                 {
                                     !token ? (
                                         <>
-                                            <h1 className="text-center text-[30px]">To start the configuration you need to log in\register</h1>
+                                            <h1 className="text-center text-[30px]">{t('configurationRegister')}</h1>
                                         </>
                                     ) : ""
                                 }
@@ -441,7 +445,7 @@ const CaseBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('computer_case')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
+                <button onClick={() => deleteComponent('computer_case')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('remove')}</button>
             </div>
         </div >
     )

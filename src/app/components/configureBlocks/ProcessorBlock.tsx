@@ -30,8 +30,11 @@ import { useConfigureStore } from "@/app/state/useConfigureStore"
 import { usePriceStore } from "@/app/state/usePriceStore"
 import { BadgeInfo } from 'lucide-react';
 import { usePowerStore } from "@/app/state/usePowerStore"
-
+import { useTranslation } from 'react-i18next';
+import "@/lib/i18n"; 
 const ProcessorBlock = () => {
+    const { t } = useTranslation('common');
+
     const { selectedFilters, setFilterValue, clearAllFilters } = useFilterStore();
     const { configureStore, setConfigureStore, deleteConfigureObject } = useConfigureStore();
     const { price, setPriceStore, totalPrice, unsetCurrentComponent, unsetPriceStore, recalculateTotal } = usePriceStore()
@@ -220,14 +223,14 @@ const ProcessorBlock = () => {
                                 hasMotherboard && isCompatible(currentComponent, configureStore.motherboard ) ? (
                                     <>
                                         <Tooltip>
-                                            <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Compatible</div></TooltipTrigger>
+                                            <TooltipTrigger className="text-[#28CC20] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />{t('compatible')}</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
-                                                    Your processor: {currentComponent.processor_model} 
+                                                    {t('your')} {t('processors')}: {currentComponent.processor_model} 
                                                     <br /> 
-                                                    compatible with
+                                                    {t('compatibleWith')}
                                                     <br /> 
-                                                    your motherboard: {configureStore.motherboard.motherboard_model}
+                                                    {t('your')} {t('motherboard')}: {configureStore.motherboard.motherboard_model}
                                                 </p>
                                             </TooltipContent>
                                         </Tooltip>
@@ -235,7 +238,7 @@ const ProcessorBlock = () => {
                                 ) : (
                                     <>
                                         <Tooltip>
-                                            <TooltipTrigger className="text-[#FF5252] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />Uncompatible</div></TooltipTrigger>
+                                            <TooltipTrigger className="text-[#FF5252] mt-[10px] "> <div className="flex justify-center gap-[6px]"><BadgeInfo />{t('uncompatible')}</div></TooltipTrigger>
                                             <TooltipContent className="bg-[#3E3E3E] p-[20px]">
                                                 <p className="text-[17px]">
                                                     {incompatibilityReason}
@@ -252,23 +255,23 @@ const ProcessorBlock = () => {
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Socket: {currentComponent?.socket[0].model}</p>
-                            <p className="">Cores: {currentComponent.core}</p>
-                            <p className="">Price: {currentComponent.price}$</p>
+                            <p className="text-[25px] text-[#fffffff]">{t('socket')}: {currentComponent?.socket[0].model}</p>
+                            <p className="">{t('cores')}: {currentComponent.core}</p>
+                            <p className="">{t('price')}: {currentComponent.price}$</p>
                         </div>
                     </>
                 ) : (
                     <>
                         <div className="text-center">
-                            <p className="text-[25px] text-[#fffffff]">Processors</p>
-                            <p className="text-[#626262]">Unknown</p>
+                            <p className="text-[25px] text-[#fffffff]">{t('processors')}</p>
+                            <p className="text-[#626262]">{t('unknown')}</p>
                         </div >
                         <div className="md:mx-[40px] my-[20px] flex justify-center">
                             <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
-                            <p className="text-[25px] text-[#fffffff]">Model</p>
-                            <p className="text-[#626262]">Description under name</p>
+                            <p className="text-[25px] text-[#fffffff]">{t('model')}</p>
+                            <p className="text-[#626262]">{t('descriptionComponent')}</p>
                         </div>
                     </>
                 )
@@ -278,16 +281,16 @@ const ProcessorBlock = () => {
             <div className="flex flex-col">
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger onClick={() => handleComponentClick()} className="text-[#1A1A1A] py-[8px] px-[25px] rounded-[10px] mb-[20px] md:mb-[10px] bg-[#FFCC70] cursor-pointer">
-                        Add
+                        {t('Add')}
                     </DialogTrigger>
                     <DialogContent id="dialog-content" className="bg-[#1A1A1A] border-none text-[#ffffff] px-0 max-w-[320px] lg:max-h-[80vh] overflow-y-auto lg:!max-w-[850px] w-full">
                         <DialogHeader className="px-[24px]">
-                            <DialogTitle className="text-center text-[30px]">Processors</DialogTitle>
+                            <DialogTitle className="text-center text-[30px]">{t('processors')}</DialogTitle>
                         </DialogHeader>
                         <div className="px-[24px] py-[16px]">
                             <Accordion type="single" collapsible>
                                 <AccordionItem value="item-1">
-                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Processors filters</AccordionTrigger>
+                                    <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">{t('processorFilter')}</AccordionTrigger>
                                     <AccordionContent>
                                         {filterConfig["processors"].map((filter) => (
                                             <div key={filter.name} className="mb-4">
@@ -310,7 +313,7 @@ const ProcessorBlock = () => {
                                                     <div className="flex space-x-2">
                                                         <input
                                                             type="number"
-                                                            placeholder="From"
+                                                            placeholder={t('from')}
                                                             value={selectedFilters[filter.name]?.from ?? ""}
                                                             onChange={(e) =>
                                                                 handleRangeChange(filter.name, "from", Number(e.target.value))
@@ -320,7 +323,7 @@ const ProcessorBlock = () => {
                                                         />
                                                         <input
                                                             type="number"
-                                                            placeholder="To"
+                                                            placeholder={t('to')}
                                                             value={selectedFilters[filter.name]?.to ?? ""}
                                                             onChange={(e) => {
                                                                 handleRangeChange(filter.name, "to", Number(e.target.value))
@@ -352,7 +355,7 @@ const ProcessorBlock = () => {
                                                         onChange={(e) => setFilterValue(filter.name, e.target.value)}
                                                         className="bg-[#3E3E3E] text-white rounded p-2 w-full"
                                                     >
-                                                        <option value="">Without sort</option>
+                                                        <option value="">{t('withoutSort')}</option>
                                                         {filter.options.map((option) => (
                                                             <option key={option} value={option}>
                                                                 {option === "asc" ? "ASC" : "DESC"}
@@ -363,8 +366,8 @@ const ProcessorBlock = () => {
                                             </div>
                                         ))}
                                         <div className="flex justify-center gap-[10px]">
-                                            <button onClick={onApplyFilters} className="text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Apply</button>
-                                            <button onClick={handleRemove} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove filters</button>
+                                            <button onClick={onApplyFilters} className="text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">{t('apply')}</button>
+                                            <button onClick={handleRemove} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('removeFilters')}</button>
                                         </div>
                                     </AccordionContent>
 
@@ -385,17 +388,17 @@ const ProcessorBlock = () => {
                                                     <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
-                                                    <p className="text-[18px] text-[#fffffff]">Characteristics:</p>
+                                                    <p className="text-[18px] text-[#fffffff]">{t('characteristics')}:</p>
                                                     <div className="text-[#626262] whitespace-nowrap">
-                                                        <p className="">Frequency: {el.frequency}GHz</p>
-                                                        <p className="">Power wattage: {el.power_wattage}Wt</p>
-                                                        <p className="">Socket: {el.socket[0].model}</p>
-                                                        <p className="">Memory generation: {el.memory_generation.title}</p>
+                                                        <p className="">{t('frequency')}: {el.frequency}{t('ghz')}</p>
+                                                        <p className="">{t('powerWattage')}: {el.power_wattage}{t('wt')}</p>
+                                                        <p className="">{t('socket')}: {el.socket[0].model}</p>
+                                                        <p className="">{t('memoryGeneration')}: {el.memory_generation.title}</p>
                                                     </div>
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
                                                     
-                                                    <button onClick={() => handleAddComponent(el)} disabled={hasFilterComponent && el.socket[0].id !== socket ? true : false} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">Add</button>
+                                                    <button onClick={() => handleAddComponent(el)} disabled={hasFilterComponent && el.socket[0].id !== socket ? true : false} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">{t('add')}</button>
                                                     <p className="mt-[20px]">{el.price}$</p>
                                                 </div>
                                             </div>
@@ -406,7 +409,7 @@ const ProcessorBlock = () => {
                                 {
                                     !token ? (
                                         <>
-                                            <h1 className="text-center text-[30px]">To start the configuration you need to log in\register</h1>
+                                            <h1 className="text-center text-[30px]">{t('configurationRegister')}</h1>
                                         </>
                                     ) : ""
                                 }
@@ -417,7 +420,7 @@ const ProcessorBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('processor')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove</button>
+                <button onClick={() => deleteComponent('processor')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('remove')}</button>
             </div>
         </div >
     )

@@ -15,6 +15,12 @@ html, body {
 body, input, textarea, select {
   font-family: var(--font-k2d), sans-serif;
 }
+
+html[lang="ru"] body,
+html[lang="kk"] body {
+  font-family: 'Fira Sans', sans-serif;
+}
+
 #dialog-content {
   max-height: 80vh;
   overflow-y: auto;
