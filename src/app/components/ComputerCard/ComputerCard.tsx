@@ -10,7 +10,7 @@ const ComputerCard = ({ computer }: ComputerCardInterface) => {
                 <Link href={`/computer/${computer?.id}`}>
 
                     <div className="p-[10px]">
-                        <Image src="/img/pc2.png" width={200} height={200} alt="pc-photo" />
+                        <Image className="rounded-[10px]" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${computer?.link_img}`} width={200} height={200} alt="pc-photo" />
                     </div>
 
                     <div className="w-full border-t  border-[#6D6C6C]" />

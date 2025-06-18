@@ -250,7 +250,7 @@ const MotherboardBlock = () => {
 
                         </div>
                         <div className="md:mx-[40px] my-[20px] flex justify-center">
-                            <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
+                            <Image alt="photo" className="rounded-[10px]" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${currentComponent.link_img}`} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
                             <p className="text-[25px] text-[#fffffff]">{t('chipset')}: {currentComponent?.chipset?.model}</p>
@@ -383,7 +383,7 @@ const MotherboardBlock = () => {
                                                     <p className="text-[20px] text-[#fffffff]">{el.motherboard_model}</p>
                                                 </div>
                                                 <div className="mx-[40px] my-[20px] flex justify-center">
-                                                    <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
+                                                    <Image alt="photo" className="rounded-[10px]" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${el.link_img}`} width={150} height={100} />
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
                                                     <p className="text-[18px] text-[#fffffff]">Characteristics:</p>

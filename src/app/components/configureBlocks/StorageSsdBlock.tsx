@@ -144,7 +144,7 @@ const StorageSsdBlock = () => {
 
     const handleComponentClick = async () => {
         try {
-            let url = `/storages?storage_type_id=1`;
+            let url = `/storages?storage_type_id=2`;
             if (hasMotherboard && Array.isArray(storageInterface)) {
                 storageInterface.forEach((id, index) => {
                     url += `&connect_interfaces_id[${index}]=${id}`
@@ -162,11 +162,11 @@ const StorageSsdBlock = () => {
             clearAllFilters()
             setRemove(!remove)
             if (hasMotherboard) {
-                await instanceAxios.get(`/storages?storage_type_id=1${hasMotherboard ? `&connect_interfaces_id[0]=${storageInterface}` : ""}`).then(res => {
+                await instanceAxios.get(`/storages?storage_type_id=2${hasMotherboard ? `&connect_interfaces_id[0]=${storageInterface}` : ""}`).then(res => {
                     setComponents(res.data.data)
                 })
             } else {
-                await instanceAxios.get(`/storages?storage_type_id=1`).then(res => {
+                await instanceAxios.get(`/storages?storage_type_id=2`).then(res => {
                     setComponents(res.data.data)
                 })
             }
@@ -255,7 +255,7 @@ const StorageSsdBlock = () => {
 
                         </div>
                         <div className="md:mx-[40px] my-[20px] flex justify-center">
-                            <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
+                            <Image alt="photo" className="rounded-[10px]" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${currentComponent?.link_img}`} width={150} height={100} />
                         </div>
                         <div className="md:mr-[40px] mb-[20px] text-center">
                             <p className="text-[25px] text-[#fffffff] whitespace-nowrap">{t('volume')}: {currentComponent.volume}{t('gb')}</p>
@@ -389,7 +389,7 @@ const StorageSsdBlock = () => {
                                                     <p className="text-[20px] text-[#fffffff]">{el.storage_model}</p>
                                                 </div>
                                                 <div className="mx-[40px] my-[20px] flex justify-center">
-                                                    <Image alt="photo" src={"/img/placeholder.png"} width={150} height={100} />
+                                                    <Image alt="photo" className="rounded-[10px]" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${el.link_img}`} width={150} height={100} />
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
                                                     <p className="text-[18px] text-[#fffffff]">{t('characteristics')}:</p>

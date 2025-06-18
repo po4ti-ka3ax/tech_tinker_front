@@ -11,10 +11,14 @@ import Comment from "@/app/components/computer/Comment";
 import { SetColorInterface } from "@/app/interfaces/interface";
 import { useParams } from 'next/navigation'
 import instanceAxios from "@/app/components/axios/instanceAxios";
+import { useRouter } from "next/navigation"; 
+
 const Computer = () => {
+    const Cookies = require('js-cookie');
+    const userId = Cookies.get('user_id')
     const { setUserData, userData } = useUserData();
     const [image, setImage] = useState('');
-    const [pc,setPc] = useState({})
+    const [pc, setPc] = useState({})
     const params = useParams();
     const id = params.id;
 
@@ -23,10 +27,11 @@ const Computer = () => {
             instanceAxios.get(`/builds/${id}`).then(res => {
                 setPc(res.data.data)
             })
-        } catch(err) {
+        } catch (err) {
             console.error(err)
         }
-    },[])
+    }, [])
+    const router = useRouter();
 
     const [reliability, setReliability] = useState(8);
     const [performance, setPerformance] = useState(5);
@@ -35,38 +40,51 @@ const Computer = () => {
     const [performanceColor, setPerformanceColor] = useState("");
     const [compatibilityColor, setCompatibilityColor] = useState("");
     // console.log(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${userData?.profile_img}`)
-    
+
     useEffect(() => {
         if (userData) {
             setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${userData?.profile_img}`)
         }
 
-        const setColor = ({setterColor, param}: SetColorInterface) => {
-            if(param >= 7){
+        const setColor = ({ setterColor, param }: SetColorInterface) => {
+            if (param >= 7) {
                 setterColor("text-white")
-            } 
-            if(param <= 6.8) {
+            }
+            if (param <= 6.8) {
                 setterColor("text-[#FFCC70]")
-            } 
-            if(param <= 4.9) {
+            }
+            if (param <= 4.9) {
                 setterColor("text-[#FF5252]")
             }
         }
 
-        setColor({setterColor: setReliabilityColor, param:reliability});
-        setColor({setterColor: setPerformanceColor, param:performance});
-        setColor({setterColor: setCompatibilityColor, param:compatibility});
-        
-    }, [userData,reliability,performance,compatibility])
-   
-    const text="It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a computer. It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a computer.";
+        setColor({ setterColor: setReliabilityColor, param: reliability });
+        setColor({ setterColor: setPerformanceColor, param: performance });
+        setColor({ setterColor: setCompatibilityColor, param: compatibility });
+
+    }, [userData, reliability, performance, compatibility])
+    console.log(userData.id)
+    console.log(userId)
+    const handleDelete = (id) => {
+        try {
+            instanceAxios.delete(`/builds/${id}`).then(res => {
+                if (res.status === 204) {
+                    router.push(`/content`);
+                }
+            });
+            
+        } catch(err) {
+            console.error(err)
+        }
+    }
+    const text = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a computer. It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a computer.";
     return (
         <>
             <div className="">
 
                 <div className="flex justify-around">
                     <div className="">
-                        <Image src={"/img/pc1.png"} width={500} height={500} alt="Photo PC" />
+                        <Image src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${pc?.link_img}`} width={500} height={500} alt="Photo PC" />
                         <div className="bg-[#2D2D2D] text-center m-auto w-[300px] p-[20px] rounded-[10px]">
                             <p className="text-[23px] mb-[10px]">Grades</p>
                             <div className={`flex justify-between px-[30px]  bg-[#3E3E3E] p-[5px] rounded-[10px]`}>
@@ -130,28 +148,28 @@ const Computer = () => {
                         </div>
                         <LongCharacteristicComponent nameComponent="Processor" brandComponent={pc.processor?.brand?.title} modelComponent="Xeon e5 228" price={pc.processor?.price} />
                         {
-                                pc.graphic_cards?.map(el => (
-                                    <>
-                                        <LongCharacteristicComponent nameComponent="Videocard" brandComponent={el.brand?.title} modelComponent={el.gpu_model} price={el.price} />
-                                    </>
-                                ))
-                            }
+                            pc.graphic_cards?.map(el => (
+                                <>
+                                    <LongCharacteristicComponent nameComponent="Videocard" brandComponent={el.brand?.title} modelComponent={el.gpu_model} price={el.price} />
+                                </>
+                            ))
+                        }
                         <LongCharacteristicComponent nameComponent="Motherboard" brandComponent={pc.motherboard?.brand?.title} modelComponent={pc.motherboard?.motherboard_model} price={pc.motherboard?.price} />
 
-                            {
-                                pc?.systemMemories?.map(el => (
-                                    <>
-                                        <LongCharacteristicComponent nameComponent="RAM" brandComponent={el.brand?.title} modelComponent={el.memory_model} price={el.price} />
-                                    </>
-                                ))
-                            }
-                            {
-                                pc?.storages?.map(el => (
-                                    <>
-                                        <LongCharacteristicComponent nameComponent="Storage" brandComponent={el.brand?.title} modelComponent={el.storage_model} price={el.price} />
-                                    </>
-                                ))
-                            }
+                        {
+                            pc?.systemMemories?.map(el => (
+                                <>
+                                    <LongCharacteristicComponent nameComponent="RAM" brandComponent={el.brand?.title} modelComponent={el.memory_model} price={el.price} />
+                                </>
+                            ))
+                        }
+                        {
+                            pc?.storages?.map(el => (
+                                <>
+                                    <LongCharacteristicComponent nameComponent="Storage" brandComponent={el.brand?.title} modelComponent={el.storage_model} price={el.price} />
+                                </>
+                            ))
+                        }
 
                         <LongCharacteristicComponent nameComponent="Power supply unit" brandComponent={pc.power?.brand?.title} modelComponent={pc.power?.power_model} price={pc.power?.price} />
                         <LongCharacteristicComponent nameComponent="Case" brandComponent={pc.computer_case?.brand?.title} modelComponent={pc.computer_case?.case_model} price={pc.computer_case?.price} />
@@ -174,31 +192,41 @@ const Computer = () => {
                                 </Avatar>
                             </div>
                             <div className="w-[100%] border-b-[2px] border-b-[#6D6C6C] pb-[10px] rounded-[2px]">
-                                <Textarea 
+                                <Textarea
                                     className="resize-none w-full bg-transparent outline-none border-none  text-white px-4 py-2 leading-[1.5rem] text-[16px] focus-visible:ring-0 focus-visible:ring-offset-0"
                                     placeholder="Write your comment"
                                     rows={1}
                                 />
                                 <div className="flex gap-[5px] px-4">
-                                    
+
                                     <div className="">
-                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Reliability"/>
+                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Reliability" />
                                     </div>
                                     <div >
-                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Performance"/>
+                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Performance" />
                                     </div>
                                     <div className="">
-                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Compatibility"/>
+                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Compatibility" />
                                     </div>
-                               </div>
+                                </div>
                             </div>
                         </div>
                         <div className="">
-                            <Comment userData={userData} image={image} commentText={text}/>
+                            <Comment userData={userData} image={image} commentText={text} />
                         </div>
+                        
                     </div>
+                    
                 </div>
-
+{
+                        userData.id == userId ? (
+                            <>
+                                <div className="text-center mt-[30px]">
+                                    <button className="text-center cursor-pointer text-[#C82323] border-[#C82323] hover:bg-[#C82323] hover:text-[#ffffff] duration-300 border-1 rounded-[10px] px-[10px] py-[10px]" onClick={() => handleDelete(id)}>Delete pc</button>
+                                </div>
+                            </>
+                        ) : ""
+                    }
             </div>
         </>
     )

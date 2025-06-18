@@ -19,8 +19,10 @@ import instanceAxios from "../components/axios/instanceAxios"
 import { useState } from "react"
 import { redirect } from "next/navigation"
 import { useTranslation } from 'react-i18next';
-import "@/lib/i18n"; 
+import { useRouter } from "next/navigation";
+import "@/lib/i18n";
 const Configure = () => {
+    const router = useRouter();
     const { t } = useTranslation('common');
     const [pcName, setPcName] = useState("")
     const [pcDescription, setPcDescription] = useState("")
@@ -36,9 +38,12 @@ const Configure = () => {
 
         formData.append("title", pcName);
         formData.append("description", pcDescription);
-        formData.append("user_id", userId);
+        formData.append("user_id", userId || "");
+
         if (pcImage) {
             formData.append("image", pcImage);
+        } else {
+            console.warn("Файл не выбран!");
         }
 
         const arr = [
@@ -69,6 +74,9 @@ const Configure = () => {
         const indexedFields = ['storage_id', 'cooling_spec_id', 'graphic_card_id', 'system_memory_id'];
 
         let indexCounters: { [key: string]: number } = {};
+        formData.forEach((val, key) => {
+            console.log(key, val);
+        });
 
         arr.forEach((key) => {
             const component = configureStore[key];
@@ -101,8 +109,10 @@ const Configure = () => {
                     "Content-Type": "multipart/form-data",
                 },
             }).then(res => {
-                console.log("Сборка сохранена:", res.data);
-                redirect(`/computer/${res.id}`);
+                console.log(res)
+                if (res.status === 201) {
+                    router.push(`/computer/${res.data.data.id}`);
+                }
             })
         } catch (err) {
             console.error("Ошибка при сохранении:", err);
