@@ -140,7 +140,7 @@ const Content = () => {
                     <input type="text" className="mx-[20px] bg-[#2D2D2D] pl-[20px] px-[200px] rounded-[10px]" placeholder={t('search')} />
                     <button className="px-[20px]  py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]" >{t('search')}</button>
                 </div>
-                <div className=" flex wrap mt-[30px] justify-center">
+                <div className=" grid grid-cols-5 mt-[30px] justify-center">
                     {
                         pc.map(el => (
                             <>
