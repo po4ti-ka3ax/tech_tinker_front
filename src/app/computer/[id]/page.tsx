@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 const Computer = () => {
     const Cookies = require('js-cookie');
     const userId = Cookies.get('user_id')
+    const userRole = Cookies.get('user_role')
     const { setUserData, userData } = useUserData();
     const [image, setImage] = useState('');
     const [pc, setPc] = useState({})
@@ -84,7 +85,12 @@ const Computer = () => {
 
                 <div className="flex justify-around">
                     <div className="">
-                        <Image src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${pc?.link_img}`} width={500} height={500} alt="Photo PC" />
+                        <div className="bg-[#2D2D2D] relative p-[10px] rounded-[10px] mb-[40px]">
+                            <Image className="rounded-[10px]" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${pc?.link_img}`} width={400} height={400} alt="Photo PC" />
+                            <div className="bg-[#2D2D2D] opacity-[60%] py-[20px] absolute left-[10px] bottom-0 w-[96%] ">
+                                <p className="text-[25px] text-center">PC name: {pc.title}</p>
+                            </div>
+                        </div>
                         <div className="bg-[#2D2D2D] text-center m-auto w-[300px] p-[20px] rounded-[10px]">
                             <p className="text-[23px] mb-[10px]">Grades</p>
                             <div className={`flex justify-between px-[30px]  bg-[#3E3E3E] p-[5px] rounded-[10px]`}>
@@ -105,7 +111,7 @@ const Computer = () => {
                     <div className="bg-[#2D2D2D] w-[400px] py-[30px] flex flex-col items-center rounded-[10px]">
                         <p className="text-[25px]">{pc.title}</p>
                         <div className="w-full border-b  border-[#FFCC70]" />
-                        <div className="py-[20px]">
+                        <div className="py-[20px] px-[20px]">
                             <ShortCharacteristic nameComponent="CPU" brandComponent={pc.processor?.brand?.title} modelComponent={pc.processor?.processor_model} />
                             {
                                 pc.graphic_cards?.map(el => (
@@ -146,7 +152,7 @@ const Computer = () => {
                             <p className="text-[22px] text-center">Model components:</p>
                             <p className="text-[22px] text-right">Price:</p>
                         </div>
-                        <LongCharacteristicComponent nameComponent="Processor" brandComponent={pc.processor?.brand?.title} modelComponent="Xeon e5 228" price={pc.processor?.price} />
+                        <LongCharacteristicComponent nameComponent="Processor" brandComponent={pc.processor?.brand?.title} modelComponent={pc.processor?.processor_model} price={pc.processor?.price} />
                         {
                             pc.graphic_cards?.map(el => (
                                 <>
@@ -174,7 +180,7 @@ const Computer = () => {
                         <LongCharacteristicComponent nameComponent="Power supply unit" brandComponent={pc.power?.brand?.title} modelComponent={pc.power?.power_model} price={pc.power?.price} />
                         <LongCharacteristicComponent nameComponent="Case" brandComponent={pc.computer_case?.brand?.title} modelComponent={pc.computer_case?.case_model} price={pc.computer_case?.price} />
 
-                        <p className="text-center mt-[50px] text-[25px]">Total: {pc.total_price}</p>
+                        <p className="text-center mt-[50px] text-[25px]">Total: {pc.total_price}₸</p>
                     </div>
                 </div>
 
@@ -219,7 +225,7 @@ const Computer = () => {
                     
                 </div>
 {
-                        userData.id == userId ? (
+                        userData.id == userId || userRole === 2 ? (
                             <>
                                 <div className="text-center mt-[30px]">
                                     <button className="text-center cursor-pointer text-[#C82323] border-[#C82323] hover:bg-[#C82323] hover:text-[#ffffff] duration-300 border-1 rounded-[10px] px-[10px] py-[10px]" onClick={() => handleDelete(id)}>Delete pc</button>

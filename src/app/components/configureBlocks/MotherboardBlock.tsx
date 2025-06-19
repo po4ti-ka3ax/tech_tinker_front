@@ -389,7 +389,7 @@ const MotherboardBlock = () => {
                                                     <p className="text-[18px] text-[#fffffff]">Characteristics:</p>
                                                     <div className="text-[#626262] whitespace-nowrap">
                                                         <p className="">{t('chipset')}: {el.chipset.model}</p>
-                                                        <p className="">{t('formFactor')}: {el.form_factor.title}Wt</p>
+                                                        <p className="">{t('formFactor')}: {el.form_factor.title}</p>
                                                         <p className="">{t('socket')}: {el.socket.model}</p>
                                                         <p className="">{t('memoryGeneration')}: {el.memory_generation.title}</p>
                                                     </div>

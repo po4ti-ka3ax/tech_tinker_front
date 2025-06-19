@@ -29,6 +29,7 @@ const Signup = () => {
         let index = res.data.token.indexOf('|')
         Cookies.set('access_token', res.data.token.substr(index + 1, 49))
         Cookies.set('user_id', res.data.data.id)
+        Cookies.set('user_role', res.data.data.role.id)
         if (Cookies.get('access_token')) {
             redirect('/content')
         }

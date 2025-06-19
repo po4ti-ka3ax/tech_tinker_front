@@ -79,6 +79,7 @@ const Profile = ({ params }: ProfilePageProps) => {
             if (res.status === 200) {
                 Cookies.remove('access_token')
                 Cookies.remove('user_id')
+                Cookies.remove('user_role')
             }
         })
     }

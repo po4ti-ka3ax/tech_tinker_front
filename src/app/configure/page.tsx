@@ -31,7 +31,7 @@ const Configure = () => {
     const userId = Cookies.get('user_id')
     const { price, setPriceStore, totalPrice, unsetCurrentComponent, unsetPriceStore } = usePriceStore()
     // const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
-    const { configureStore, setConfigureStore, deleteConfigureObject } = useConfigureStore();
+    const { configureStore, setConfigureStore, deleteConfigureObject,unsetConfigureStore } = useConfigureStore();
 
     const handleSubmit = async () => {
         const formData = new FormData();
@@ -41,7 +41,7 @@ const Configure = () => {
         formData.append("user_id", userId || "");
 
         if (pcImage) {
-            formData.append("image", pcImage);
+            formData.append("upload", pcImage);
         } else {
             console.warn("Файл не выбран!");
         }
@@ -111,6 +111,8 @@ const Configure = () => {
             }).then(res => {
                 console.log(res)
                 if (res.status === 201) {
+                    unsetPriceStore();
+                    unsetConfigureStore();
                     router.push(`/computer/${res.data.data.id}`);
                 }
             })
@@ -130,6 +132,7 @@ const Configure = () => {
                     <div className="">
                         <input type="file" accept="image/*" onChange={e => {
                             if (e.target.files && e.target.files[0]) {
+                                console.log(e.target.files[0])
                                 setPcImage(e.target.files[0])
                             }
                         }} id="real-input" hidden />

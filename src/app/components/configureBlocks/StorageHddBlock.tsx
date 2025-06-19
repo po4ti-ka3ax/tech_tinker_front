@@ -146,7 +146,7 @@ const StorageHddBlock = () => {
     const handleComponentClick = async () => {
         try {
             if (hasMotherboard) {
-                await instanceAxios.get(`/storages?storage_type_id=1${hasMotherboard ? `&connect_interfaces_id[0]=5` : ""}`).then(res => {
+                await instanceAxios.get(`/storages?storage_type_id=1${hasMotherboard ? `&connect_interfaces_id[0]=10` : ""}`).then(res => {
                     setComponents(res.data.data)
                 })
             } else {
@@ -164,7 +164,7 @@ const StorageHddBlock = () => {
             clearAllFilters()
             setRemove(!remove)
             if (hasMotherboard) {
-                await instanceAxios.get(`/storages?storage_type_id=1${hasMotherboard ? `&connect_interfaces_id[0]=5` : ""}`).then(res => {
+                await instanceAxios.get(`/storages?storage_type_id=1${hasMotherboard ? `&connect_interfaces_id[0]=10` : ""}`).then(res => {
                     setComponents(res.data.data)
                 })
             } else {

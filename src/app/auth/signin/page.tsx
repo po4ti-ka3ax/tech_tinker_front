@@ -28,6 +28,7 @@ const Auth = () => {
         Cookies.set('access_token', res.data.token.substr(index + 1, 49))
         Cookies.set('user_id', res.data.data.id)
         Cookies.set('email_user', res.data.data.email)
+        Cookies.set('user_role', res.data.data.role.id)
         if (Cookies.get('access_token')) {
             redirect('/content')
         }
