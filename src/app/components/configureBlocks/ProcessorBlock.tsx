@@ -61,7 +61,7 @@ const ProcessorBlock = () => {
     };
 
     const deleteComponent = (key) => {
-        unsetCurrentComponent(key)
+        unsetCurrentComponent(`${key}_id`)
         unsetPowerCurrentComponent(key)
         setTimeout(() => recalculateTotal(), 0)
         setTimeout(() => recalculateTotalPower(), 0)
@@ -172,6 +172,8 @@ const ProcessorBlock = () => {
     const handleRemove = async () => {
         try {
             clearAllFilters()
+            
+            console.log(price)
             setRemove(!remove)
             if (hasMotherboard) {
                 await instanceAxios.get(`/processors${hasMotherboard ? `?socket_id=${socket}` : ""}`).then(res => {
@@ -201,11 +203,17 @@ const ProcessorBlock = () => {
        }
     }, [configureStore.processor, currentComponent]);
 
+    useEffect(() => {
+        recalculateTotal();
+        console.log(price)
+    },[price,totalPrice])
+
     const handleAddComponent = (el) => {
         setOpen(false)
         
         setConfigureStore('processor', el);
         setPriceStore('processor_id', el.price)
+        console.log(price)
         setPowerStore('processor_id',el.power_wattage)
         setCurrentComponent(el);
     }

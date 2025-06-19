@@ -181,18 +181,15 @@ const CaseBlock = () => {
     // const [quest, setQuest] = useState('')
 
     useEffect(() => {
-
-       
-
-       if(!configureStore.processor || !currentComponent) return;
-        const motherboardInterfaces = configureStore?.motherboard?.connect_interface || [];
-        const motherboardInterfacesIds = motherboardInterfaces.map(el => el.id);
+       if(!configureStore.motherboard || !currentComponent) return;
+        const motherboardFormFactorId = configureStore?.motherboard?.form_factor.id;
+        // const motherboardFormFactorsIds = motherboardFormFactors.map(el => el.id);
 
         const components = Array.isArray(currentComponent) ? currentComponent : [currentComponent]
 
         const incompatible = components.some(component => {
-            const componentInterfaceIds = (component.connect_interface || []).map(el => el.id);
-            const hasMatch = componentInterfaceIds.some(id => motherboardInterfacesIds.includes(id))
+            const componentFormFactorIds = (component.form_factor || []).map(el => el.id);
+            const hasMatch = componentFormFactorIds.includes(motherboardFormFactorId)
             return !hasMatch;
         })
        if(incompatible) {

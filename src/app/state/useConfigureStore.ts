@@ -2,7 +2,7 @@ import {create} from 'zustand'
 import { StateConfigureInterface } from '../interfaces/interface'
 
 export const useConfigureStore = create<StateConfigureInterface>((set) => ({
-    configureStore: [],
+    configureStore: {},
     setConfigureStore: (componentName, component) => set((state) => ({configureStore: {
          ...state.configureStore,
         [componentName]: component

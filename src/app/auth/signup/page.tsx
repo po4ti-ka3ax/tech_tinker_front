@@ -3,7 +3,7 @@ import Slider from "@/app/components/slider/Slider";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import instanceAxios from "@/app/components/axios/instanceAxios";
 import { redirect } from "next/navigation";
@@ -19,7 +19,7 @@ const Signup = () => {
     const [showRepeat, setShowRepeat] = useState(true);
 
     const Cookies = require('js-cookie')
-
+    const access_token = Cookies.get("access_token")
     const onSubmit = data => instanceAxios.post('/register', {
         "username": watch('username'),
         "email": watch('email'),
@@ -29,12 +29,17 @@ const Signup = () => {
         let index = res.data.token.indexOf('|')
         Cookies.set('access_token', res.data.token.substr(index + 1, 49))
         Cookies.set('user_id', res.data.data.id)
+        Cookies.set('email_user', res.data.data.email)
         Cookies.set('user_role', res.data.data.role.id)
-        if (Cookies.get('access_token')) {
-            redirect('/content')
-        }
+
         // console.log()
     });
+
+    useEffect(() => {
+        if (access_token) {
+            redirect('/content')
+        }
+    }, [access_token])
 
     const validatePassword = () => {
         if (watch("password").length < 8) {

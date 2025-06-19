@@ -62,7 +62,7 @@ const StorageHddBlock = () => {
     };
 
     const deleteComponent = (key) => {
-        unsetCurrentComponent(key)
+        unsetCurrentComponent(`${key}_id`)
         unsetPowerCurrentComponent(key)
         setTimeout(() => recalculateTotal(), 0)
         setTimeout(() => recalculateTotalPower(), 0)
@@ -179,20 +179,21 @@ const StorageHddBlock = () => {
 
     const isCompatible = (component) => {
         if (!component) return false;
-        const motherboardInterfacesIds = (configureStore?.motherboard?.connect_interface || []).map(el => el.id);
+        const motherboardInterfacesIds = (configureStore?.motherboard?.connect_interface?.internal || []).map(el => el.id);
         const componentInterfaceIds = (component?.connect_interface || []).map(el => el.id);
         return componentInterfaceIds.some(id => motherboardInterfacesIds.includes(id));
     };
 
     useEffect(() => {
        if(!configureStore.motherboard || !currentComponent) return;
-        const motherboardInterfaces = configureStore?.motherboard?.connect_interface || [];
-        const motherboardInterfacesIds = motherboardInterfaces.map(el => el.id);
+        const motherboardInterfaces = configureStore?.motherboard?.connect_interface.internal || [];
+        console.log(motherboardInterfaces)
+        const motherboardInterfacesIds = motherboardInterfaces?.map(el => el.id);
 
         const components = Array.isArray(currentComponent) ? currentComponent : [currentComponent]
 
         const incompatible = components.some(component => {
-            const componentInterfaceIds = (component.connect_interface || []).map(el => el.id);
+            const componentInterfaceIds = (component?.connect_interface || []).map(el => el.id);
             const hasMatch = componentInterfaceIds.some(id => motherboardInterfacesIds.includes(id))
             return !hasMatch;
         })
@@ -208,7 +209,7 @@ const StorageHddBlock = () => {
     const handleAddComponent = (el) => {
         setOpen(false)
         setConfigureStore('storageHdd', el);
-        setPriceStore('storage_id', el.price)
+        setPriceStore('storageHdd_id', el.price)
         // setPowerStore('storage_id',el.power_wattage)
         setCurrentComponent(el);
     }
@@ -431,7 +432,7 @@ const StorageHddBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('storage')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('remove')}</button>
+                <button onClick={() => deleteComponent('storageHdd')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('remove')}</button>
             </div>
         </div >
     )

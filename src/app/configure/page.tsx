@@ -64,18 +64,40 @@ const Configure = () => {
             'graphic_card': 'graphic_card_id',
             'system_memory': 'system_memory_id',
             'cooling_spec': 'cooling_spec_id',
-            'storageHdd': 'storage_id',
-            'storageSsd': 'storage_id',
-            'computer_case': 'computer_case_id', // исправлено по твоему замечанию
+            'computer_case': 'computer_case_id',
             'power': 'power_id'
         };
 
-        // Эти поля должны быть в формате *_id[0], *_id[1], ...
-        const indexedFields = ['storage_id', 'cooling_spec_id', 'graphic_card_id', 'system_memory_id'];
+        const indexedFields = [ 'cooling_spec_id', 'graphic_card_id', 'system_memory_id'];
 
         let indexCounters: { [key: string]: number } = {};
         formData.forEach((val, key) => {
             console.log(key, val);
+        });
+        const storageDevices = [];
+
+        if (configureStore.storageHdd) {
+            if (Array.isArray(configureStore.storageHdd)) {
+                storageDevices.push(...configureStore.storageHdd);
+            } else {
+                storageDevices.push(configureStore.storageHdd);
+            }
+        }
+
+        if (configureStore.storageSsd) {
+            if (Array.isArray(configureStore.storageSsd)) {
+                storageDevices.push(...configureStore.storageSsd);
+            } else {
+                storageDevices.push(configureStore.storageSsd);
+            }
+        }
+
+        // console.log("storageDevices:", storageDevices);
+
+        storageDevices.forEach((device, index) => {
+            if (device?.id) {
+                formData.append(`storage_id[${index}]`, device.id);
+            }
         });
 
         arr.forEach((key) => {
@@ -88,7 +110,7 @@ const Configure = () => {
                 ids.forEach((id) => {
                     if (indexedFields.includes(formKey)) {
                         const index = indexCounters[formKey] || 0;
-                        formData.append(`${formKey}[${index}]`, id.toString());
+                        formData.append(`${formKey}[${index}]`, id);
                         indexCounters[formKey] = index + 1;
                     } else {
                         formData.append(`${formKey}`, id.toString());

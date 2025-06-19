@@ -61,7 +61,7 @@ const StorageSsdBlock = () => {
     };
 
     const deleteComponent = (key) => {
-        unsetCurrentComponent(key)
+        unsetCurrentComponent(`${key}_id`)
         unsetPowerCurrentComponent(key)
         setTimeout(() => recalculateTotal(), 0)
         setTimeout(() => recalculateTotalPower(), 0)
@@ -177,7 +177,7 @@ const StorageSsdBlock = () => {
 
     const isCompatible = (component) => {
         if (!component) return false;
-        const motherboardInterfacesIds = (configureStore?.motherboard?.connect_interface || []).map(el => el.id);
+        const motherboardInterfacesIds = (configureStore?.motherboard?.connect_interface?.internal || []).map(el => el.id);
         const componentInterfaceIds = (component?.connect_interface || []).map(el => el.id);
         return componentInterfaceIds.some(id => motherboardInterfacesIds.includes(id));
     };
@@ -185,10 +185,10 @@ const StorageSsdBlock = () => {
 
 
     useEffect(() => {
-        if (!configureStore.processor || !currentComponent) return;
-        const motherboardInterfaces = configureStore?.motherboard?.connect_interface || [];
+        if (!configureStore.motherboard || !currentComponent) return;
+        const motherboardInterfaces = configureStore?.motherboard?.connect_interface?.internal || [];
         const motherboardInterfacesIds = motherboardInterfaces.map(el => el.id);
-
+        console.log(motherboardInterfaces)
         const components = Array.isArray(currentComponent) ? currentComponent : [currentComponent]
 
         const incompatible = components.some(component => {
@@ -208,7 +208,7 @@ const StorageSsdBlock = () => {
     const handleAddComponent = (el) => {
         setOpen(false)
         setConfigureStore('storageSsd', el);
-        setPriceStore('storage_id', el.price)
+        setPriceStore('storageSsd_id', el.price)
         // setPowerStore('storage_id', el.power_wattage)
         setCurrentComponent(el);
     }
@@ -431,7 +431,7 @@ const StorageSsdBlock = () => {
 
                     </DialogContent>
                 </Dialog>
-                <button onClick={() => deleteComponent('storage')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('remove')}</button>
+                <button onClick={() => deleteComponent('storageSsd')} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('remove')}</button>
             </div>
         </div >
     )

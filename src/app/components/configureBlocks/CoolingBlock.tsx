@@ -56,7 +56,7 @@ const CoolingBlock = () => {
     };
 
     const deleteComponent = (key) => {
-        unsetCurrentComponent(key)
+        unsetCurrentComponent(`${key}_id`)
         // unsetPowerCurrentComponent(key)
         setTimeout(() => recalculateTotal(), 0)
         // setTimeout(() => recalculateTotalPower(), 0)

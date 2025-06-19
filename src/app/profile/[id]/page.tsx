@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ProfilePageProps } from "@/app/interfaces/interface";
 import Link from "next/link";
 import useUserData from "@/app/state/useDataStore";
+import ComputerCard from "@/app/components/ComputerCard/ComputerCard";
 const Profile = ({ params }: ProfilePageProps) => {
     const { setUserData, userData } = useUserData();
     const Cookies = require('js-cookie')
@@ -23,12 +24,15 @@ const Profile = ({ params }: ProfilePageProps) => {
         username: '',
         email: ''
     })
+    const [pcFavorites, setPcFavorites] = useState([]);
+    const [pcUser, setPcUser] = useState([]);
     const hasEmailChange = Cookies.get('has_email_change');
     const axios = require("axios");
     const [edit, setEdit] = useState(false);
     const [emailChange, setEmailChange] = useState(false);
 
     useEffect(() => {
+
         const fetchUser = () => {
             // setLoading(true)
             // const interval = setInterval(() => {
@@ -62,6 +66,14 @@ const Profile = ({ params }: ProfilePageProps) => {
         }
 
     }, [userId, userData])
+
+    useEffect(() => {
+        try {
+            instanceAxios.get(`/builds?user_id=${userId}`).then(res => setPcUser(res.data.data))
+        } catch (err) {
+            console.error(err)
+        }
+    }, [])
 
     useEffect(() => {
         if (userInfo) {
@@ -133,79 +145,83 @@ const Profile = ({ params }: ProfilePageProps) => {
     return (
         <>
             <ProtectedMiddleware>
-                <h1 className="text-center text-[24px]">Profile</h1>
-                {
-                    edit ? (
-                        <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto px-[20px] py-[80px] rounded-[10px] md:flex md:justify-around md:items-center">
-                            <div className="flex justify-center gap-[20px]">
-                                <div className=" flex flex-col text-[17px] md:text-[25px] text-right gap-[10px]">
-                                    <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Username: </p>
-                                    <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Email: </p>
+                <h1 className="text-center text-[36px]">Profile</h1>
+                <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto py-[40px] rounded-[10px] ">
+                    <p className="text-[30px] text-center">User info</p>
+                    <div className="w-full border-b border-[#FFCC70] my-6" />
+                    {
+                        edit ? (
+                            <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto px-[20px] py-[80px] rounded-[10px] md:flex md:justify-around md:items-center">
+                                <div className="flex justify-center gap-[20px]">
+                                    <div className=" flex flex-col text-[17px] md:text-[25px] text-right gap-[10px]">
+                                        <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Username: </p>
+                                        <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Email: </p>
 
-                                    {/* <p className="text-[25px]">Role: </p> */}
-                                </div>
-                                <div className="flex flex-col text-[17px] md:text-[25px] text-right gap-[10px]">
-                                    <input className="px-[10px] bg-[#434343] py-[5px] rounded-[10px]" onChange={(e) => setEditData({ ...editData, username: e.target.value })} value={editData.username} placeholder="Unknown" type="text" />
-                                    <input className="px-[10px] bg-[#434343] py-[5px] rounded-[10px]" readOnly={hasEmailChange ? false : true} onChange={(e) => setEditData({ ...editData, email: e.target.value })} value={editData.email} placeholder="Unknown" type="email" />
-                                    <Link
-                                        href="/change_email"
-                                        className={`md:w-[40%] text-left px-[10px] mt-[10px] py-[10px] text-[17px] rounded-[10px] ${hasEmailChange
+                                        {/* <p className="text-[25px]">Role: </p> */}
+                                    </div>
+                                    <div className="flex flex-col text-[17px] md:text-[25px] text-right gap-[10px]">
+                                        <input className="px-[10px] bg-[#434343] py-[5px] rounded-[10px]" onChange={(e) => setEditData({ ...editData, username: e.target.value })} value={editData.username} placeholder="Unknown" type="text" />
+                                        <input className="px-[10px] bg-[#434343] py-[5px] rounded-[10px]" readOnly={hasEmailChange ? false : true} onChange={(e) => setEditData({ ...editData, email: e.target.value })} value={editData.email} placeholder="Unknown" type="email" />
+                                        <Link
+                                            href="/change_email"
+                                            className={`md:w-[40%] text-left px-[10px] mt-[10px] py-[10px] text-[17px] rounded-[10px] ${hasEmailChange
                                                 ? "bg-[#E5CA98] text-[#3E3E3E] cursor-not-allowed pointer-events-none"
                                                 : "bg-[#FFCC70] text-black cursor-pointer"
-                                            }`}
-                                    >
-                                        Change Email
-                                    </Link>
+                                                }`}
+                                        >
+                                            Change Email
+                                        </Link>
 
-                                    {/* <input className="px-[10px] py-[5px] rounded-[10px]" readonly="readonly" value={userInfo?.role?.slug} placeholder="Unknown" type="text" /> */}
+                                        {/* <input className="px-[10px] py-[5px] rounded-[10px]" readonly="readonly" value={userInfo?.role?.slug} placeholder="Unknown" type="text" /> */}
+                                    </div>
+
                                 </div>
 
-                            </div>
+                                <div className="flex flex-col mt-[20px] justify-center items-center">
+                                    <input type="file" id="real-input" onChange={(e) => {
+                                        if (e.target.files?.[0]) {
+                                            setSelectedImage(e.target.files[0]);
+                                        }
+                                    }} hidden />
+                                    <label htmlFor="real-input">
+                                        <Avatar className="w-[190px] cursor-pointer h-[190px] mb-[10px]">
+                                            <AvatarImage className="object-cover" src={image} />
+                                            <AvatarFallback className="text-[#000000] text-[40px] uppercase">{userInfo.username?.slice(0, 2)}</AvatarFallback>
+                                        </Avatar>
+                                        <p className="my-[20px] text-center cursor-pointer">Upload photo</p>
 
-                            <div className="flex flex-col mt-[20px] justify-center items-center">
-                                <input type="file" id="real-input" onChange={(e) => {
-                                    if (e.target.files?.[0]) {
-                                        setSelectedImage(e.target.files[0]);
-                                    }
-                                }} hidden />
-                                <label htmlFor="real-input">
-                                    <Avatar className="w-[190px] cursor-pointer h-[190px] mb-[10px]">
-                                        <AvatarImage className="object-cover" src={image} />
-                                        <AvatarFallback className="text-[#000000] text-[40px] uppercase">{userInfo.username?.slice(0, 2)}</AvatarFallback>
-                                    </Avatar>
-                                    <p className="my-[20px] text-center cursor-pointer">Upload photo</p>
-
-                                </label>
-                                {/* <input type="file" onChange={(e) => {
+                                    </label>
+                                    {/* <input type="file" onChange={(e) => {
                                     if(e.target.files?.[0]) {
                                         setSelectedImage(e.target.files[0]);
                                     }
                                 }}/> */}
 
-                                <div className="">
-                                    <button className="px-[10px] mr-[30px] mb-[10px] py-[10px] bg-[#FFCC70] text-[17px] text-black cursor-pointer rounded-[10px]" onClick={() => {
-                                        setEdit(!edit)
-                                        Cookies.remove('has_email_change')
+                                    <div className="">
+                                        <button className="px-[10px] mr-[30px] mb-[10px] py-[10px] bg-[#FFCC70] text-[17px] text-black cursor-pointer rounded-[10px]" onClick={() => {
+                                            setEdit(!edit)
+                                            Cookies.remove('has_email_change')
                                         }}>Cancel</button>
-                                    <button className="px-[10px] mb-[10px] py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]" onClick={handleChange}>Save changes</button>
+                                        <button className="px-[10px] mb-[10px] py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]" onClick={handleChange}>Save changes</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )
-                        :
-                        <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto px-[20px] py-[80px] rounded-[10px] md:flex md:justify-around md:items-center">
-                            <div className="flex justify-center gap-[20px] mb-[20px]">
-                                <div className="flex flex-col text-[17px] md:text-[25px] text-right gap-[10px]">
-                                    <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Username: </p>
-                                    {
-                                        urlUserId === userId ? (
-                                            <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Email: </p>
-                                        ) : ""
-                                    }
-                                    {/* <p className="text-[25px]">Role: </p> */}
-                                </div>
-                                <div className="flex flex-col gap-[10px]">
-                                    {/* {loading ? (
+                        )
+                            :
+                            <div className="md:flex md:justify-around md:items-center">
+
+                                <div className="flex justify-center gap-[20px] mb-[20px]">
+                                    <div className="flex flex-col text-[17px] md:text-[25px] text-right gap-[10px]">
+                                        <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Username: </p>
+                                        {
+                                            urlUserId === userId ? (
+                                                <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">Email: </p>
+                                            ) : ""
+                                        }
+                                        {/* <p className="text-[25px]">Role: </p> */}
+                                    </div>
+                                    <div className="flex flex-col gap-[10px]">
+                                        {/* {loading ? (
                                         <>
                                             <Skeleton className="h-[30px] w-[130px]" />
                                             <Skeleton className="h-[30px] w-[200px]" />
@@ -214,35 +230,78 @@ const Profile = ({ params }: ProfilePageProps) => {
                                     ) : (
                                         ""
                                     )} */}
-                                    <div className="flex flex-col text-[17px] md:text-[25px] text-left gap-[10px]">
-                                        <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">{userInfo.username}</p>
+                                        <div className="flex flex-col text-[17px] md:text-[25px] text-left gap-[10px]">
+                                            <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">{userInfo.username}</p>
 
-                                        {
-                                            urlUserId === userId ? (
-                                                <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">{userInfo.email}</p>
-                                            ) : ""
-                                        }
+                                            {
+                                                urlUserId === userId ? (
+                                                    <p className="bg-[#434343] px-[5px] py-[5px] rounded-[10px]">{userInfo.email}</p>
+                                                ) : ""
+                                            }
+                                        </div>
                                     </div>
+
+
                                 </div>
 
+                                <div className="flex flex-col justify-center items-center">
+                                    <Avatar className="w-[190px] h-[190px] mb-[30px]">
+                                        <AvatarImage className="object-cover" src={image} />
+                                        <AvatarFallback className="text-[#000000] text-[40px] uppercase">{userInfo.username?.slice(0, 2)}</AvatarFallback>
+                                    </Avatar>
+                                    {
+                                        urlUserId === userId ? (
+                                            <button className="px-[10px] py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]" onClick={() => setEdit(!edit)}>Edit profile info</button>
+                                        ) : ""
+                                    }
+                                </div>
 
                             </div>
 
-                            <div className="flex flex-col justify-center items-center">
-                                <Avatar className="w-[190px] h-[190px] mb-[30px]">
-                                    <AvatarImage className="object-cover" src={image} />
-                                    <AvatarFallback className="text-[#000000] text-[40px] uppercase">{userInfo.username?.slice(0, 2)}</AvatarFallback>
-                                </Avatar>
-                                {
-                                    urlUserId === userId ? (
-                                        <button className="px-[10px] py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]" onClick={() => setEdit(!edit)}>Edit profile info</button>
-                                    ) : ""
-                                }
-                            </div>
+                    }
+                </div>
+                <div className="">
+                    <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto py-[40px] rounded-[10px]">
+                        <p className="text-[30px] text-center">PC's favorites - {userInfo.username}</p>
+                        <div className="w-full border-b border-[#FFCC70] my-2" />
 
-                        </div>
-                }
+                        {
+                            pcFavorites.length >= 1 ? (
+                                <div className=" grid grid-cols-4 mt-[30px] justify-center">
+                                    {
+                                        pcFavorites.map(el => (
+                                            <ComputerCard computer={el} />
+                                        ))
+                                    }
+                                </div>
+                            ) : (
+                                <div>
+                                    <p className="text-center">You don't have PC's in favorite list</p>
+                                </div>
+                            )
+                        }
+                    </div>
+                    <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto py-[40px] rounded-[10px]">
+                        <p className="text-[30px] text-center">PC's user - {userInfo.username}</p>
+                        <div className="w-full border-b border-[#FFCC70] my-2" />
 
+                        {
+                            pcUser.length >= 1 ? (
+                                <div className=" grid grid-cols-4 mt-[30px] justify-center">
+                                    {
+                                        pcUser.map(el => (
+                                            <ComputerCard computer={el} />
+                                        ))
+                                    }
+                                </div>
+                            ) : (
+                                <div>
+                                    <p className="text-center">You don't have PC's</p>
+                                </div>
+                            )
+                        }
+                    </div>
+                </div>
                 {
                     userInfo.role_id === 2 ? (
                         <>

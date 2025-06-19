@@ -11,7 +11,8 @@ import Comment from "@/app/components/computer/Comment";
 import { SetColorInterface } from "@/app/interfaces/interface";
 import { useParams } from 'next/navigation'
 import instanceAxios from "@/app/components/axios/instanceAxios";
-import { useRouter } from "next/navigation"; 
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 const Computer = () => {
     const Cookies = require('js-cookie');
@@ -20,9 +21,43 @@ const Computer = () => {
     const { setUserData, userData } = useUserData();
     const [image, setImage] = useState('');
     const [pc, setPc] = useState({})
+    const [comments, setComments] = useState([])
     const params = useParams();
     const id = params.id;
+    const { register, handleSubmit, watch, formState: { errors }, reset } = useForm({
+        mode: "onSubmit"
+    });
 
+    const commentFunc = async (data) => {
+    try {
+        const res = await instanceAxios.post(`/reviews`, {
+            content: data.textComment,
+            build_id: id,
+            reliability_rating: data.reliability,
+            performance_rating: data.performance,
+            compatibility_rating: data.compatibility,
+        });
+
+        if (res.status === 201) {
+            const updated = await instanceAxios.get(`/reviews?build_id=${id}`);
+            setComments(updated.data.data);
+
+            reset();
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+    useEffect(() => {
+        try {
+            instanceAxios.get(`/reviews?build_id=${id}`).then(res => {
+                setComments(res.data.data)
+            })
+        } catch (err) {
+            console.error(err)
+        }
+    }, [pc])
     useEffect(() => {
         try {
             instanceAxios.get(`/builds/${id}`).then(res => {
@@ -73,8 +108,8 @@ const Computer = () => {
                     router.push(`/content`);
                 }
             });
-            
-        } catch(err) {
+
+        } catch (err) {
             console.error(err)
         }
     }
@@ -192,47 +227,58 @@ const Computer = () => {
                     <div className="p-[20px]">
                         <div className="flex items-center">
                             <div className="mr-[20px]">
-                                <Avatar className="w-[50px] cursor-pointer h-[50px] mb-[10px]">
+                                <Avatar className="w-[60px] cursor-pointer h-[60px] mb-[10px]">
                                     <AvatarImage className="object-cover" src={image} />
                                     <AvatarFallback className="text-[#000000] text-[40px] uppercase">{userData.username?.slice(0, 2)}</AvatarFallback>
                                 </Avatar>
                             </div>
                             <div className="w-[100%] border-b-[2px] border-b-[#6D6C6C] pb-[10px] rounded-[2px]">
-                                <Textarea
-                                    className="resize-none w-full bg-transparent outline-none border-none  text-white px-4 py-2 leading-[1.5rem] text-[16px] focus-visible:ring-0 focus-visible:ring-offset-0"
-                                    placeholder="Write your comment"
-                                    rows={1}
-                                />
-                                <div className="flex gap-[5px] px-4">
+                                <form onSubmit={handleSubmit(commentFunc)}>
+                                    <Textarea
+                                        className="resize-none w-full bg-transparent outline-none border-none  text-white px-4 py-2 leading-[1.5rem] text-[16px] focus-visible:ring-0 focus-visible:ring-offset-0"
+                                        placeholder="Write your comment"
+                                        rows={1}
+                                        {...register('textComment', { required: "text is required" })}
+                                    />
+                                    <div className="flex justify-between">
+                                        <div className="flex  gap-[5px] px-4">
+                                            <input aria-invalid={errors.reliability ? "true" : "false"} {...register("reliability", { required: "is required",min:0, max:10 })} className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Reliability" />
+                                                
+                                            <input aria-invalid={errors.performance ? "true" : "false"} {...register("performance", { required: "is required",min:0, max:10 })} className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Performance" />
 
-                                    <div className="">
-                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Reliability" />
+                                            <input aria-invalid={errors.compatibility ? "true" : "false"} {...register("compatibility", { required: "is required",min:0, max:10 })} className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Compatibility" />
+                                        
+                                        </div>
+
+                                        <div className="flex-end">
+                                            <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">send</button>
+                                        </div>
                                     </div>
-                                    <div >
-                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Performance" />
-                                    </div>
-                                    <div className="">
-                                        <input className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Compatibility" />
-                                    </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
-                        <div className="">
-                            <Comment userData={userData} image={image} commentText={text} />
+                        <div className="ml-[30px]">
+                            {
+                                comments.map(el => (
+                                    <>
+                                        <Comment commentInfo={el} />
+                                    </>
+                                ))
+                            }
                         </div>
-                        
+
                     </div>
-                    
+
                 </div>
-{
-                        userData.id == userId || userRole === 2 ? (
-                            <>
-                                <div className="text-center mt-[30px]">
-                                    <button className="text-center cursor-pointer text-[#C82323] border-[#C82323] hover:bg-[#C82323] hover:text-[#ffffff] duration-300 border-1 rounded-[10px] px-[10px] py-[10px]" onClick={() => handleDelete(id)}>Delete pc</button>
-                                </div>
-                            </>
-                        ) : ""
-                    }
+                {
+                    pc?.user_id == userId || userRole === 2 ? (
+                        <>
+                            <div className="text-center mt-[30px]">
+                                <button className="text-center cursor-pointer text-[#C82323] border-[#C82323] hover:bg-[#C82323] hover:text-[#ffffff] duration-300 border-1 rounded-[10px] px-[10px] py-[10px]" onClick={() => handleDelete(id)}>Delete pc</button>
+                            </div>
+                        </>
+                    ) : ""
+                }
             </div>
         </>
     )
