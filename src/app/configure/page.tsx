@@ -32,7 +32,7 @@ const Configure = () => {
     const { price, setPriceStore, totalPrice, unsetCurrentComponent, unsetPriceStore } = usePriceStore()
     // const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
     const { configureStore, setConfigureStore, deleteConfigureObject,unsetConfigureStore } = useConfigureStore();
-
+    const [image,setImage] = useState<string | null>(null)
     const handleSubmit = async () => {
         const formData = new FormData();
 
@@ -45,7 +45,7 @@ const Configure = () => {
         } else {
             console.warn("Файл не выбран!");
         }
-
+        localStorage.removeItem('imagePC')
         const arr = [
             'processor',
             'motherboard',
@@ -156,10 +156,12 @@ const Configure = () => {
                             if (e.target.files && e.target.files[0]) {
                                 console.log(e.target.files[0])
                                 setPcImage(e.target.files[0])
-                            }
+                                const src = URL.createObjectURL(e.target.files[0])
+                                setImage(src)
+                            } 
                         }} id="real-input" hidden />
                         <label htmlFor="real-input">
-                            <Image alt="add photo" className="cursor-pointer w-[200px] md:w-[300px] md:h-[300px]" src={'/img/addPhoto.svg'} width={300} height={300} />
+                            <Image alt="add photo" className="cursor-pointer rounded-[10px] w-[200px] md:w-[300px] md:h-[300px]" src={image ? image : '/img/addPhoto.svg'} width={300} height={300} />
                             <p className="my-[20px] cursor-pointer">{t('uploadPhoto')}</p>
                         </label>
                     </div>

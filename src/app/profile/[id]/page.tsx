@@ -10,12 +10,15 @@ import { ProfilePageProps } from "@/app/interfaces/interface";
 import Link from "next/link";
 import useUserData from "@/app/state/useDataStore";
 import ComputerCard from "@/app/components/ComputerCard/ComputerCard";
+import { useParams } from "next/navigation";
 const Profile = ({ params }: ProfilePageProps) => {
     const { setUserData, userData } = useUserData();
     const Cookies = require('js-cookie')
     const token = Cookies.get('access_token');
     const userId = Cookies.get('user_id')
-    const urlUserId = params.id;
+    const paramsUrl = useParams();
+    const [imageProfile, setProfile] = useState("")
+    const urlUserId = paramsUrl.id;
     const [userInfo, setUserInfo] = useState({});
     const [image, setImage] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
@@ -69,7 +72,23 @@ const Profile = ({ params }: ProfilePageProps) => {
 
     useEffect(() => {
         try {
-            instanceAxios.get(`/builds?user_id=${userId}`).then(res => setPcUser(res.data.data))
+            instanceAxios.get(`/users/${urlUserId}`).then(res => {
+                Cookies.set('email_user', res.data.data.email)
+                setUserData(res.data.data)
+                setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${res.data.data.profile_img}`)
+            })
+        } catch (err) {
+            console.error(err)
+        } finally {
+            setLoading(false)
+            // clearInterval(interval)
+        }
+    }, [urlUserId])
+
+
+    useEffect(() => {
+        try {
+            instanceAxios.get(`/builds?user_id=${urlUserId}`).then(res => setPcUser(res.data.data))
         } catch (err) {
             console.error(err)
         }
@@ -181,11 +200,13 @@ const Profile = ({ params }: ProfilePageProps) => {
                                     <input type="file" id="real-input" onChange={(e) => {
                                         if (e.target.files?.[0]) {
                                             setSelectedImage(e.target.files[0]);
+                                            const src = URL.createObjectURL(e.target.files[0])
+                                            setProfile(src)
                                         }
                                     }} hidden />
                                     <label htmlFor="real-input">
                                         <Avatar className="w-[190px] cursor-pointer h-[190px] mb-[10px]">
-                                            <AvatarImage className="object-cover" src={image} />
+                                            <AvatarImage className="object-cover" src={imageProfile ? imageProfile : image} />
                                             <AvatarFallback className="text-[#000000] text-[40px] uppercase">{userInfo.username?.slice(0, 2)}</AvatarFallback>
                                         </Avatar>
                                         <p className="my-[20px] text-center cursor-pointer">Upload photo</p>
@@ -201,6 +222,7 @@ const Profile = ({ params }: ProfilePageProps) => {
                                         <button className="px-[10px] mr-[30px] mb-[10px] py-[10px] bg-[#FFCC70] text-[17px] text-black cursor-pointer rounded-[10px]" onClick={() => {
                                             setEdit(!edit)
                                             Cookies.remove('has_email_change')
+                                            setProfile("")
                                         }}>Cancel</button>
                                         <button className="px-[10px] mb-[10px] py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]" onClick={handleChange}>Save changes</button>
                                     </div>
@@ -246,7 +268,7 @@ const Profile = ({ params }: ProfilePageProps) => {
 
                                 <div className="flex flex-col justify-center items-center">
                                     <Avatar className="w-[190px] h-[190px] mb-[30px]">
-                                        <AvatarImage className="object-cover" src={image} />
+                                        <AvatarImage className="object-cover" src={imageProfile ? imageProfile : image} />
                                         <AvatarFallback className="text-[#000000] text-[40px] uppercase">{userInfo.username?.slice(0, 2)}</AvatarFallback>
                                     </Avatar>
                                     {
@@ -261,26 +283,30 @@ const Profile = ({ params }: ProfilePageProps) => {
                     }
                 </div>
                 <div className="">
-                    <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto py-[40px] rounded-[10px]">
-                        <p className="text-[30px] text-center">PC's favorites - {userInfo.username}</p>
-                        <div className="w-full border-b border-[#FFCC70] my-2" />
+                    {
+                        urlUserId === userInfo.id ? (
+                            <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto py-[40px] rounded-[10px]">
+                                <p className="text-[30px] text-center">PC's favorites - {userInfo.username}</p>
+                                <div className="w-full border-b border-[#FFCC70] my-2" />
 
-                        {
-                            pcFavorites.length >= 1 ? (
-                                <div className=" grid grid-cols-4 mt-[30px] justify-center">
-                                    {
-                                        pcFavorites.map(el => (
-                                            <ComputerCard computer={el} />
-                                        ))
-                                    }
-                                </div>
-                            ) : (
-                                <div>
-                                    <p className="text-center">You don't have PC's in favorite list</p>
-                                </div>
-                            )
-                        }
-                    </div>
+                                {
+                                    pcFavorites.length >= 1 ? (
+                                        <div className=" grid grid-cols-4 mt-[30px] justify-center">
+                                            {
+                                                pcFavorites.map(el => (
+                                                    <ComputerCard computer={el} />
+                                                ))
+                                            }
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <p className="text-center">You don't have PC's in favorite list</p>
+                                        </div>
+                                    )
+                                }
+                            </div>
+                        ) : ""
+                    }
                     <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto py-[40px] rounded-[10px]">
                         <p className="text-[30px] text-center">PC's user - {userInfo.username}</p>
                         <div className="w-full border-b border-[#FFCC70] my-2" />
@@ -296,7 +322,7 @@ const Profile = ({ params }: ProfilePageProps) => {
                                 </div>
                             ) : (
                                 <div>
-                                    <p className="text-center">You don't have PC's</p>
+                                    <p className="text-center">User - {userInfo.username} don't have PC's</p>
                                 </div>
                             )
                         }
@@ -317,9 +343,13 @@ const Profile = ({ params }: ProfilePageProps) => {
 
 
 
-                <div className="text-center mt-[30px]">
-                    <button className="text-center cursor-pointer text-[#C82323] border-[#C82323] hover:bg-[#C82323] hover:text-[#ffffff] duration-300 border-1 rounded-[10px] px-[10px] py-[10px]" onClick={() => handleSignOut()}>Sign out</button>
-                </div>
+                {
+                    urlUserId === userId ? (
+                        <div className="text-center mt-[30px]">
+                            <button className="text-center cursor-pointer text-[#C82323] border-[#C82323] hover:bg-[#C82323] hover:text-[#ffffff] duration-300 border-1 rounded-[10px] px-[10px] py-[10px]" onClick={() => handleSignOut()}>Sign out</button>
+                        </div>
+                    ) : ""
+                }
 
             </ProtectedMiddleware>
         </>

@@ -29,7 +29,8 @@ const Header = () => {
     };
 
     const { t } = useTranslation('common');
-    const { userData, setUserData } = useUserData();
+    // const { userData, setUserData } = useUserData();
+    const [userData, setUserData] = useState({})
     const pathname = usePathname();
     const Cookie = require('js-cookie')
     // const [userData, setUserData] = useState([])

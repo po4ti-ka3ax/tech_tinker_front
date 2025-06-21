@@ -66,8 +66,9 @@ const CaseBlock = () => {
     const hasMotherboard = configureStore.motherboard
     const motherboardFormFactor = configureStore?.motherboard?.form_factor.id;
 
-    const hasVideocard = configureStore.videocard
-    const videocardWidth = configureStore.videocard?.width.toFixed(1)
+    const hasVideocard = configureStore.graphic_card
+    const videocardWidth = configureStore.graphic_card?.width.toFixed(1)
+    console.log(configureStore)
 
     // const socket = configureStore?.processor?.socket[0]?.id
 

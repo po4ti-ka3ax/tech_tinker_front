@@ -13,12 +13,18 @@ import { useParams } from 'next/navigation'
 import instanceAxios from "@/app/components/axios/instanceAxios";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { BadgeInfo } from "lucide-react";
 const Computer = () => {
     const Cookies = require('js-cookie');
     const userId = Cookies.get('user_id')
     const userRole = Cookies.get('user_role')
-    const { setUserData, userData } = useUserData();
+    // const { setUserData, userData } = useUserData();
+    const [ userData,setUserData] = useState({})
     const [image, setImage] = useState('');
     const [pc, setPc] = useState({})
     const [comments, setComments] = useState([])
@@ -27,6 +33,22 @@ const Computer = () => {
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm({
         mode: "onSubmit"
     });
+    console.log(userData)
+
+    useEffect(() => {
+        try {
+            instanceAxios.get(`/users/${userId}`).then(res => {
+                if(res.status === 200) {
+                    setUserData(res.data.data)
+                }
+            })
+        } catch(err) {
+            console.error(err)
+        }
+    },[])
+    const loadMoreHandle = () => {
+        
+    }
 
     const commentFunc = async (data) => {
     try {
@@ -58,9 +80,11 @@ const Computer = () => {
             console.error(err)
         }
     }, [pc])
+
     useEffect(() => {
         try {
             instanceAxios.get(`/builds/${id}`).then(res => {
+                setTotalGrade(res.data.data.average_rating)
                 setPc(res.data.data)
             })
         } catch (err) {
@@ -72,11 +96,13 @@ const Computer = () => {
     const [reliability, setReliability] = useState(8);
     const [performance, setPerformance] = useState(5);
     const [compatibility, setCompatibility] = useState(0);
+    const [totalGrade,setTotalGrade] = useState(0)
     const [reliabilityColor, setReliabilityColor] = useState("");
     const [performanceColor, setPerformanceColor] = useState("");
     const [compatibilityColor, setCompatibilityColor] = useState("");
+    const [totalGradeColor, setTotalGradeColor] = useState("");
     // console.log(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${userData?.profile_img}`)
-
+    const [open, setOpen] = useState(false)
     useEffect(() => {
         if (userData) {
             setImage(`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${userData?.profile_img}`)
@@ -97,8 +123,9 @@ const Computer = () => {
         setColor({ setterColor: setReliabilityColor, param: reliability });
         setColor({ setterColor: setPerformanceColor, param: performance });
         setColor({ setterColor: setCompatibilityColor, param: compatibility });
+        setColor({ setterColor: setTotalGradeColor, param: totalGrade });
 
-    }, [userData, reliability, performance, compatibility])
+    }, [userData, reliability, performance, compatibility, totalGrade])
     console.log(userData.id)
     console.log(userId)
     const handleDelete = (id) => {
@@ -121,22 +148,49 @@ const Computer = () => {
                 <div className="flex justify-around">
                     <div className="">
                         <div className="bg-[#2D2D2D] relative p-[10px] rounded-[10px] mb-[40px]">
-                            <Image className="rounded-[10px]" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${pc?.link_img}`} width={400} height={400} alt="Photo PC" />
+                            <Image className="rounded-[10px] object-cover w-[400px] h-[600px]" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${pc?.link_img}`} width={400} height={600} alt="Photo PC" />
                             <div className="bg-[#2D2D2D] opacity-[60%] py-[20px] absolute left-[10px] bottom-0 w-[96%] ">
                                 <p className="text-[25px] text-center">PC name: {pc.title}</p>
                             </div>
                         </div>
                         <div className="bg-[#2D2D2D] text-center m-auto w-[300px] p-[20px] rounded-[10px]">
-                            <p className="text-[23px] mb-[10px]">Grades</p>
-                            <div className={`flex justify-between px-[30px]  bg-[#3E3E3E] p-[5px] rounded-[10px]`}>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <div className="flex mb-[10px] items-center justify-center gap-[10px]">
+                                            <p className="text-[23px] ">Grades</p>
+                                            <BadgeInfo />
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="text-[18px]">
+                                        <p className="text-center">Colors grades:</p>
+                                        <br />
+                                        <div className="flex">
+                                            <p>Grade more or equal 7, color - </p>
+                                            <p className="text-white">&nbsp;white</p>
+                                        </div>
+                                        <div className="flex">
+                                            <p>Grade less or equal 6.8, color - </p>
+                                            <p className="text-[#FFCC70]">&nbsp;orange</p>
+                                        </div>
+                                        <div className="flex">
+                                            <p>Grade less or equal 4.9, color - </p>
+                                            <p className="text-[#FF5252]">&nbsp;red</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            <div className={`flex justify-around items-center px-[30px] my-[10px] bg-[#3E3E3E] p-[5px] rounded-[10px]`}>
+                                <p className="text-[25px]">Total grade:</p>
+                                <p className={`text-[20px] ${totalGradeColor}`}>{totalGrade}</p>
+                            </div>
+                            <div className={`flex justify-between items-center px-[30px] mx-[20px] bg-[#3E3E3E] p-[5px] rounded-[10px]`}>
                                 <p className="text-[19px]">Reliability:</p>
                                 <p className={`text-[17px] ${reliabilityColor}`}>{reliability}</p>
                             </div>
-                            <div className="flex  justify-between px-[30px]  my-[10px] bg-[#3E3E3E] p-[5px] rounded-[10px]">
+                            <div className="flex  justify-between items-center px-[30px] mx-[20px] my-[10px] bg-[#3E3E3E] p-[5px] rounded-[10px]">
                                 <p className=" text-[19px]">Performance:</p>
                                 <p className={`text-[17px] ${performanceColor}`}>{performance}</p>
                             </div>
-                            <div className="flex justify-between px-[30px]  bg-[#3E3E3E] p-[5px] rounded-[10px]">
+                            <div className="flex justify-between items-center px-[30px] mx-[20px] bg-[#3E3E3E] p-[5px] rounded-[10px]">
                                 <p className=" text-[19px]">Compatibility:</p>
                                 <p className={`text-[17px] ${compatibilityColor}`}>{compatibility}</p>
                             </div>
@@ -155,8 +209,14 @@ const Computer = () => {
                                     </>
                                 ))
                             }
-                            <ShortCharacteristic nameComponent="Motherboard" brandComponent={pc.motherboard?.brand?.title} modelComponent="Z170 pro" />
-                            <ShortCharacteristic nameComponent="RAM" brandComponent={pc?.systemMemories?.brand?.title} modelComponent="TridentZ 32GB" />
+                            <ShortCharacteristic nameComponent="Motherboard" brandComponent={pc.motherboard?.brand?.title} modelComponent={pc.motherboard?.motherboard_model} />
+                            {
+                                pc.systemMemories?.map(el => (
+                                    <>
+                                        <ShortCharacteristic nameComponent="RAM" brandComponent={el?.brand?.title} modelComponent={el?.memory_model} />
+                                    </>
+                                ))
+                            }
                         </div>
                         <div className="">
                             <p className="text-[#DCDCDC] text-[25px]">Price: {pc.total_price}$</p>
@@ -259,11 +319,20 @@ const Computer = () => {
                         </div>
                         <div className="ml-[30px]">
                             {
-                                comments.map(el => (
+                                comments.length >= 1 && comments.map(el => (
                                     <>
                                         <Comment commentInfo={el} />
                                     </>
                                 ))
+                            }
+                            {
+                                comments.length > 10 ? (
+                                    <>
+                                        <div className="flex justify-center mr-[35px]">
+                                            <button onClick={() => loadMoreHandle()} className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A] cursor-pointer">Load more</button>
+                                        </div>
+                                    </>
+                                ) : ""
                             }
                         </div>
 

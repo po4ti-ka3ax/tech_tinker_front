@@ -6,18 +6,42 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import instanceAxios from "@/app/components/axios/instanceAxios";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useTranslation } from 'react-i18next';
 import "@/lib/i18n";
+import useUserData from "@/app/state/useDataStore";
 const Signup = () => {
     const { t } = useTranslation('common');
-
+    const router = useRouter();
     const { register, handleSubmit, watch, formState: { errors } } = useForm({
         mode: "onSubmit"
     });
     const [show, setShow] = useState(true);
     const [showRepeat, setShowRepeat] = useState(true);
-
+    const { setUserData, userData } = useUserData();
+    const signGoogle = async () => {
+        try {
+            await instanceAxios.get(`/auth/google/redirect`).then(res => {
+                if (res.status === 200) {
+                    // console.log(res.data.url)
+                    window.location.href = res?.data?.url
+                }
+            })
+        } catch (err) {
+            console.error(err)
+        }
+    }
+    const signDiscord = async () => {
+        try {
+            await instanceAxios.get(`/auth/discord/redirect`).then(res => {
+                if (res.status === 200) {
+                    redirect(res.data.data.url)
+                }
+            })
+        } catch (err) {
+            console.error(err)
+        }
+    }
     const Cookies = require('js-cookie')
     const access_token = Cookies.get("access_token")
     const onSubmit = data => instanceAxios.post('/register', {
@@ -26,12 +50,23 @@ const Signup = () => {
         "password": watch('password'),
         "password_confirmation": watch('repeatPassword'),
     }).then(res => {
-        let index = res.data.token.indexOf('|')
-        Cookies.set('access_token', res.data.token.substr(index + 1, 49))
-        Cookies.set('user_id', res.data.data.id)
-        Cookies.set('email_user', res.data.data.email)
-        Cookies.set('user_role', res.data.data.role.id)
-
+        console.log(res.data)
+        // let index = res.data.token.indexOf('|')
+        if (res.status === 200) {
+            instanceAxios.post(`/login`, {
+                "email": watch('email'),
+                "password": watch('password'),
+            }).then(res => {
+                Cookies.set('access_token', res.data.access_token)
+                Cookies.set('user_id', res.data.data.id)
+                Cookies.set('email_user', res.data.data.email)
+                Cookies.set('user_role', res.data.data.role.id)
+                setUserData(res.data.data)
+                if (res.status === 200) {
+                    router.push(`/content`);
+                }
+            })
+        }
         // console.log()
     });
 
@@ -111,10 +146,10 @@ const Signup = () => {
                     </div>
                     <div className="bg-[#3E3E3E] opacity-[90%] px-[54px] py-[30px] rounded-[20px] font-bold">
                         <div className="">
-                            <button onClick={() => signIn('google')} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('signUp')} with Google <Image className="ml-[7px]" alt="google" width={23} height={23} src="/img/google.svg" /></button>
+                            <button onClick={() => signGoogle()} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('signUp')} with Google <Image className="ml-[7px]" alt="google" width={23} height={23} src="/img/google.svg" /></button>
                         </div>
                         <div className="mt-[20px]">
-                            <button onClick={() => signIn('discord')} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('signUp')} with Discord <Image className="ml-[7px]" alt="discord" width={23} height={23} src="/img/discord.svg" /></button>
+                            <button onClick={() => signDiscord()} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('signUp')} with Discord <Image className="ml-[7px]" alt="discord" width={23} height={23} src="/img/discord.svg" /></button>
                         </div>
                     </div>
                     {/* <div className="text-center mt-[20px]">

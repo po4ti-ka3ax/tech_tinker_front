@@ -11,63 +11,35 @@ import {
 } from "@/components/ui/accordion"
 import instanceAxios from "../axios/instanceAxios";
 import Link from "next/link";
-import ShortComment from "./ShortComment";
-import Image from "next/image";
 
-const Comment = ({ commentInfo }: CommentInterface) => {
+const ShortComment = ({ commentInfo }: CommentInterface) => {
     const [reliabilityColor, setReliabilityColor] = useState("");
     const [performanceColor, setPerformanceColor] = useState("");
     const [compatibilityColor, setCompatibilityColor] = useState("");
     const [parentComment, setParentComment] = useState([]);
     const [open, setOpen] = useState(false)
-    const [like, setLike] = useState(false)
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm({
         mode: "onSubmit"
     });
+    const [replyText, setReplyText] = useState("")
+    const [replyTextId, setReplyTextId] = useState(0)
+    const [commentParent,setCommentParent] = useState([]);
     useEffect(() => {
-        try {
-            instanceAxios.get(`/reviews?parent_id=${commentInfo.id}`).then(res => {
-                setParentComment(res.data.data)
-            })
-        } catch (err) {
-            console.error(err)
-        }
-
-    }, [])
-    useEffect(() => {
-
-    })
+        instanceAxios.get(`/reviews?parent_id=${commentInfo.id}`).then(res => {
+            setParentComment(res.data.data)
+        })
+    },[])
     const commentAnswerFunc = () => {
-        try {
-            instanceAxios.post(`/reviews`, {
-                "content":watch("textComment"),
-                "build_id":commentInfo.build_id,
-                "parent_id":commentInfo.id,
-            }).then(res => {
-                setParentComment(res.data.data)
-            })
-        } catch (err) {
-            console.error(err)
-        }
+        instanceAxios.post(`reviews`, {
+            "content":replyText,
+            "review_id":commentInfo.id,
+            "build_id":commentInfo.build_id,
+        })
+
+        reset()
     }
-    const setLikeHandle = () => {
-        try {
-            instanceAxios.post(`/reviews/like/${commentInfo.id}`).then(res => {
-                setLike(true)
-            })
-        } catch (err) {
-            console.error(err)
-        }
-    }
-    const unsetLikeHandle = () => {
-        try {
-            instanceAxios.delete(`/reviews/like/${commentInfo.id}`).then(res => {
-                setLike(false)
-            })
-        } catch (err) {
-            console.error(err)
-        }
-    }
+
+    
     useEffect(() => {
         const setColor = ({ setterColor, param }: SetColorInterface) => {
             if (param >= 7) {
@@ -86,11 +58,31 @@ const Comment = ({ commentInfo }: CommentInterface) => {
         setColor({ setterColor: setCompatibilityColor, param: commentInfo.compatibility_rating });
 
     }, [performance])
+    const renderCommentWithMentions = (text: string) => {
+        const mentionRegex = /@(\w+)/g;
+        const parts = text.split(mentionRegex)
+
+        return parts.map((part,index) => {
+            if(index % 2 === 1) {
+                return (
+                    <Link 
+                        key={index}
+                        href={`/profile/${replyTextId}`}
+                        className="text-[#3282C6] underline"
+                    >
+                        @{part}
+                    </Link>
+                )
+            } else {
+                return part
+            }
+        })
+    }
     return (
         <>
             <div className="flex items-start my-[30px]">
                 <div className="mr-[20px] text-center w-[50px] shrink-0">
-                    <Link href={`/profile/${commentInfo.user_id}`}>
+                    <Link href={`/profile/${commentInfo.user?.id}`}>
                         <Avatar className="w-[50px] cursor-pointer h-[50px] mb-[10px]">
                             <AvatarImage className="object-cover" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${commentInfo.user?.profile_img}`} />
                             <AvatarFallback className="text-[#000000] text-[40px] uppercase">{commentInfo.user?.username?.slice(0, 2)}</AvatarFallback>
@@ -99,10 +91,10 @@ const Comment = ({ commentInfo }: CommentInterface) => {
                     <p>{commentInfo.user?.username}</p>
                 </div>
                 <div className="w-[100%]  rounded-[2px]">
-                    <p>{commentInfo.content}</p>
+                    <p>{renderCommentWithMentions(commentInfo.content)}</p>
                     {/* <div className="w-full border-b border-[#6D6C6C] my-4" /> */}
 
-                    <div className="flex gap-[20px] my-[10px]">
+                    {/* <div className="flex gap-[20px] my-[10px]">
                         <div className="flex  bg-[#3E3E3E] p-[5px] rounded-[10px]">
                             <p>Reliability: </p>
                             <p className={`${reliabilityColor}`}>&nbsp;{commentInfo.reliability_rating}</p>
@@ -115,41 +107,37 @@ const Comment = ({ commentInfo }: CommentInterface) => {
                             <p>Compatibility: </p>
                             <p className={`${compatibilityColor}`}>&nbsp;{commentInfo.compatibility_rating}</p>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="">
                         <Accordion type="single" collapsible>
                             <AccordionItem value="item-1">
                                 <div className="flex gap-[20px]">
-                                    <div className="flex gap-[10px] items-center">
-                                        {
-                                            like ? (
-                                                <Image onClick={() => unsetLikeHandle()} src="/img/like-full.svg" width={20} height={20} alt={"like"} />
-                                            ) : (
-                                                <Image onClick={() => setLikeHandle()} src="/img/like-non-full.svg" width={20} height={20} alt={"like"} />
-                                            )
-                                        }
-                                        <p>{commentInfo?.review_rating === 0 ? "" : commentInfo?.review_rating}</p>
-                                    </div>
                                     <AccordionTrigger>
                                         <button className="text-[#3282C6] cursor-pointer">Answers</button>
                                     </AccordionTrigger>
-                                    <button className="text-[#3282C6] cursor-pointer" onClick={() => setOpen(!open)}>Answer</button>
+                                    <button className="text-[#3282C6] cursor-pointer" onClick={() => {
+                                        setReplyTextId(commentInfo.user?.id)
+                                        setReplyText(`@${commentInfo.user?.username} `);
+                                        setOpen(!open)
+                                    }}>Answer</button>
                                 </div>
                                 <div className="">
-                                    {
+                                     {
                                         open ? (
                                             <>
                                                 <div className="flex">
                                                     <div className="w-[100%] border-b-[2px] border-b-[#6D6C6C] pb-[10px] rounded-[2px]">
                                                         <form onSubmit={handleSubmit(commentAnswerFunc)}>
                                                             <Textarea
+                                                                value={replyText}
                                                                 className="resize-none w-full bg-transparent outline-none border-none  text-white   leading-[1.5rem] text-[16px] focus-visible:ring-0 focus-visible:ring-offset-0"
                                                                 placeholder="Write your answer"
                                                                 rows={1}
-                                                                {...register('textComment', { required: "text is required" })}
+                                                                onChange={e => setReplyText(e.target.value)}
+                                                                // {...register('textComment', { required: "text is required" })}
                                                             />
                                                             <div className="flex justify-end">
-                                                                <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">send</button>
+                                                                    <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">send</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -159,19 +147,20 @@ const Comment = ({ commentInfo }: CommentInterface) => {
                                     }
                                 </div>
                                 <AccordionContent>
-                                    {
-                                        parentComment.length >= 1 ? (
-                                            <>
-                                                {
-                                                    parentComment.map(el => (
-                                                        <>
-                                                            <ShortComment commentInfo={el} />
-                                                        </>
-                                                    ))
-                                                }
-                                            </>
-                                        ) : "Don't have answer on this comment, you can become first"
-                                    }
+                                   {
+                                    commentParent.length >= 1 ? (
+                                        <>
+                                            {
+                                                commentParent.map(el => (
+                                                    <>
+                                                        <ShortComment commentInfo={el}/>
+                                                    </>
+                                                ))
+                                            }
+                                        </>
+                                    ) : "Don't have answer on this comment, you can become first"
+                                   }
+
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
@@ -184,4 +173,4 @@ const Comment = ({ commentInfo }: CommentInterface) => {
     )
 }
 
-export default Comment;
+export default ShortComment;
