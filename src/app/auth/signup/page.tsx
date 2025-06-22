@@ -10,6 +10,14 @@ import { redirect, useRouter } from "next/navigation";
 import { useTranslation } from 'react-i18next';
 import "@/lib/i18n";
 import useUserData from "@/app/state/useDataStore";
+
+interface UserData {
+    id?: number;
+    username?: string;
+    role_id?: number;
+    profile_img?: string;
+}
+
 const Signup = () => {
     const { t } = useTranslation('common');
     const router = useRouter();
@@ -19,11 +27,11 @@ const Signup = () => {
     const [show, setShow] = useState(true);
     const [showRepeat, setShowRepeat] = useState(true);
     const { setUserData, userData } = useUserData();
+    
     const signGoogle = async () => {
         try {
-            await instanceAxios.get(`/auth/google/redirect`).then(res => {
+            await instanceAxios.get(`/auth/google/redirect`).then((res: any) => {
                 if (res.status === 200) {
-                    // console.log(res.data.url)
                     window.location.href = res?.data?.url
                 }
             })
@@ -31,9 +39,10 @@ const Signup = () => {
             console.error(err)
         }
     }
+    
     const signDiscord = async () => {
         try {
-            await instanceAxios.get(`/auth/discord/redirect`).then(res => {
+            await instanceAxios.get(`/auth/discord/redirect`).then((res: any) => {
                 if (res.status === 200) {
                     redirect(res.data.data.url)
                 }
@@ -42,21 +51,22 @@ const Signup = () => {
             console.error(err)
         }
     }
+    
     const Cookies = require('js-cookie')
     const access_token = Cookies.get("access_token")
-    const onSubmit = data => instanceAxios.post('/register', {
+    
+    const onSubmit = (data: any) => instanceAxios.post('/register', {
         "username": watch('username'),
         "email": watch('email'),
         "password": watch('password'),
         "password_confirmation": watch('repeatPassword'),
-    }).then(res => {
+    }).then((res: any) => {
         console.log(res.data)
-        // let index = res.data.token.indexOf('|')
         if (res.status === 200) {
             instanceAxios.post(`/login`, {
                 "email": watch('email'),
                 "password": watch('password'),
-            }).then(res => {
+            }).then((res: any) => {
                 Cookies.set('access_token', res.data.access_token)
                 Cookies.set('user_id', res.data.data.id)
                 Cookies.set('email_user', res.data.data.email)
@@ -67,7 +77,6 @@ const Signup = () => {
                 }
             })
         }
-        // console.log()
     });
 
     useEffect(() => {
@@ -78,16 +87,15 @@ const Signup = () => {
 
     const validatePassword = () => {
         if (watch("password").length < 8) {
-            return 'Password must be at least 8 characters long'
+            return t('passwordMinLength')
         }
     }
+    
     const validateRepeatPassword = () => {
         if (watch("password_confirmation") != watch("Repeat_password")) {
-            return 'Password must be equal'
+            return t('passwordMustEqual')
         }
     }
-
-
 
     return (
         <>
@@ -127,7 +135,6 @@ const Signup = () => {
                                         <Image onClick={() => setShow(!show)} className="" alt="eye" width={30} height={20} src={show ? '/img/hide.png' : '/img/eye.png'} />
                                     </div>
                                     {errors.Password && <p className="mt-[10px] text-center text-[#940014]">{errors.Password.message as string}</p>}
-
                                 </div>
                                 <div className="my-[17px]">
                                     <p className="px-[12px] text-[15px] font-regular text-white">{t('repeatPassword')}</p>
@@ -136,7 +143,6 @@ const Signup = () => {
                                         <Image onClick={() => setShowRepeat(!showRepeat)} className="mr-[30px] sm:mr-[0px]" alt="eye" width={30} height={20} src={showRepeat ? '/img/hide.png' : '/img/eye.png'} />
                                     </div>
                                     {errors.Password && <p className="mt-[10px] text-center text-[#940014]">{errors.Password.message as string}</p>}
-
                                 </div>
                                 <div className="">
                                     <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[90px] w-[100%] py-[10px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">{t('signUp')}</button>
@@ -146,17 +152,12 @@ const Signup = () => {
                     </div>
                     <div className="bg-[#3E3E3E] opacity-[90%] px-[54px] py-[30px] rounded-[20px] font-bold">
                         <div className="">
-                            <button onClick={() => signGoogle()} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('signUp')} with Google <Image className="ml-[7px]" alt="google" width={23} height={23} src="/img/google.svg" /></button>
+                            <button onClick={() => signGoogle()} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('signUpWithGoogle')} <Image className="ml-[7px]" alt="google" width={23} height={23} src="/img/google.svg" /></button>
                         </div>
                         <div className="mt-[20px]">
-                            <button onClick={() => signDiscord()} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('signUp')} with Discord <Image className="ml-[7px]" alt="discord" width={23} height={23} src="/img/discord.svg" /></button>
+                            <button onClick={() => signDiscord()} className="flex cursor-pointer justify-center border-1 border-[#FFCC70] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('signUpWithDiscord')} <Image className="ml-[7px]" alt="discord" width={23} height={23} src="/img/discord.svg" /></button>
                         </div>
                     </div>
-                    {/* <div className="text-center mt-[20px]">
-                        <Link className="underline text-[#DCDCDC]" href={'/auth/signup'}>
-                            Not account? Sign up!
-                        </Link>
-                    </div> */}
                 </div>
 
                 <div className="hidden lg:block">

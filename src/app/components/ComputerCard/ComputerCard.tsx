@@ -1,8 +1,12 @@
 import { ComputerCardInterface } from "@/app/interfaces/interface";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslation } from 'react-i18next';
+import "@/lib/i18n";
 
 const ComputerCard = ({ computer }: ComputerCardInterface) => {
+    const { t } = useTranslation('common');
+    
     return (
         <>
 
@@ -16,8 +20,8 @@ const ComputerCard = ({ computer }: ComputerCardInterface) => {
                         <div className="w-full border-t  border-[#6D6C6C]" />
                         <div className="mb-[40px] px-[20px] py-[10px]">
                             <p className="mb-[15px] text-[20px]">{computer.title}</p>
-                            <p className="text-[#B3B3B3] text-[14px]">Author: {computer.user.username}</p>
-                            <p className="mb-[15px] text-[16px]">Price: {computer.total_price}$</p>
+                            <p className="text-[#B3B3B3] text-[14px]">{t('author')}: {computer.user.username}</p>
+                            <p className="mb-[15px] text-[16px]">{t('price')}: {computer.total_price}$</p>
 
                         </div>
                         <div className="absolute bottom-[10px] right-[10px]">

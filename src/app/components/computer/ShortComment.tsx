@@ -13,12 +13,15 @@ import {
 } from "@/components/ui/accordion";
 import instanceAxios from "../axios/instanceAxios";
 import Link from "next/link";
+import { useTranslation } from 'react-i18next';
+import "@/lib/i18n";
 
 interface ShortCommentProps extends CommentInterface {
   onDelete?: (id: number) => void;
 }
 
 const ShortComment = ({ commentInfo, onDelete }: ShortCommentProps) => {
+  const { t } = useTranslation('common');
   const Cookies = require("js-cookie");
   const userId = Cookies.get("user_id");
     
@@ -156,7 +159,7 @@ useEffect(() => {
                   setOpen(!open);
                 }}
               >
-                Answer
+                {t('answer')}
               </button>
             </div>
 
@@ -168,7 +171,7 @@ useEffect(() => {
                       value={replyText}
                       onChange={e => setReplyText(e.target.value)}
                       className="resize-none w-full bg-transparent outline-none border-none text-white text-[16px] focus-visible:ring-0"
-                      placeholder="Write your answer"
+                      placeholder={t('writeAnswer')}
                       rows={1}
                     />
                     <div className="flex justify-end mt-2">
@@ -176,7 +179,7 @@ useEffect(() => {
                         type="submit"
                         className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A]"
                       >
-                        Send
+                        {t('send')}
                       </button>
                     </div>
                   </form>
@@ -190,7 +193,7 @@ useEffect(() => {
                   <ShortComment key={el.id} commentInfo={el} onDelete={deleteCommentHandler} />
                 ))
               ) : (
-                <p className="mt-2">Don't have answer on this comment, you can become first</p>
+                <p className="mt-2">{t('noAnswers')}</p>
               )}
             </AccordionContent>
           </AccordionItem>
@@ -203,7 +206,7 @@ useEffect(() => {
             onClick={deleteCommentHandler}
             className="cursor-pointer rounded-[15px] text-[15px] px-[20px] py-[7px] bg-[#FF5252] text-white"
           >
-            Delete
+            {t('delete')}
           </button>
         </div>
       )}

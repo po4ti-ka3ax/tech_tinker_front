@@ -88,7 +88,7 @@ const Auth = () => {
                                 <div className="my-[17px]">
                                     <p className="px-[12px] text-[15px] font-regular text-white">{t('password')}</p>
                                     <div className="flex opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] px-[12px] mt-[7px] py-[10px]">
-                                        <input className="w-[100%] text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "password" : "text"} {...register("password", { required: 'Password is required', minLength: { value: 8, message: t('passwordRequired') }, })} placeholder={t('passwordEnter')} />
+                                        <input className="w-[100%] text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={show ? "password" : "text"} {...register("password", { required: t('passwordRequire'), minLength: { value: 8, message: t('passwordRequired') }, })} placeholder={t('passwordEnter')} />
                                         <Image onClick={() => setShow(!show)} className="" alt="eye" width={30} height={20} src={show ? '/img/hide.png' : '/img/eye.png'} />
                                     </div>
                                     <Link href='/forgot' className="text-[#DCDCDC]  px-[12px] underline">{t('passwordForgot')}</Link>
@@ -112,10 +112,10 @@ const Auth = () => {
                     </div>
                     <div className="bg-[#3E3E3E] opacity-[90%] px-[54px] py-[30px] rounded-[20px] ">
                         <div className="">
-                            <button onClick={() => signGoogle()} className="flex whitespace-nowrap cursor-pointer justify-center border-1 border-[#FFCC70] px-[18px] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('logIn')} with Google <Image className="ml-[7px]" alt="google" width={23} height={23} src="/img/google.svg" /></button>
+                            <button onClick={() => signGoogle()} className="flex whitespace-nowrap cursor-pointer justify-center border-1 border-[#FFCC70] px-[18px] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('logInWithGoogle')} <Image className="ml-[7px]" alt="google" width={23} height={23} src="/img/google.svg" /></button>
                         </div>
                         <div className="mt-[20px]">
-                            <button onClick={() => signDiscord()} className="flex whitespace-nowrap cursor-pointer justify-center border-1 border-[#FFCC70] px-[18px] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('logIn')} with Discord <Image className="ml-[7px]" alt="discord" width={23} height={23} src="/img/discord.svg" /></button>
+                            <button onClick={() => signDiscord()} className="flex whitespace-nowrap cursor-pointer justify-center border-1 border-[#FFCC70] px-[18px] py-[10px] w-[100%] text-[17px] rounded-[15px]">{t('logInWithDiscord')} <Image className="ml-[7px]" alt="discord" width={23} height={23} src="/img/discord.svg" /></button>
                         </div>
                     </div>
                     <div className="text-center mt-[20px]">

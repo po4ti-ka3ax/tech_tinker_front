@@ -13,53 +13,58 @@ import instanceAxios from "../axios/instanceAxios";
 import Link from "next/link";
 import ShortComment from "./ShortComment";
 import Image from "next/image";
+import { useTranslation } from 'react-i18next';
+import "@/lib/i18n";
+
 interface CommentProps extends CommentInterface {
   onDelete?: (id: number) => void;
 }
 
-const Comment = ({ commentInfo,onDelete }: CommentProps) => {
+const Comment = ({ commentInfo, onDelete }: CommentProps) => {
+    const { t } = useTranslation('common');
     const Cookies = require("js-cookie");
     const userId = Cookies.get("user_id")
     const [reliabilityColor, setReliabilityColor] = useState("");
     const [performanceColor, setPerformanceColor] = useState("");
     const [compatibilityColor, setCompatibilityColor] = useState("");
-    const [parentComment, setParentComment] = useState([]);
+    const [parentComment, setParentComment] = useState<any[]>([]);
     const [nextLink, setNextLink] = useState('')
     const [open, setOpen] = useState(false)
     const [like, setLike] = useState(false)
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm({
         mode: "onSubmit"
     });
+    
     const handleDeleteChildComment = (id: number) => {
-        setParentComment(prev => prev.filter(comment => comment.id !== id));
+        setParentComment(prev => prev.filter((comment: any) => comment.id !== id));
     };
-const fetchParentComments = async () => {
-    try {
-        const res = await instanceAxios.get(`/comments?review_id=${commentInfo.id}`);
-        if (res.status === 200) {
-            setParentComment(res.data.data);
-            setNextLink(res.data.links?.next || '');
+    
+    const fetchParentComments = async () => {
+        try {
+            const res = await instanceAxios.get(`/comments?review_id=${commentInfo.id}`);
+            if (res.status === 200) {
+                setParentComment(res.data.data);
+                setNextLink(res.data.links?.next || '');
+            }
+        } catch (err) {
+            console.error("Ошибка при получении ответов:", err);
         }
-    } catch (err) {
-        console.error("Ошибка при получении ответов:", err);
-    }
-};
-useEffect(() => {
-    fetchParentComments();
-}, []);
+    };
+    
+    useEffect(() => {
+        fetchParentComments();
+    }, []);
 
     useEffect(() => {
         try {
-            instanceAxios.get(`/comments?review_id=${commentInfo.id}`).then(res => {
+            instanceAxios.get(`/comments?review_id=${commentInfo.id}`).then((res: any) => {
                 setParentComment(res.data.data)
                 setNextLink(res.data?.links?.next)
             })
         } catch (err) {
             console.error(err)
         }
-
     }, [])
-    console.log(parentComment.length >= 10)
 
     const commentAnswerFunc = async () => {
         try {
@@ -69,22 +74,18 @@ useEffect(() => {
             });
 
             if (res.status === 200 || res.status === 201) {
-                const newComment = res.data.data; // предполагается, что сервер вернёт добавленный комментарий
-
-                // Добавить новый комментарий в начало, чтобы он сразу появился
+                const newComment = res.data.data;
                 setParentComment(prev => [...prev, newComment]);
-
-                reset(); // очистить textarea
+                reset();
             }
         } catch (err) {
             console.error(err);
         }
     };
 
-
     useEffect(() => {
         try {
-            instanceAxios.get(`/comments?parent_id=${commentInfo.review_id}`).then(res => {
+            instanceAxios.get(`/comments?parent_id=${commentInfo.review_id}`).then((res: any) => {
                 if (res.status === 200) {
                     setParentComment(res.data.data)
                 }
@@ -94,43 +95,42 @@ useEffect(() => {
         }
     }, [commentInfo.id])
 
-const fetchReplies = async () => {
-    try {
-      const res = await instanceAxios.get(`/comments?parent_id=${commentInfo.id}`);
-      if (res.status === 200) {
-        setParentComment(res.data.data);
-      }
-    } catch (err) {
-      console.error("Ошибка при загрузке ответов:", err);
-    }
-  };
+    const fetchReplies = async () => {
+        try {
+            const res = await instanceAxios.get(`/comments?parent_id=${commentInfo.id}`);
+            if (res.status === 200) {
+                setParentComment(res.data.data);
+            }
+        } catch (err) {
+            console.error("Ошибка при загрузке ответов:", err);
+        }
+    };
 
- useEffect(() => {
-  if (commentInfo?.id) {
-    fetchReplies();
-  }
-}, [commentInfo?.id]);
+    useEffect(() => {
+        if (commentInfo?.id) {
+            fetchReplies();
+        }
+    }, [commentInfo?.id]);
 
     const setLikeHandle = () => {
         try {
-            instanceAxios.post(`/reviews/like/${commentInfo.id}`).then(res => {
+            instanceAxios.post(`/reviews/like/${commentInfo.id}`).then((res: any) => {
                 setLike(true)
             })
         } catch (err) {
             console.error(err)
         }
     }
+    
     const unsetLikeHandle = () => {
         try {
-            instanceAxios.delete(`/reviews/like/${commentInfo.id}`).then(res => {
+            instanceAxios.delete(`/reviews/like/${commentInfo.id}`).then((res: any) => {
                 setLike(false)
             })
         } catch (err) {
             console.error(err)
         }
     }
-
-const [renderFlag, setRenderFlag] = useState(0);
 
     useEffect(() => {
         const setColor = ({ setterColor, param }: SetColorInterface) => {
@@ -149,7 +149,8 @@ const [renderFlag, setRenderFlag] = useState(0);
         setColor({ setterColor: setPerformanceColor, param: commentInfo.performance_rating });
         setColor({ setterColor: setCompatibilityColor, param: commentInfo.compatibility_rating });
 
-    }, [performance])
+    }, [commentInfo.reliability_rating, commentInfo.performance_rating, commentInfo.compatibility_rating])
+    
     return (
         <>
             <div className="flex items-start justify-between my-[30px]">
@@ -164,19 +165,18 @@ const [renderFlag, setRenderFlag] = useState(0);
                 </div>
                 <div className="w-[100%]  rounded-[2px]">
                     <p>{commentInfo.content}</p>
-                    {/* <div className="w-full border-b border-[#6D6C6C] my-4" /> */}
 
                     <div className="flex gap-[20px] my-[10px]">
                         <div className="flex  bg-[#3E3E3E] p-[5px] rounded-[10px]">
-                            <p>Reliability: </p>
+                            <p>{t('reliability')}: </p>
                             <p className={`${reliabilityColor}`}>&nbsp;{commentInfo.reliability_rating}</p>
                         </div>
                         <div className="flex  bg-[#3E3E3E] p-[5px] rounded-[10px]">
-                            <p>Performance: </p>
+                            <p>{t('performance')}: </p>
                             <p className={`${performanceColor}`}>&nbsp;{commentInfo.performance_rating}</p>
                         </div>
                         <div className="flex  bg-[#3E3E3E] p-[5px] rounded-[10px]">
-                            <p>Compatibility: </p>
+                            <p>{t('compatibility')}: </p>
                             <p className={`${compatibilityColor}`}>&nbsp;{commentInfo.compatibility_rating}</p>
                         </div>
                     </div>
@@ -185,84 +185,72 @@ const [renderFlag, setRenderFlag] = useState(0);
                             <AccordionItem value="item-1">
                                 <div className="flex gap-[20px]">
                                     <div className="flex gap-[10px] items-center">
-                                        {
-                                            like ? (
-                                                <Image onClick={() => unsetLikeHandle()} src="/img/like-full.svg" width={20} height={20} alt={"like"} />
-                                            ) : (
-                                                <Image onClick={() => setLikeHandle()} src="/img/like-non-full.svg" width={20} height={20} alt={"like"} />
-                                            )
-                                        }
+                                        {like ? (
+                                            <Image onClick={() => unsetLikeHandle()} src="/img/like-full.svg" width={20} height={20} alt={"like"} />
+                                        ) : (
+                                            <Image onClick={() => setLikeHandle()} src="/img/like-non-full.svg" width={20} height={20} alt={"like"} />
+                                        )}
                                         <p>{commentInfo?.review_rating === 0 ? "" : commentInfo?.review_rating}</p>
                                     </div>
                                     <AccordionTrigger>
-                                        <button className="text-[#3282C6] cursor-pointer">Answers</button>
+                                        <button className="text-[#3282C6] cursor-pointer">{t('answers')}</button>
                                     </AccordionTrigger>
-                                    <button className="text-[#3282C6] cursor-pointer" onClick={() => setOpen(!open)}>Answer</button>
+                                    <button className="text-[#3282C6] cursor-pointer" onClick={() => setOpen(!open)}>{t('answer')}</button>
                                 </div>
                                 <div className="">
-                                    {
-                                        open ? (
-                                            <>
-                                                <div className="flex">
-                                                    <div className="w-[100%] border-b-[2px] border-b-[#6D6C6C] pb-[10px] rounded-[2px]">
-                                                        <form onSubmit={handleSubmit(commentAnswerFunc)}>
-                                                            <Textarea
-                                                                className="resize-none w-full bg-transparent outline-none border-none  text-white   leading-[1.5rem] text-[16px] focus-visible:ring-0 focus-visible:ring-offset-0"
-                                                                placeholder="Write your answer"
-                                                                rows={1}
-                                                                {...register('textComment', { required: "text is required" })}
-                                                            />
-                                                            <div className="flex justify-end">
-                                                                <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">Send</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
+                                    {open && (
+                                        <>
+                                            <div className="flex">
+                                                <div className="w-[100%] border-b-[2px] border-b-[#6D6C6C] pb-[10px] rounded-[2px]">
+                                                    <form onSubmit={handleSubmit(commentAnswerFunc)}>
+                                                        <Textarea
+                                                            className="resize-none w-full bg-transparent outline-none border-none  text-white   leading-[1.5rem] text-[16px] focus-visible:ring-0 focus-visible:ring-offset-0"
+                                                            placeholder={t('writeAnswer')}
+                                                            rows={1}
+                                                            {...register('textComment', { required: t('textRequired') })}
+                                                        />
+                                                        <div className="flex justify-end">
+                                                            <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">{t('send')}</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
-                                            </>
-                                        ) : ""
-                                    }
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                                 <AccordionContent>
-                                    {
-                                        parentComment.length >= 1 ? (
-                                            <>
-                                                {
-                                                    parentComment.map(el => (
-                                                        <ShortComment  key={el.id} commentInfo={el} onDelete={handleDeleteChildComment} />
-                                                    ))
-                                                }
-                                            </>
-                                        ) : "Don't have answer on this comment, you can become first"
-                                    }
-                                    {
-                                        parentComment.length >= 10 && nextLink && (
-                                            <>
-                                                <button
-                                                    onClick={async () => {
-                                                        try {
-                                                            const res = await instanceAxios.get(`${nextLink}`);
-                                                            if (res.status === 200) {
-                                                                setParentComment(prev => [...prev, ...res.data.data]);
-                                                                setNextLink(res.data.links?.next || '');
-                                                            }
-                                                        } catch (err) {
-                                                            console.error(err);
+                                    {parentComment.length >= 1 ? (
+                                        <>
+                                            {parentComment.map((el: any) => (
+                                                <ShortComment key={el.id} commentInfo={el} onDelete={handleDeleteChildComment} />
+                                            ))}
+                                        </>
+                                    ) : (
+                                        t('noAnswers')
+                                    )}
+                                    {parentComment.length >= 10 && nextLink && (
+                                        <>
+                                            <button
+                                                onClick={async () => {
+                                                    try {
+                                                        const res = await instanceAxios.get(`${nextLink}`);
+                                                        if (res.status === 200) {
+                                                            setParentComment(prev => [...prev, ...res.data.data]);
+                                                            setNextLink(res.data.links?.next || '');
                                                         }
-                                                    }}
-                                                >
-                                                    Show more
-                                                </button>
-
-                                            </>
-                                        )
-                                    }
+                                                    } catch (err) {
+                                                        console.error(err);
+                                                    }
+                                                }}
+                                            >
+                                                {t('showMore')}
+                                            </button>
+                                        </>
+                                    )}
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
-
                     </div>
-
-
                 </div>
                 <div className="">
                     {commentInfo?.user?.id == userId && (
@@ -272,7 +260,7 @@ const [renderFlag, setRenderFlag] = useState(0);
                                     try {
                                         const res = await instanceAxios.delete(`/reviews/${commentInfo.id}`);
                                         if (res.status === 204 && onDelete) {
-                                            onDelete(commentInfo.id); // вызов родительской функции для удаления из состояния
+                                            onDelete(commentInfo.id);
                                         }
                                     } catch (err) {
                                         console.error("Ошибка при удалении комментария:", err);
@@ -280,11 +268,10 @@ const [renderFlag, setRenderFlag] = useState(0);
                                 }}
                                 className="cursor-pointer rounded-[15px] text-[15px] px-[20px] py-[7px] bg-[#FF5252] text-white"
                             >
-                                delete
+                                {t('delete')}
                             </button>
                         </div>
                     )}
-
                 </div>
             </div>
         </>

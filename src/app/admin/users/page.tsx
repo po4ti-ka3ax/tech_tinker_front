@@ -19,9 +19,12 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { useForm } from "react-hook-form";
+import { useTranslation } from 'react-i18next';
+import "@/lib/i18n";
 // import Image from "next/image";
 
 const userPage = () => {
+    const { t } = useTranslation('common');
     const [users, setUsers] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
     const [deleteOpen, setDeleteOpen] = useState(false)
@@ -71,7 +74,7 @@ const userPage = () => {
     }
     const validatePassword = () => {
         if (watch("password").length < 8) {
-            return 'Password must be at least 8 characters long'
+            return t('passwordMinLength')
         }
     }
     useEffect(() => {
@@ -93,14 +96,14 @@ const userPage = () => {
 
                 <div className=" bg-[#2D2D2D] rounded-[10px] px-[20px] py-[20px]">
                     <Table>
-                        <TableCaption>Users lists</TableCaption>
+                        <TableCaption>{t('Users lists')}</TableCaption>
                         <TableHeader>
                             <TableRow >
-                                <TableHead className="text-white">Id:</TableHead>
-                                <TableHead className="text-white">Username:</TableHead>
-                                <TableHead className="text-white">Email:</TableHead>
-                                <TableHead className="text-white">Profile image:</TableHead>
-                                <TableHead className="text-white">Role id:</TableHead>
+                                <TableHead className="text-white">{t('Id:')}</TableHead>
+                                <TableHead className="text-white">{t('Username:')}</TableHead>
+                                <TableHead className="text-white">{t('Email:')}</TableHead>
+                                <TableHead className="text-white">{t('Profile image:')}</TableHead>
+                                <TableHead className="text-white">{t('Role id:')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -110,15 +113,15 @@ const userPage = () => {
                                         <TableCell>{el.id}</TableCell>
                                         <TableCell>{el.username}</TableCell>
                                         <TableCell>{el.email}</TableCell>
-                                        <TableCell>{el.profile_img ? el.profile_img : <p className="text-[#626262]">Not set</p>}</TableCell>
+                                        <TableCell>{el.profile_img ? el.profile_img : <p className="text-[#626262]">{t('Not set')}</p>}</TableCell>
                                         <TableCell>{el.role_id}</TableCell>
                                         <TableCell>
 
                                             <Dialog open={editOpen} onOpenChange={setEditOpen}>
-                                                <DialogTrigger className="cursor-pointer bg-[#FFCC70] text-[18px] text-black px-[4px] py-[4px] rounded-[5px]" onClick={() => setCurrentUser(el)}>Edit</DialogTrigger>
+                                                <DialogTrigger className="cursor-pointer bg-[#FFCC70] text-[18px] text-black px-[4px] py-[4px] rounded-[5px]" onClick={() => setCurrentUser(el)}>{t('Edit')}</DialogTrigger>
                                                 <DialogContent className="bg-[#242424] text-white border-0">
                                                     <DialogHeader>
-                                                        <DialogTitle>Edit profile</DialogTitle>
+                                                        <DialogTitle>{t('Edit profile')}</DialogTitle>
                                                     </DialogHeader>
 
                                                     <form onSubmit={onSubmitEdit}>
@@ -139,10 +142,10 @@ const userPage = () => {
                                                             <input className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none" name="profile_img" type="file" placeholder="User image" />
                                                         </div> */}
                                                         <div className="mt-[20px]">
-                                                            <p className="px-[12px] text-[15px] font-regular text-white">Role id</p>
-                                                            <input className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none" name="role_id" type="text" placeholder="User role Id" defaultValue={el.role_id || ''} />
+                                                            <p className="px-[12px] text-[15px] font-regular text-white">{t('Role id:')}</p>
+                                                            <input className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none" name="role_id" type="text" placeholder={t('User role Id')} defaultValue={el.role_id || ''} />
                                                         </div>
-                                                        <button className="rounded-[15px] mt-[20px] cursor-pointer text-[15px] font-black px-[90px] w-[100%] py-[10px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">Edit user</button>
+                                                        <button className="rounded-[15px] mt-[20px] cursor-pointer text-[15px] font-black px-[90px] w-[100%] py-[10px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">{t('Edit user')}</button>
 
                                                     </form>
                                                 </DialogContent>
@@ -152,13 +155,13 @@ const userPage = () => {
                                         <TableCell>
 
                                             <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                                                <DialogTrigger className="cursor-pointer bg-[#FF5252] text-[18px] text-white px-[4px] py-[4px] rounded-[5px]">Delete</DialogTrigger>
+                                                <DialogTrigger className="cursor-pointer bg-[#FF5252] text-[18px] text-white px-[4px] py-[4px] rounded-[5px]">{t('delete')}</DialogTrigger>
                                                 <DialogContent className="bg-[#242424] text-white border-0">
                                                     <DialogHeader>
-                                                        <DialogTitle>Delete profile</DialogTitle>
+                                                        <DialogTitle>{t('Delete profile')}</DialogTitle>
                                                     </DialogHeader>
-                                                    <p>You want delete this user ?</p>
-                                                    <button onClick={() => onSubmitDelete(el.id)} className="cursor-pointer bg-[#FF5252] duration-300 hover:bg-[#C03838] text-[18px] text-white px-[4px] py-[4px] rounded-[5px]">Delete user - {el.username}</button>
+                                                    <p>{t('You want delete this user ?')}</p>
+                                                    <button onClick={() => onSubmitDelete(el.id)} className="cursor-pointer bg-[#FF5252] duration-300 hover:bg-[#C03838] text-[18px] text-white px-[4px] py-[4px] rounded-[5px]">{t('Delete user -')} {el.username}</button>
                                                 </DialogContent>
                                             </Dialog>
 
@@ -168,55 +171,55 @@ const userPage = () => {
                             }
                             <div >
                                 <Dialog open={addOpen} onOpenChange={setAddOpen}>
-                                    <DialogTrigger className="mt-[30px] cursor-pointer bg-[#FFCC70] text-[18px] text-black px-[4px] py-[4px] rounded-[5px]">Add user</DialogTrigger>
+                                    <DialogTrigger className="mt-[30px] cursor-pointer bg-[#FFCC70] text-[18px] text-black px-[4px] py-[4px] rounded-[5px]">{t('Add user')}</DialogTrigger>
                                     <DialogContent className="bg-[#242424] text-white border-0">
                                         <DialogHeader>
-                                            <DialogTitle>Add user</DialogTitle>
+                                            <DialogTitle>{t('Add user')}</DialogTitle>
                                         </DialogHeader>
                                         <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
                                             <div className="mt-[20px]">
-                                                <p className="px-[12px] text-[15px] font-regular text-white">Username</p>
+                                                <p className="px-[12px] text-[15px] font-regular text-white">{t('username')}</p>
                                                 <input
                                                     autoComplete="username"
                                                     className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none"
                                                     type="text"
-                                                    {...register("username", { required: "Username is required" })}
-                                                    placeholder="Enter your username"
+                                                    {...register("username", { required: t('usernameRequired') })}
+                                                    placeholder={t('Enter your username')}
                                                 />
                                                 {errors.username && <p className="text-[#FF5252]">{errors.username.message}</p>}
                                             </div>
 
                                             <div className="mt-[20px]">
-                                                <p className="px-[12px] text-[15px] font-regular text-white">Email</p>
+                                                <p className="px-[12px] text-[15px] font-regular text-white">{t('email')}</p>
                                                 <input
                                                     autoComplete="email"
                                                     className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none"
                                                     type="email"
-                                                    {...register("email", { required: "Email is required" })}
-                                                    placeholder="Enter your email"
+                                                    {...register("email", { required: t('emailIsRequired') })}
+                                                    placeholder={t('Enter your email')}
                                                 />
                                                 {errors.email && <p className="text-[#FF5252]">{errors.email.message}</p>}
                                             </div>
                                             <div className="my-[17px]">
-                                                <p className="px-[12px] text-[15px] font-regular text-white">Password</p>
+                                                <p className="px-[12px] text-[15px] font-regular text-white">{t('password')}</p>
                                                 <div className="flex opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] px-[12px] mt-[7px] py-[10px]">
-                                                    <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={"text"} {...register("password", { required: 'Password must be at least 8 characters long', minLength: 8, validate: validatePassword })} placeholder="Enter your password" />
+                                                    <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={"text"} {...register("password", { required: t('passwordMinLength'), minLength: 8, validate: validatePassword })} placeholder={t('Enter your password')} />
                                                     {/* <Image onClick={() => setShow(!show)} className="" alt="eye" width={30} height={20} src={show ? '/img/hide.png' : '/img/eye.png'} /> */}
                                                 </div>
                                                 {errors.Password && <p className="mt-[10px] text-center text-[#940014]">{errors.Password.message as string}</p>}
 
                                             </div>
                                             <div className="my-[17px]">
-                                                <p className="px-[12px] text-[15px] font-regular text-white">Repeat password</p>
+                                                <p className="px-[12px] text-[15px] font-regular text-white">{t('repeatPassword')}</p>
                                                 <div className="flex opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] px-[12px] mt-[7px] py-[10px]">
-                                                    <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={"text"} {...register("repeatPassword", { required: 'Password must be at least 8 characters long', minLength: 8, validate: validatePassword })} placeholder="Repeat your password" />
+                                                    <input className=" text-[15px] placeholder:text-[#DCDCDC]  autofill:bg-[#434343] focus:outline-none focus:border-none" type={"text"} {...register("repeatPassword", { required: t('passwordMinLength'), minLength: 8, validate: validatePassword })} placeholder={t('Repeat your password')} />
                                                     {/* <Image onClick={() => setShowRepeat(!showRepeat)} className="mr-[30px] sm:mr-[0px]" alt="eye" width={30} height={20} src={showRepeat ? '/img/hide.png' : '/img/eye.png'} /> */}
                                                 </div>
                                                 {errors.Password && <p className="mt-[10px] text-center text-[#940014]">{errors.Password.message as string}</p>}
 
                                             </div>
                                             <div className="">
-                                                <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[90px] w-[100%] py-[10px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">Add user</button>
+                                                <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[90px] w-[100%] py-[10px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">{t('Add user')}</button>
                                             </div>
                                         </form>
                                     </DialogContent>

@@ -357,7 +357,7 @@ const MotherboardBlock = () => {
                                                         <option value="">{t('withoutSort')}</option>
                                                         {filter.options.map((option) => (
                                                             <option key={option} value={option}>
-                                                                {option === "asc" ? "ASC" : "DESC"}
+                                                                {option === "asc" ? t('asc') : t('desc')}
                                                             </option>
                                                         ))}
                                                     </select>
@@ -387,7 +387,7 @@ const MotherboardBlock = () => {
                                                     <Image alt="photo" className="rounded-[10px]" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${el.link_img}`} width={150} height={100} />
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
-                                                    <p className="text-[18px] text-[#fffffff]">Characteristics:</p>
+                                                    <p className="text-[18px] text-[#fffffff]">{t('characteristics')}:</p>
                                                     <div className="text-[#626262] whitespace-nowrap">
                                                         <p className="">{t('chipset')}: {el.chipset.model}</p>
                                                         <p className="">{t('formFactor')}: {el.form_factor.title}</p>

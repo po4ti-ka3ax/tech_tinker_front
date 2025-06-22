@@ -204,7 +204,7 @@ useEffect(() => {
                             <div className="px-[24px] py-[16px]">
                                 <Accordion type="single" collapsible>
                                     <AccordionItem value="item-1">
-                                        <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Filter</AccordionTrigger>
+                                        <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">{t('Filter')}</AccordionTrigger>
                                         <AccordionContent>
                                             {filterConfig["builds"].map((filter) => (
                                                 <div key={filter.name} className="mb-4">
@@ -286,7 +286,7 @@ useEffect(() => {
                             <div className="w-full border-b  border-[#FFCC70]" />
                             <div className="text-center flex gap-[10px] justify-center">
                                 <button onClick={() => clearFiltersHandle()} className="cursor-pointer text-[#000000] bg-[#FFCC70] px-[5px] py-[10px] rounded-[10px] text-[20px]">{t('resetFilters')}</button>
-                                <button onClick={onApplyFilters} className="cursor-pointer text-[#000000] bg-[#FFCC70] px-[5px] py-[10px] rounded-[10px] text-[20px]">Apply</button>
+                                <button onClick={onApplyFilters} className="cursor-pointer text-[#000000] bg-[#FFCC70] px-[5px] py-[10px] rounded-[10px] text-[20px]">{t('apply')}</button>
                             </div>
                         </DialogContent>
                     </Dialog>

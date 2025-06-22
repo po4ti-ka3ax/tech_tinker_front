@@ -24,7 +24,6 @@ import {
 import CheckboxComponent from "../filters/CheckboxComponent"
 import instanceAxios from "../axios/instanceAxios"
 import { useEffect, useState } from "react"
-import { filterConfig } from "@/app/config/filterConfig"
 import { useFilterStore } from "@/app/state/useFilterStore"
 import { useConfigureStore } from "@/app/state/useConfigureStore"
 import { usePriceStore } from "@/app/state/usePriceStore"
@@ -32,6 +31,8 @@ import { BadgeInfo } from 'lucide-react';
 import { usePowerStore } from "@/app/state/usePowerStore"
 import { useTranslation } from 'react-i18next';
 import "@/lib/i18n"; 
+import { filterConfig } from "@/app/config/filterConfig"
+
 const ProcessorBlock = () => {
     const { t } = useTranslation('common');
 
@@ -366,7 +367,7 @@ const ProcessorBlock = () => {
                                                         <option value="">{t('withoutSort')}</option>
                                                         {filter.options.map((option) => (
                                                             <option key={option} value={option}>
-                                                                {option === "asc" ? "ASC" : "DESC"}
+                                                                {option === "asc" ? t('asc') : t('desc')}
                                                             </option>
                                                         ))}
                                                     </select>

@@ -1,6 +1,5 @@
 // config/filterConfig.ts
 
-
 export const filterConfig = {
   processors: [
     {
@@ -237,8 +236,8 @@ export const filterConfig = {
     label: "Number per Page",
     type: "number"
   }
-],
-cooling: [
+  ],
+  cooling: [
   {
     name: "brand_id",
     label: "Brand",
@@ -259,12 +258,17 @@ cooling: [
   },
   {
     name: "height",
-    label: "Height (mm)",
+    label: "Case Height (mm)",
     type: "range"
   },
   {
     name: "width",
-    label: "Width (mm)",
+    label: "Case Width (mm)",
+    type: "range"
+  },
+  {
+    name: "length",
+    label: "Case Length (mm)",
     type: "range"
   },
   {
@@ -283,8 +287,8 @@ cooling: [
     label: "Number per Page",
     type: "number"
   }
-],
-storages: [
+  ],
+  storages: [
   {
     name: "brand_id",
     label: "Brand",
@@ -333,8 +337,8 @@ storages: [
     label: "Number per Page",
     type: "number"
   }
-],
-cases: [
+  ],
+  cases: [
   {
     name: "brand_id",
     label: "Brand",
@@ -360,6 +364,11 @@ cases: [
   {
     name: "width",
     label: "Case Width (mm)",
+    type: "range"
+  },
+  {
+    name: "length",
+    label: "Case Length (mm)",
     type: "range"
   },
   {
@@ -393,8 +402,8 @@ cases: [
     label: "Number per Page",
     type: "number"
   }
-],
-power_supplies: [
+  ],
+  power_supplies: [
   {
     name: "brand_id",
     label: "Brand",
@@ -440,8 +449,8 @@ power_supplies: [
     label: "Number per Page",
     type: "number"
   }
-],
-builds: [
+  ],
+  builds: [
   {
     name: "search",
     label: "Search",
@@ -523,9 +532,5 @@ builds: [
     label: "Number per Page",
     type: "number"
   }
-]
-
-
-
-
+  ]
 };

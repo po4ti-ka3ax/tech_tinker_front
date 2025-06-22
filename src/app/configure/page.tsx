@@ -170,7 +170,7 @@ const Configure = () => {
                             <button onClick={() => {
                                 setPcImage(null)
                                 setImage("")
-                            }} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove photo</button>
+                            }} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">{t('Remove photo')}</button>
                             </div>
                         </label>
                     </div>
