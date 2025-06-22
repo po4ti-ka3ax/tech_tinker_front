@@ -24,7 +24,7 @@ const Computer = () => {
     const userId = Cookies.get('user_id')
     const userRole = Cookies.get('user_role')
     // const { setUserData, userData } = useUserData();
-    const [ userData,setUserData] = useState({})
+    const [userData, setUserData] = useState({})
     const [image, setImage] = useState('');
     const [pc, setPc] = useState({})
     const [comments, setComments] = useState([])
@@ -38,38 +38,74 @@ const Computer = () => {
     useEffect(() => {
         try {
             instanceAxios.get(`/users/${userId}`).then(res => {
-                if(res.status === 200) {
+                if (res.status === 200) {
                     setUserData(res.data.data)
                 }
             })
-        } catch(err) {
+        } catch (err) {
             console.error(err)
         }
-    },[])
+    }, [])
     const loadMoreHandle = () => {
-        
+
+    }
+    const [favorite, setFavorite] = useState(false)
+    useEffect(() => {
+        if (!pc?.id) return; // чтобы не вызывался без данных
+        try {
+            instanceAxios.get(`/builds/favorites/list`).then(res => {
+                const favor = res.data.data;
+                const isFavorite = favor.some(el => el.id == pc.id);
+                setFavorite(isFavorite);
+            })
+        } catch (err) {
+            console.error(err)
+        }
+    }, [pc.id]) // триггерим, когда pc.id есть
+
+    const saveFavorite = () => {
+        try {
+            instanceAxios.post(`/builds/favorites/${pc.id}`).then(res => {
+                if(res.status === 200) {
+                    setFavorite(true)
+                }
+            })
+        } catch (err) {
+            console.error(err)
+        }
+    }
+    const unsaveFavorite = () => {
+        try {
+            instanceAxios.delete(`/builds/favorites/${pc.id}`).then(res => {
+                if(res.status === 204) {
+                    setFavorite(false)
+                }
+            })
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     const commentFunc = async (data) => {
-    try {
-        const res = await instanceAxios.post(`/reviews`, {
-            content: data.textComment,
-            build_id: id,
-            reliability_rating: data.reliability,
-            performance_rating: data.performance,
-            compatibility_rating: data.compatibility,
-        });
+        try {
+            const res = await instanceAxios.post(`/reviews`, {
+                content: data.textComment,
+                build_id: id,
+                reliability_rating: data.reliability,
+                performance_rating: data.performance,
+                compatibility_rating: data.compatibility,
+            });
 
-        if (res.status === 201) {
-            const updated = await instanceAxios.get(`/reviews?build_id=${id}`);
-            setComments(updated.data.data);
+            if (res.status === 201) {
+                const updated = await instanceAxios.get(`/reviews?build_id=${id}`);
+                setComments(updated.data.data);
 
-            reset();
+                reset();
+            }
+        } catch (err) {
+            console.error(err);
         }
-    } catch (err) {
-        console.error(err);
     }
-}
 
     useEffect(() => {
         try {
@@ -96,7 +132,7 @@ const Computer = () => {
     const [reliability, setReliability] = useState(8);
     const [performance, setPerformance] = useState(5);
     const [compatibility, setCompatibility] = useState(0);
-    const [totalGrade,setTotalGrade] = useState(0)
+    const [totalGrade, setTotalGrade] = useState(0)
     const [reliabilityColor, setReliabilityColor] = useState("");
     const [performanceColor, setPerformanceColor] = useState("");
     const [compatibilityColor, setCompatibilityColor] = useState("");
@@ -154,30 +190,30 @@ const Computer = () => {
                             </div>
                         </div>
                         <div className="bg-[#2D2D2D] text-center m-auto w-[300px] p-[20px] rounded-[10px]">
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <div className="flex mb-[10px] items-center justify-center gap-[10px]">
-                                            <p className="text-[23px] ">Grades</p>
-                                            <BadgeInfo />
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="text-[18px]">
-                                        <p className="text-center">Colors grades:</p>
-                                        <br />
-                                        <div className="flex">
-                                            <p>Grade more or equal 7, color - </p>
-                                            <p className="text-white">&nbsp;white</p>
-                                        </div>
-                                        <div className="flex">
-                                            <p>Grade less or equal 6.8, color - </p>
-                                            <p className="text-[#FFCC70]">&nbsp;orange</p>
-                                        </div>
-                                        <div className="flex">
-                                            <p>Grade less or equal 4.9, color - </p>
-                                            <p className="text-[#FF5252]">&nbsp;red</p>
-                                        </div>
-                                    </TooltipContent>
-                                </Tooltip>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <div className="flex mb-[10px] items-center justify-center gap-[10px]">
+                                        <p className="text-[23px] ">Grades</p>
+                                        <BadgeInfo />
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent className="text-[18px]">
+                                    <p className="text-center">Colors grades:</p>
+                                    <br />
+                                    <div className="flex">
+                                        <p>Grade more or equal 7, color - </p>
+                                        <p className="text-white">&nbsp;white</p>
+                                    </div>
+                                    <div className="flex">
+                                        <p>Grade less or equal 6.8, color - </p>
+                                        <p className="text-[#FFCC70]">&nbsp;orange</p>
+                                    </div>
+                                    <div className="flex">
+                                        <p>Grade less or equal 4.9, color - </p>
+                                        <p className="text-[#FF5252]">&nbsp;red</p>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
                             <div className={`flex justify-around items-center px-[30px] my-[10px] bg-[#3E3E3E] p-[5px] rounded-[10px]`}>
                                 <p className="text-[25px]">Total grade:</p>
                                 <p className={`text-[20px] ${totalGradeColor}`}>{totalGrade}</p>
@@ -221,9 +257,21 @@ const Computer = () => {
                         <div className="">
                             <p className="text-[#DCDCDC] text-[25px]">Price: {pc.total_price}$</p>
                         </div>
-                        <div className=" mt-[15px]">
-                            <button className="bg-[#1A1A1A] w-[100%] text-[25px] py-[7px] px-[70px] rounded-[20px] cursor-pointer">Save Configure</button>
-                        </div>
+                        {
+                            favorite ? (
+                                <div className=" mt-[15px]">
+                                    <button onClick={() => {
+                                        unsaveFavorite()
+                                    }} className="bg-[#FF5252] w-[100%] text-[25px] py-[7px] px-[70px] rounded-[20px] cursor-pointer">Delete in favorite</button>
+                                </div>
+                            ) : (
+                                <div className=" mt-[15px]">
+                                    <button onClick={() => {
+                                        saveFavorite()
+                                    }} className="bg-[#1A1A1A] w-[100%] text-[25px] py-[7px] px-[70px] rounded-[20px] cursor-pointer">Save in favorite</button>
+                                </div>
+                            )
+                        }
                     </div>
                 </div>
                 <div className="bg-[#2D2D2D] w-[85%] m-auto py-[5px] mt-[30px] rounded-[10px]">
@@ -302,12 +350,12 @@ const Computer = () => {
                                     />
                                     <div className="flex justify-between">
                                         <div className="flex  gap-[5px] px-4">
-                                            <input aria-invalid={errors.reliability ? "true" : "false"} {...register("reliability", { required: "is required",min:0, max:10 })} className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Reliability" />
-                                                
-                                            <input aria-invalid={errors.performance ? "true" : "false"} {...register("performance", { required: "is required",min:0, max:10 })} className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Performance" />
+                                            <input aria-invalid={errors.reliability ? "true" : "false"} {...register("reliability", { required: "is required", min: 0, max: 10 })} className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Reliability" />
 
-                                            <input aria-invalid={errors.compatibility ? "true" : "false"} {...register("compatibility", { required: "is required",min:0, max:10 })} className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Compatibility" />
-                                        
+                                            <input aria-invalid={errors.performance ? "true" : "false"} {...register("performance", { required: "is required", min: 0, max: 10 })} className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Performance" />
+
+                                            <input aria-invalid={errors.compatibility ? "true" : "false"} {...register("compatibility", { required: "is required", min: 0, max: 10 })} className="inline bg-[#3E3E3E] p-[5px] rounded-[10px]" type="number" placeholder="Compatibility" />
+
                                         </div>
 
                                         <div className="flex-end">

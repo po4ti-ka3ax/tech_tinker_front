@@ -56,7 +56,7 @@ const SystemMemoryBlock = () => {
     };
 
     const deleteComponent = (key) => {
-        unsetCurrentComponent(`${key}_id`)
+        unsetCurrentComponent(`${key}`)
         // unsetPowerCurrentComponent(key)
         setTimeout(() => recalculateTotal(), 0)
         // setTimeout(() => recalculateTotalPower(), 0)
@@ -381,7 +381,28 @@ const SystemMemoryBlock = () => {
                                                 </div>
                                                 <div className="md:mr-[40px] mb-[20px] text-center">
                                                     {/* disabled={hasProcessor && el.socket.id !== socket ? true : false} */}
-                                                    <button  onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">{t('add')}</button>
+                                                    {
+                                                        configureStore?.motherboard?.memory_generation?.id < el.memory_generation_id  ? (
+                                                            <>
+                                                                <Tooltip>
+                                                                    <TooltipTrigger>
+                                                                        <button disabled={configureStore?.motherboard?.memory_generation?.id < el.memory_generation_id ? true : false} onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">{t('add')}</button>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        <p>Your videocard {el.gpu_model}</p>
+                                                                        <p>doesn't match with</p>
+                                                                        <p>your case {configureStore?.computer_case?.case_model}</p>
+                                                                        <p>doesn't match width videocard and max width videocard in case</p>
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <button disabled={configureStore?.motherboard?.memory_generation?.id < el.memory_generation_id} onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">{t('add')}</button>
+                                                            </>
+                                                        )
+                                                    }
+                                                    {/* <button  onClick={() => handleAddComponent(el)} className="disabled:cursor-default disabled:text-[#626262] disabled:bg-[#C8B593] text-[#000000] py-[8px] px-[25px] rounded-[10px] bg-[#FFCC70] cursor-pointer">{t('add')}</button> */}
                                                     <p className="mt-[20px]">{el.price}$</p>
                                                 </div>
                                             </div>

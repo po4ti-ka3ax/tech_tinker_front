@@ -161,8 +161,16 @@ const Configure = () => {
                             } 
                         }} id="real-input" hidden />
                         <label htmlFor="real-input">
-                            <Image alt="add photo" className="cursor-pointer rounded-[10px] w-[200px] md:w-[300px] md:h-[300px]" src={image ? image : '/img/addPhoto.svg'} width={300} height={300} />
+                            <div className="py-[10px] my-[20px] bg-[#242424] rounded-[10px]">
+                                <div className="px-[10px]">
+                                    <Image alt="add photo" className="cursor-pointer rounded-[10px] w-[200px] md:w-[300px] md:h-[300px]" src={image ? image : '/img/Upload.svg'} width={300} height={300} />
+                                </div>
                             <p className="my-[20px] cursor-pointer">{t('uploadPhoto')}</p>
+                            <button onClick={() => {
+                                setPcImage(null)
+                                setImage("")
+                            }} className="text-[#ffffff] py-[8px] px-[25px] rounded-[10px] bg-[#FF5252] cursor-pointer">Remove photo</button>
+                            </div>
                         </label>
                     </div>
                     <input type="text" value={pcName} onChange={e => setPcName(e.target.value)} placeholder={t('pcName')} className="text-center rounded-[20px] py-[10px] px-[50px] bg-[#242424]" />
