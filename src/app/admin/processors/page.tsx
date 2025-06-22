@@ -13,13 +13,12 @@ import {
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { useForm } from "react-hook-form";
-import Image from "next/image";
+// import Image from "next/image";
 
 const ProcessorPage = () => {
     const [processor, setProcessor] = useState([]);
@@ -47,7 +46,7 @@ const ProcessorPage = () => {
         );
 
         instanceAxios.post('/processors', payload)
-            .then(res => {
+            .then(() => {
                 setAddOpen(!addOpen);
             });
     };
@@ -75,11 +74,11 @@ const ProcessorPage = () => {
             console.error(err)
         }
     }
-    const validatePassword = () => {
-        if (watch("password").length < 8) {
-            return 'Password must be at least 8 characters long'
-        }
-    }
+    // const validatePassword = () => {
+    //     if (watch("password").length < 8) {
+    //         return 'Password must be at least 8 characters long'
+    //     }
+    // }
     useEffect(() => {
         try {
             instanceAxios.get('/processors').then(res => {
@@ -116,7 +115,7 @@ const ProcessorPage = () => {
                         <TableBody>
                             {
                                 processor?.map(el => (
-                                    <TableRow>
+                                    <TableRow key={el.id}>
                                         <TableCell>{el.id}</TableCell>
                                         <TableCell>{el.processor_model}</TableCell>
                                         <TableCell>{el.category_id}</TableCell>
@@ -220,7 +219,7 @@ const ProcessorPage = () => {
                                         <form className="max-h-[70vh] overflow-y-auto" autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
                                             {
                                                 keys?.map(el => (
-                                                    <div className="mt-[20px]">
+                                                    <div key={el.id} className="mt-[20px]">
                                                         <p className="px-[12px] text-[15px] font-regular text-white">{el}</p>
                                                         <input
                                                             className="px-[12px] mt-[7px] py-[10px] text-[15px] placeholder:text-[#DCDCDC] opacity-[100%] w-[100%] bg-[#434343] rounded-[10px] autofill:bg-[#434343] focus:outline-none focus:border-none"

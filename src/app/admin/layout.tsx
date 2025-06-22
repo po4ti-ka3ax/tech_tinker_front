@@ -1,5 +1,5 @@
 'use client'
-import Link from "next/link";
+// import Link from "next/link";
 import LinkComponent from "../components/admin/LinkComponent";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

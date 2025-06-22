@@ -409,7 +409,7 @@ const Computer = () => {
 
                 </div>
                 {
-                    pc?.user_id == userId || userRole === 2 ? (
+                    (pc?.user_id == userId) || (userRole == 2) ? (
                         <>
                             <div className="text-center mt-[30px]">
                                 <button className="text-center cursor-pointer text-[#C82323] border-[#C82323] hover:bg-[#C82323] hover:text-[#ffffff] duration-300 border-1 rounded-[10px] px-[10px] py-[10px]" onClick={() => handleDelete(id)}>Delete pc</button>

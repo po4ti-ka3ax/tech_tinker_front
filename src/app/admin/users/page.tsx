@@ -13,13 +13,13 @@ import {
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
+    // DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { useForm } from "react-hook-form";
-import Image from "next/image";
+// import Image from "next/image";
 
 const userPage = () => {
     const [users, setUsers] = useState([]);
