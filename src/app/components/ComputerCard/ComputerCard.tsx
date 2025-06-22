@@ -16,7 +16,7 @@ const ComputerCard = ({ computer }: ComputerCardInterface) => {
                         <div className="w-full border-t  border-[#6D6C6C]" />
                         <div className="mb-[40px] px-[20px] py-[10px]">
                             <p className="mb-[15px] text-[20px]">{computer.title}</p>
-                            <p className="text-[#B3B3B3] text-[14px]">Status: {computer.status.slug}</p>
+                            <p className="text-[#B3B3B3] text-[14px]">Author: {computer.user.username}</p>
                             <p className="mb-[15px] text-[16px]">Price: {computer.total_price}$</p>
 
                         </div>

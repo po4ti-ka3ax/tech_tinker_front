@@ -19,6 +19,7 @@ const Comment = ({ commentInfo }: CommentInterface) => {
     const [performanceColor, setPerformanceColor] = useState("");
     const [compatibilityColor, setCompatibilityColor] = useState("");
     const [parentComment, setParentComment] = useState([]);
+    const [nextLink, setNextLink] = useState('')
     const [open, setOpen] = useState(false)
     const [like, setLike] = useState(false)
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm({
@@ -26,29 +27,50 @@ const Comment = ({ commentInfo }: CommentInterface) => {
     });
     useEffect(() => {
         try {
-            instanceAxios.get(`/reviews?parent_id=${commentInfo.id}`).then(res => {
+            instanceAxios.get(`/comments?review_id=${commentInfo.id}`).then(res => {
                 setParentComment(res.data.data)
+                setNextLink(res.data?.links?.next)
             })
         } catch (err) {
             console.error(err)
         }
 
     }, [])
-    useEffect(() => {
+    console.log(parentComment.length >= 10)
 
-    })
     const commentAnswerFunc = () => {
         try {
             instanceAxios.post(`/comments`, {
-                "content":watch("textComment"),
-                "review_id":commentInfo.id,
+                "content": watch("textComment"),
+                "review_id": commentInfo.id,
             }).then(res => {
-                setParentComment(res.data.data)
+                if (res.status === 200) {
+                    reset()
+                    instanceAxios.get(`/comments?review_id=${commentInfo.id}`).then(res => {
+                        if (res.status === 200) {
+                            setParentComment(res.data.data)
+                        }
+                    })
+                }
             })
         } catch (err) {
             console.error(err)
         }
     }
+    useEffect(() => {
+        try {
+            instanceAxios.get(`/comments?review_id=${commentInfo.id}`).then(res => {
+                if (res.status === 200) {
+                    setParentComment(res.data.data)
+                }
+            })
+        } catch (err) {
+            console.error(err)
+        }
+    }, [commentInfo.id])
+
+
+
     const setLikeHandle = () => {
         try {
             instanceAxios.post(`/reviews/like/${commentInfo.id}`).then(res => {
@@ -67,6 +89,8 @@ const Comment = ({ commentInfo }: CommentInterface) => {
             console.error(err)
         }
     }
+
+
     useEffect(() => {
         const setColor = ({ setterColor, param }: SetColorInterface) => {
             if (param >= 7) {
@@ -148,7 +172,7 @@ const Comment = ({ commentInfo }: CommentInterface) => {
                                                                 {...register('textComment', { required: "text is required" })}
                                                             />
                                                             <div className="flex justify-end">
-                                                                <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">send</button>
+                                                                <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">Send</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -171,9 +195,33 @@ const Comment = ({ commentInfo }: CommentInterface) => {
                                             </>
                                         ) : "Don't have answer on this comment, you can become first"
                                     }
+                                    {
+                                        parentComment.length >= 10 && nextLink && (
+                                            <>
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            const res = await instanceAxios.get(`${nextLink}`);
+                                                            if (res.status === 200) {
+                                                                setParentComment(prev => [...prev, ...res.data.data]);
+                                                                setNextLink(res.data.links?.next || '');
+                                                            }
+                                                        } catch (err) {
+                                                            console.error(err);
+                                                        }
+                                                    }}
+                                                >
+                                                    Show more
+                                                </button>
+
+                                            </>
+                                        )
+                                    }
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
+
+
                     </div>
 
 

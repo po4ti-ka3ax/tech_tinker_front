@@ -13,6 +13,8 @@ import instanceAxios from "../axios/instanceAxios";
 import Link from "next/link";
 
 const ShortComment = ({ commentInfo }: CommentInterface) => {
+    const Cookies = require("js-cookie")
+    const userId = Cookies.get('user_id')
     const [reliabilityColor, setReliabilityColor] = useState("");
     const [performanceColor, setPerformanceColor] = useState("");
     const [compatibilityColor, setCompatibilityColor] = useState("");
@@ -23,23 +25,23 @@ const ShortComment = ({ commentInfo }: CommentInterface) => {
     });
     const [replyText, setReplyText] = useState("")
     const [replyTextId, setReplyTextId] = useState(0)
-    const [commentParent,setCommentParent] = useState([]);
+    const [commentParent, setCommentParent] = useState([]);
     useEffect(() => {
         instanceAxios.get(`/reviews?parent_id=${commentInfo.id}`).then(res => {
             setParentComment(res.data.data)
         })
-    },[])
+    }, [])
     const commentAnswerFunc = () => {
         instanceAxios.post(`reviews`, {
-            "content":replyText,
-            "review_id":commentInfo.id,
-            "build_id":commentInfo.build_id,
+            "content": replyText,
+            "review_id": commentInfo.id,
+            "build_id": commentInfo.build_id,
         })
 
         reset()
     }
 
-    
+
     useEffect(() => {
         const setColor = ({ setterColor, param }: SetColorInterface) => {
             if (param >= 7) {
@@ -62,10 +64,10 @@ const ShortComment = ({ commentInfo }: CommentInterface) => {
         const mentionRegex = /@(\w+)/g;
         const parts = text.split(mentionRegex)
 
-        return parts.map((part,index) => {
-            if(index % 2 === 1) {
+        return parts.map((part, index) => {
+            if (index % 2 === 1) {
                 return (
-                    <Link 
+                    <Link
                         key={index}
                         href={`/profile/${replyTextId}`}
                         className="text-[#3282C6] underline"
@@ -80,15 +82,21 @@ const ShortComment = ({ commentInfo }: CommentInterface) => {
     }
     return (
         <>
-            <div className="flex items-start my-[30px]">
+            <div className="flex items-start justify-between my-[30px] px-[20px]">
                 <div className="mr-[20px] text-center w-[50px] shrink-0">
-                    <Link href={`/profile/${commentInfo.user?.id}`}>
-                        <Avatar className="w-[50px] cursor-pointer h-[50px] mb-[10px]">
-                            <AvatarImage className="object-cover" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${commentInfo.user?.profile_img}`} />
-                            <AvatarFallback className="text-[#000000] text-[40px] uppercase">{commentInfo.user?.username?.slice(0, 2)}</AvatarFallback>
-                        </Avatar>
-                    </Link>
-                    <p>{commentInfo.user?.username}</p>
+                    <div className="">
+                        <div className="">
+                            <Link href={`/profile/${commentInfo.user?.id}`}>
+                                <Avatar className="w-[50px] cursor-pointer h-[50px] mb-[10px]">
+                                    <AvatarImage className="object-cover" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}${commentInfo.user?.profile_img}`} />
+                                    <AvatarFallback className="text-[#000000] text-[40px] uppercase">{commentInfo.user?.username?.slice(0, 2)}</AvatarFallback>
+                                </Avatar>
+                            </Link>
+                            <p>{commentInfo.user?.username}</p>
+
+                        </div>
+                    </div>
+
                 </div>
                 <div className="w-[100%]  rounded-[2px]">
                     <p>{renderCommentWithMentions(commentInfo.content)}</p>
@@ -122,7 +130,7 @@ const ShortComment = ({ commentInfo }: CommentInterface) => {
                                     }}>Answer</button>
                                 </div>
                                 <div className="">
-                                     {
+                                    {
                                         open ? (
                                             <>
                                                 <div className="flex">
@@ -134,10 +142,10 @@ const ShortComment = ({ commentInfo }: CommentInterface) => {
                                                                 placeholder="Write your answer"
                                                                 rows={1}
                                                                 onChange={e => setReplyText(e.target.value)}
-                                                                // {...register('textComment', { required: "text is required" })}
+                                                            // {...register('textComment', { required: "text is required" })}
                                                             />
                                                             <div className="flex justify-end">
-                                                                    <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">send</button>
+                                                                <button className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A]" type="submit">send</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -147,19 +155,19 @@ const ShortComment = ({ commentInfo }: CommentInterface) => {
                                     }
                                 </div>
                                 <AccordionContent>
-                                   {
-                                    commentParent.length >= 1 ? (
-                                        <>
-                                            {
-                                                commentParent.map(el => (
-                                                    <>
-                                                        <ShortComment commentInfo={el}/>
-                                                    </>
-                                                ))
-                                            }
-                                        </>
-                                    ) : "Don't have answer on this comment, you can become first"
-                                   }
+                                    {
+                                        commentParent.length >= 1 ? (
+                                            <>
+                                                {
+                                                    commentParent.map(el => (
+                                                        <>
+                                                            <ShortComment commentInfo={el} />
+                                                        </>
+                                                    ))
+                                                }
+                                            </>
+                                        ) : "Don't have answer on this comment, you can become first"
+                                    }
 
                                 </AccordionContent>
                             </AccordionItem>
@@ -168,6 +176,14 @@ const ShortComment = ({ commentInfo }: CommentInterface) => {
 
 
                 </div>
+                {
+                    commentInfo?.user?.id === userId ? (
+                        <div className="">
+                            <button className="cursor-pointer rounded-[15px] cursor-pointer text-[15px]  px-[20px] py-[7px] bg-[#FF5252] text-white">delete</button>
+                        </div>
+                    ) : ""
+
+                }
             </div>
         </>
     )

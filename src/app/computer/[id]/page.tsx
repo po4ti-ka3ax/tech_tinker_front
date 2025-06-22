@@ -100,7 +100,6 @@ const Computer = () => {
             if (res.status === 201) {
                 const updated = await instanceAxios.get(`/reviews?build_id=${id}`);
                 setComments(updated.data.data);
-
                 reset();
             }
         } catch (err) {
@@ -219,7 +218,7 @@ const Computer = () => {
                                 <p className="text-[25px]">Total grade:</p>
                                 <p className={`text-[20px] ${totalGradeColor}`}>{totalGrade}</p>
                             </div>
-                            <div className={`flex justify-between items-center px-[30px] mx-[20px] bg-[#3E3E3E] p-[5px] rounded-[10px]`}>
+                            {/* <div className={`flex justify-between items-center px-[30px] mx-[20px] bg-[#3E3E3E] p-[5px] rounded-[10px]`}>
                                 <p className="text-[19px]">Reliability:</p>
                                 <p className={`text-[17px] ${reliabilityColor}`}>{reliability}</p>
                             </div>
@@ -230,7 +229,7 @@ const Computer = () => {
                             <div className="flex justify-between items-center px-[30px] mx-[20px] bg-[#3E3E3E] p-[5px] rounded-[10px]">
                                 <p className=" text-[19px]">Compatibility:</p>
                                 <p className={`text-[17px] ${compatibilityColor}`}>{compatibility}</p>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
@@ -387,12 +386,12 @@ const Computer = () => {
                             {
                                 comments.length >= 1 && comments.map(el => (
                                     <>
-                                        <Comment commentInfo={el} />
+                                        <Comment  commentInfo={el} />
                                     </>
                                 ))
                             }
                             {
-                                comments.length > 10 ? (
+                                comments.length >= 10 ? (
                                     <>
                                         <div className="flex justify-center mr-[35px]">
                                             <button onClick={() => loadMoreHandle()} className="rounded-[15px] cursor-pointer text-[15px] font-black px-[20px] py-[7px] bg-[#FFCC70] text-[#1A1A1A] cursor-pointer">Load more</button>
