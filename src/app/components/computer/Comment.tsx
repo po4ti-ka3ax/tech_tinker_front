@@ -33,6 +33,20 @@ const Comment = ({ commentInfo,onDelete }: CommentProps) => {
     const handleDeleteChildComment = (id: number) => {
         setParentComment(prev => prev.filter(comment => comment.id !== id));
     };
+const fetchParentComments = async () => {
+    try {
+        const res = await instanceAxios.get(`/comments?review_id=${commentInfo.id}`);
+        if (res.status === 200) {
+            setParentComment(res.data.data);
+            setNextLink(res.data.links?.next || '');
+        }
+    } catch (err) {
+        console.error("Ошибка при получении ответов:", err);
+    }
+};
+useEffect(() => {
+    fetchParentComments();
+}, []);
 
     useEffect(() => {
         try {
@@ -70,7 +84,7 @@ const Comment = ({ commentInfo,onDelete }: CommentProps) => {
 
     useEffect(() => {
         try {
-            instanceAxios.get(`/comments?review_id=${commentInfo.id}`).then(res => {
+            instanceAxios.get(`/comments?parent_id=${commentInfo.review_id}`).then(res => {
                 if (res.status === 200) {
                     setParentComment(res.data.data)
                 }
@@ -80,7 +94,22 @@ const Comment = ({ commentInfo,onDelete }: CommentProps) => {
         }
     }, [commentInfo.id])
 
+const fetchReplies = async () => {
+    try {
+      const res = await instanceAxios.get(`/comments?parent_id=${commentInfo.id}`);
+      if (res.status === 200) {
+        setParentComment(res.data.data);
+      }
+    } catch (err) {
+      console.error("Ошибка при загрузке ответов:", err);
+    }
+  };
 
+ useEffect(() => {
+  if (commentInfo?.id) {
+    fetchReplies();
+  }
+}, [commentInfo?.id]);
 
     const setLikeHandle = () => {
         try {
@@ -101,6 +130,7 @@ const Comment = ({ commentInfo,onDelete }: CommentProps) => {
         }
     }
 
+const [renderFlag, setRenderFlag] = useState(0);
 
     useEffect(() => {
         const setColor = ({ setterColor, param }: SetColorInterface) => {
@@ -198,7 +228,7 @@ const Comment = ({ commentInfo,onDelete }: CommentProps) => {
                                             <>
                                                 {
                                                     parentComment.map(el => (
-                                                        <ShortComment key={el.id} commentInfo={el} onDelete={handleDeleteChildComment} />
+                                                        <ShortComment  key={el.id} commentInfo={el} onDelete={handleDeleteChildComment} />
                                                     ))
                                                 }
                                             </>

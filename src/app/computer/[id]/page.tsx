@@ -279,6 +279,7 @@ const Computer = () => {
 
                         <div className=" mt-[10px] ">
                             <Link href={`/profile/${pc.user?.id}`}>
+                                <p className="text-center text-[20px]">Author:</p>
                             <div className="flex justify-center gap-[10px] items-center bg-[#3E3E3E] py-[10px] px-[20px] rounded-[10px]">
                                 <div className="">
                                     <Avatar className="w-[60px] cursor-pointer h-[60px]">
