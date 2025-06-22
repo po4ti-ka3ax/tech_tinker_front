@@ -33,6 +33,7 @@ const Configure = () => {
     // const { power, setPowerStore, totalPower, unsetPowerCurrentComponent, unsetPowerStore, recalculateTotalPower } = usePowerStore()
     const { configureStore, setConfigureStore, deleteConfigureObject,unsetConfigureStore } = useConfigureStore();
     const [image,setImage] = useState<string | null>(null)
+    
     const handleSubmit = async () => {
         const formData = new FormData();
 

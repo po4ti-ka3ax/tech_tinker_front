@@ -62,8 +62,7 @@ export const filterConfig = {
       label: "Brand",
       type: "select",
       options: [
-        { label: "Asrock", value: 3 },
-        { label: "MSI", value: 4 }
+        
       ]
     },
     {
@@ -441,8 +440,90 @@ power_supplies: [
     label: "Number per Page",
     type: "number"
   }
+],
+builds: [
+  {
+    name: "search",
+    label: "Search",
+    type: "text"
+  },
+  {
+    name: "processor_id",
+    label: "Processor",
+    type: "select",
+    options: []
+  },
+  {
+    name: "motherboard_id",
+    label: "Motherboard",
+    type: "select",
+    options: []
+  },
+  {
+    name: "graphic_card_id",
+    label: "Graphic Card",
+    type: "select",
+    options: []
+  },
+  {
+    name: "system_memory_id",
+    label: "System Memory",
+    type: "select",
+    options: []
+  },
+  {
+    name: "cooling_spec_id",
+    label: "Cooling",
+    type: "select",
+    options: []
+  },
+  {
+    name: "storage_id",
+    label: "Storage",
+    type: "select",
+    options: []
+  },
+  {
+    name: "computer_case_id",
+    label: "Case",
+    type: "select",
+    options: []
+  },
+  {
+    name: "power_id",
+    label: "Power",
+    type: "select",
+    options: []
+  },
+  {
+    name: "user_id",
+    label: "User",
+    type: "select",
+    options: []
+  },
+  {
+    name: "price",
+    label: "Price",
+    type: "range"
+  },
+  {
+    name: "price_sort",
+    label: "Sort by Price",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "average_rating_sort",
+    label: "Sort by Rating",
+    type: "sort",
+    options: ["asc", "desc"]
+  },
+  {
+    name: "per_page",
+    label: "Number per Page",
+    type: "number"
+  }
 ]
-
 
 
 

@@ -20,82 +20,171 @@ import { useFilterStore } from '../state/useFilterStore'
 import ComputerCard from "../components/ComputerCard/ComputerCard"
 import instanceAxios from "../components/axios/instanceAxios"
 import { useTranslation } from 'react-i18next';
-import "@/lib/i18n"; 
+import "@/lib/i18n";
+import { filterConfig } from "../config/filterConfig"
+import CheckboxComponent from "../components/filters/CheckboxComponent"
 const Content = () => {
+    const { selectedFilters, setFilterValue } = useFilterStore();
     const { t } = useTranslation('common');
     const [pc, setPC] = useState([]);
-    const ProcessorSocket = [
-        { id: 1, name: "LGA1151" },
-        { id: 2, name: "LGA1200" },
-        { id: 3, name: "AM4" },
-        { id: 4, name: "LGA1700" },
-        { id: 5, name: "AM5" },
-        { id: 6, name: "TR4" },
-        { id: 7, name: "sTRX4" },
-        { id: 8, name: "SP3" }
-    ];
-    const NameModel = [
-        { id: 1, name: "Intel Core i5-10400F" },
-        { id: 2, name: "Intel Core i7-11700K" },
-        { id: 3, name: "Intel Core i9-13900K" },
-        { id: 4, name: "AMD Ryzen 5 5600X" },
-        { id: 5, name: "AMD Ryzen 7 5800X" },
-        { id: 6, name: "AMD Ryzen 9 7950X" },
-        { id: 7, name: "Intel Core i3-12100" },
-        { id: 8, name: "AMD Ryzen 3 4100" }
-    ];
-    const NameVendor = [
-        { id: 1, name: "Intel" },
-        { id: 2, name: "AMD" },
-    ];
-
-    const VideoCardModels = [
-        { id: 1, name: "NVIDIA GeForce RTX 3060" },
-        { id: 2, name: "NVIDIA GeForce RTX 3080" },
-        { id: 3, name: "NVIDIA GeForce GTX 1660 Super" },
-        { id: 4, name: "AMD Radeon RX 6600 XT" },
-        { id: 5, name: "AMD Radeon RX 6700 XT" },
-        { id: 6, name: "AMD Radeon RX 7900 XTX" },
-        { id: 7, name: "NVIDIA GeForce RTX 4060 Ti" },
-        { id: 8, name: "AMD Radeon RX 7600" },
-    ];
-
-    const VideoMemoryTypes = [
-        { id: 1, name: "GDDR5" },
-        { id: 2, name: "GDDR6" },
-        { id: 3, name: "GDDR6X" },
-        { id: 4, name: "HBM2" },
-    ];
-
-    const VideoVendors = [
-        { id: 1, name: "NVIDIA" },
-        { id: 2, name: "AMD" },
-    ];
-
-    const VideoMemoryVolumes = [
-        { id: 1, name: "4 GB" },
-        { id: 2, name: "6 GB" },
-        { id: 3, name: "8 GB" },
-        { id: 4, name: "10 GB" },
-        { id: 5, name: "12 GB" },
-        { id: 6, name: "16 GB" },
-        { id: 7, name: "24 GB" },
-    ];
-    const [open, setOpen] = useState(false);
-
+    const handleRangeChange = (name: string, key: 'from' | 'to', value: number | null) => {
+        const current = selectedFilters[name] || {};
+        setFilterValue(name, { ...current, [key]: value });
+    };
     useEffect(() => {
         try {
-            instanceAxios.get('/builds').then(res => setPC(res.data.data))
-        } catch(err) {
-            console.error(err)
+            instanceAxios.get(`/processors`).then(res => {
+                if (filterConfig['builds'][1].options && filterConfig['builds'][1].options.length === 0) {
+                    res.data.data.forEach(el => {
+                        console.log(el)
+                        filterConfig['builds'][1].options?.push({ value: el.id, label: el.processor_model })
+                    });
+                }
+            })
+            instanceAxios.get(`/motherboards`).then(res => {
+                if (filterConfig['builds'][2].options && filterConfig['builds'][2].options.length === 0) {
+                    res.data.data.forEach(el => {
+                        filterConfig['builds'][2].options?.push({ value: el.id, label: el.motherboard_model })
+                    });
+                }
+            })
+            instanceAxios.get(`/graphic-cards`).then(res => {
+                if (filterConfig['builds'][3].options && filterConfig['builds'][3].options.length === 0) {
+                    res.data.data.forEach(el => {
+                        filterConfig['builds'][3].options?.push({ value: el.id, label: el.gpu_model })
+                    });
+                }
+            })
+            instanceAxios.get(`/system-memories`).then(res => {
+                if (filterConfig['builds'][4].options && filterConfig['builds'][4].options.length === 0) {
+                    res.data.data.forEach(el => {
+                        filterConfig['builds'][4].options?.push({ value: el.id, label: el.memory_model })
+                    });
+                }
+            })
+            instanceAxios.get(`/cooling-specs`).then(res => {
+                if (filterConfig['builds'][5].options && filterConfig['builds'][5].options.length === 0) {
+                    res.data.data.forEach(el => {
+                        filterConfig['builds'][5].options?.push({ value: el.id, label: el.cooling_model })
+                    });
+                }
+            })
+            instanceAxios.get(`/storages`).then(res => {
+                if (filterConfig['builds'][6].options && filterConfig['builds'][6].options.length === 0) {
+                    res.data.data.forEach(el => {
+                        filterConfig['builds'][6].options?.push({ value: el.id, label: el.storage_model })
+                    });
+                }
+            })
+            instanceAxios.get(`/computer-cases`).then(res => {
+                if (filterConfig['builds'][7].options && filterConfig['builds'][7].options.length === 0) {
+                    res.data.data.forEach(el => {
+                        filterConfig['builds'][7].options?.push({ value: el.id, label: el.case_model })
+                    });
+                }
+            })
+            instanceAxios.get(`/powers`).then(res => {
+                if (filterConfig['builds'][8].options && filterConfig['builds'][8].options.length === 0) {
+                    res.data.data.forEach(el => {
+                        filterConfig['builds'][8].options?.push({ value: el.id, label: el.power_model })
+                    });
+                }
+            })
+
+
+        } catch (error) {
+            console.error(error)
         }
-        if (open) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = '';
-        }
-    }, [open])
+    }, [])
+    const buildQuery = () => {
+        const params = new URLSearchParams();
+
+        Object.entries(selectedFilters).forEach(([key, value]) => {
+            if (debouncedSearchQuery.trim()) {
+                params.append('search', debouncedSearchQuery.trim());
+            }
+
+
+            if (Array.isArray(value)) {
+                value.forEach((v, index) => {
+                    // Особая обработка для graphic_card и system_memory
+                    if (key === "graphic_card" || key === "system_memory") {
+                        params.append(`${key}`, v);
+                    } else {
+                        params.append(key, v);
+                    }
+                });
+            } else if (typeof value === "object" && value !== null) {
+                if (key === "price") {
+                    if (value.from) params.append(`${key}_min`, Number(value.from).toFixed(2));
+                    if (value.to) params.append(`${key}_max`, Number(value.to).toFixed(2));
+                } else if (key === "height" || key === "width") {
+                    if (value.from) params.append(`${key}_min`, Number(value.from).toFixed(1));
+                    if (value.to) params.append(`${key}_max`, Number(value.to).toFixed(1));
+                } else {
+                    if (value.from) params.append(`${key}_min`, value.from);
+                    if (value.to) params.append(`${key}_max`, value.to);
+                }
+            } else if (value !== undefined && value !== "") {
+                params.append(key, value);
+            }
+        });
+
+        const query = params.toString();
+        return query ? `?${query}` : "";
+    };
+
+    const onApplyFilters = async () => {
+        const query = buildQuery();
+        const response = await instanceAxios.get(`/builds?${query}`);
+        // console.log(selectedFilters)
+        setPC(response.data.data);
+    };
+    const [open, setOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+    useEffect(() => {
+        instanceAxios.get('/builds')
+            .then(res => setPC(res.data.data))
+            .catch(err => console.error(err));
+    }, []);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 500);
+
+        return () => clearTimeout(handler);
+    }, [searchQuery]);
+
+    useEffect(() => {
+        document.body.style.overflow = open ? 'hidden' : '';
+    }, [open]);
+    const clearFiltersHandle = () => {
+        clearAllFilters()
+        instanceAxios.get('/builds')
+            .then(res => setPC(res.data.data))
+            .catch(err => console.error(err));
+    }
     const { clearAllFilters } = useFilterStore();
+    const searchHandle = async () => {
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) {
+        params.append('search', searchQuery.trim());
+    }
+    try {
+        const res = await instanceAxios.get(`/builds?${params.toString()}`);
+        setPC(res.data.data);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+useEffect(() => {
+    if (debouncedSearchQuery.trim() !== '') {
+        searchHandle();
+    }
+}, [debouncedSearchQuery]);
+
 
     return (
         <>
@@ -115,36 +204,114 @@ const Content = () => {
                             <div className="px-[24px] py-[16px]">
                                 <Accordion type="single" collapsible>
                                     <AccordionItem value="item-1">
-                                        <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Price</AccordionTrigger>
+                                        <AccordionTrigger className="text-[20px] text-[#FFCC70] hover:no-underline">Filter</AccordionTrigger>
                                         <AccordionContent>
-                                            <div className="flex items-center text-center">
-                                                <input className="bg-[#3E3E3E] px-[5px] py-[10px] w-[50%] rounded-[10px]" type="number" placeholder={t('from')} />
-                                                <div className="mx-[10px]">
-                                                    <p className="whitespace-nowrap">{t('computerFilter')}</p>
-                                                    <p className="text-center">0</p>
+                                            {filterConfig["builds"].map((filter) => (
+                                                <div key={filter.name} className="mb-4">
+                                                    <label className="text-white block mb-1">{filter.label}</label>
+
+                                                    {filter.type === "select" && (
+                                                        <div className="flex bg-[#3C3C3C] rounded-[10px] px-[10px] py-[20px] flex-col gap-[5px]">
+                                                            {filter?.options.map((opt) => (
+                                                                <CheckboxComponent
+                                                                    key={opt.value}
+                                                                    componentName={filter.name}
+                                                                    componentId={opt.value}
+                                                                    componentLabel={opt.label}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    )}
+
+                                                    {filter.type === "range" && (
+                                                        <div className="flex space-x-2">
+                                                            <input
+                                                                type="number"
+                                                                placeholder={t('from')}
+                                                                value={selectedFilters[filter.name]?.from ?? ""}
+                                                                onChange={(e) =>
+                                                                    handleRangeChange(filter.name, "from", Number(e.target.value))
+                                                                }
+
+                                                                className="w-1/2 bg-[#3E3E3E] text-white rounded p-2"
+                                                            />
+                                                            <input
+                                                                type="number"
+                                                                placeholder={t('to')}
+                                                                value={selectedFilters[filter.name]?.to ?? ""}
+                                                                onChange={(e) => {
+                                                                    handleRangeChange(filter.name, "to", Number(e.target.value))
+                                                                }
+                                                                }
+                                                                className="w-1/2 bg-[#3E3E3E] text-white rounded p-2"
+                                                            />
+                                                        </div>
+                                                    )}
+
+                                                    {filter.type === "number" && (
+                                                        <input
+                                                            type="number"
+                                                            value={selectedFilters[filter.name] ?? ""}
+                                                            onChange={(e) => {
+                                                                if (filter.name === "frequency") {
+                                                                    console.log("frequency")
+                                                                    setFilterValue(filter.name, Number(e.target.value).toFixed(1))
+                                                                } else {
+                                                                    setFilterValue(filter.name, e.target.value)
+                                                                }
+                                                            }}
+                                                            className="bg-[#3E3E3E] text-white rounded p-2 w-full"
+                                                        />
+                                                    )}
+
+                                                    {filter.type === "sort" && (
+                                                        <select
+                                                            onChange={(e) => setFilterValue(filter.name, e.target.value)}
+                                                            className="bg-[#3E3E3E] text-white rounded p-2 w-full"
+                                                        >
+                                                            <option value="">{t('withoutSort')}</option>
+                                                            {filter.options.map((option) => (
+                                                                <option key={option} value={option}>
+                                                                    {option === "asc" ? "ASC" : "DESC"}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    )}
                                                 </div>
-                                                <input className="bg-[#3E3E3E] px-[5px] py-[10px] w-[50%] rounded-[10px]" type="number" placeholder={t('to')} />
-                                            </div>
+                                            ))}
                                         </AccordionContent>
                                     </AccordionItem>
                                 </Accordion>
                             </div>
                             <div className="w-full border-b  border-[#FFCC70]" />
-                            <FilterComponent componentName={"Processor"} NameVendor={NameVendor} NameModel={NameModel} ProcessorSocket={ProcessorSocket} />
-                            <FilterComponent componentName={"Videocard"} NameVendor={VideoVendors} NameModel={VideoCardModels} VideoMemoryType={VideoMemoryTypes} VideoMemoryVolume={VideoMemoryVolumes} />
-                            <div className="text-center ">
-                                <button onClick={clearAllFilters} className="text-[#000000] bg-[#FFCC70] px-[5px] py-[10px] rounded-[10px] text-[20px]">{t('resetFilters')}</button>
+                            <div className="text-center flex gap-[10px] justify-center">
+                                <button onClick={() => clearFiltersHandle()} className="cursor-pointer text-[#000000] bg-[#FFCC70] px-[5px] py-[10px] rounded-[10px] text-[20px]">{t('resetFilters')}</button>
+                                <button onClick={onApplyFilters} className="cursor-pointer text-[#000000] bg-[#FFCC70] px-[5px] py-[10px] rounded-[10px] text-[20px]">Apply</button>
                             </div>
                         </DialogContent>
                     </Dialog>
-                    <input type="text" className="mx-[20px] bg-[#2D2D2D] pl-[20px] px-[200px] rounded-[10px]" placeholder={t('search')} />
-                    <button className="px-[20px]  py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]" >{t('search')}</button>
+                <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="mx-[20px] bg-[#2D2D2D] pl-[20px] px-[200px] rounded-[10px]"
+                    placeholder={t('search')}
+                />
+
+                <button
+                    onClick={searchHandle}
+                    className="px-[20px] py-[10px] bg-[#FFCC70] text-black cursor-pointer rounded-[10px]"
+                >
+                    {t('search')}
+                </button>
+
+
                 </div>
                 <div className=" grid grid-cols-5 mt-[30px] justify-center">
                     {
                         pc.map(el => (
                             <>
-                                <ComputerCard computer={el}/>
+                                <ComputerCard computer={el} />
                             </>
                         ))
                     }
