@@ -63,6 +63,9 @@ const Computer = () => {
             console.error(err)
         }
     }, [pc.id]) // триггерим, когда pc.id есть
+    const handleDeleteComment = (id: number) => {
+    setComments(prev => prev.filter(c => c.id !== id));
+    };
 
     const saveFavorite = () => {
         try {
@@ -386,7 +389,7 @@ const Computer = () => {
                             {
                                 comments.length >= 1 && comments.map(el => (
                                     <>
-                                        <Comment  commentInfo={el} />
+                                        <Comment  commentInfo={el} onDelete={handleDeleteComment}/>
                                     </>
                                 ))
                             }

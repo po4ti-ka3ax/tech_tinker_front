@@ -13,8 +13,13 @@ import instanceAxios from "../axios/instanceAxios";
 import Link from "next/link";
 import ShortComment from "./ShortComment";
 import Image from "next/image";
+interface CommentProps extends CommentInterface {
+  onDelete?: (id: number) => void;
+}
 
-const Comment = ({ commentInfo }: CommentInterface) => {
+const Comment = ({ commentInfo,onDelete }: CommentProps) => {
+    const Cookies = require("js-cookie");
+    const userId = Cookies.get("user_id")
     const [reliabilityColor, setReliabilityColor] = useState("");
     const [performanceColor, setPerformanceColor] = useState("");
     const [compatibilityColor, setCompatibilityColor] = useState("");
@@ -25,6 +30,10 @@ const Comment = ({ commentInfo }: CommentInterface) => {
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm({
         mode: "onSubmit"
     });
+    const handleDeleteChildComment = (id: number) => {
+        setParentComment(prev => prev.filter(comment => comment.id !== id));
+    };
+
     useEffect(() => {
         try {
             instanceAxios.get(`/comments?review_id=${commentInfo.id}`).then(res => {
@@ -38,25 +47,27 @@ const Comment = ({ commentInfo }: CommentInterface) => {
     }, [])
     console.log(parentComment.length >= 10)
 
-    const commentAnswerFunc = () => {
+    const commentAnswerFunc = async () => {
         try {
-            instanceAxios.post(`/comments`, {
-                "content": watch("textComment"),
-                "review_id": commentInfo.id,
-            }).then(res => {
-                if (res.status === 200) {
-                    reset()
-                    instanceAxios.get(`/comments?review_id=${commentInfo.id}`).then(res => {
-                        if (res.status === 200) {
-                            setParentComment(res.data.data)
-                        }
-                    })
-                }
-            })
+            const res = await instanceAxios.post(`/comments`, {
+                content: watch("textComment"),
+                review_id: commentInfo.id,
+            });
+
+            if (res.status === 200 || res.status === 201) {
+                const newComment = res.data.data; // предполагается, что сервер вернёт добавленный комментарий
+
+                // Добавить новый комментарий в начало, чтобы он сразу появился
+                setParentComment(prev => [...prev, newComment]);
+
+                reset(); // очистить textarea
+            }
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
-    }
+    };
+
+
     useEffect(() => {
         try {
             instanceAxios.get(`/comments?review_id=${commentInfo.id}`).then(res => {
@@ -111,7 +122,7 @@ const Comment = ({ commentInfo }: CommentInterface) => {
     }, [performance])
     return (
         <>
-            <div className="flex items-start my-[30px]">
+            <div className="flex items-start justify-between my-[30px]">
                 <div className="mr-[20px] text-center w-[50px] shrink-0">
                     <Link href={`/profile/${commentInfo.user_id}`}>
                         <Avatar className="w-[50px] cursor-pointer h-[50px] mb-[10px]">
@@ -187,9 +198,7 @@ const Comment = ({ commentInfo }: CommentInterface) => {
                                             <>
                                                 {
                                                     parentComment.map(el => (
-                                                        <>
-                                                            <ShortComment commentInfo={el} />
-                                                        </>
+                                                        <ShortComment key={el.id} commentInfo={el} onDelete={handleDeleteChildComment} />
                                                     ))
                                                 }
                                             </>
@@ -221,9 +230,30 @@ const Comment = ({ commentInfo }: CommentInterface) => {
                             </AccordionItem>
                         </Accordion>
 
-
                     </div>
 
+
+                </div>
+                <div className="">
+                    {commentInfo?.user?.id == userId && (
+                        <div>
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        const res = await instanceAxios.delete(`/reviews/${commentInfo.id}`);
+                                        if (res.status === 204 && onDelete) {
+                                            onDelete(commentInfo.id); // вызов родительской функции для удаления из состояния
+                                        }
+                                    } catch (err) {
+                                        console.error("Ошибка при удалении комментария:", err);
+                                    }
+                                }}
+                                className="cursor-pointer rounded-[15px] text-[15px] px-[20px] py-[7px] bg-[#FF5252] text-white"
+                            >
+                                delete
+                            </button>
+                        </div>
+                    )}
 
                 </div>
             </div>

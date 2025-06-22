@@ -12,7 +12,12 @@ import {
 import instanceAxios from "../axios/instanceAxios";
 import Link from "next/link";
 
-const ShortComment = ({ commentInfo }: CommentInterface) => {
+interface ShortCommentProps extends CommentInterface {
+    onDelete?: (id: number) => void;
+}
+
+
+const ShortComment = ({ commentInfo, onDelete }: ShortCommentProps) => {
     const Cookies = require("js-cookie")
     const userId = Cookies.get('user_id')
     const [reliabilityColor, setReliabilityColor] = useState("");
@@ -23,6 +28,18 @@ const ShortComment = ({ commentInfo }: CommentInterface) => {
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm({
         mode: "onSubmit"
     });
+
+    const deleteCommentHandler = async () => {
+        try {
+            const res = await instanceAxios.delete(`/comments/${commentInfo.id}`);
+            if (res.status === 204 && onDelete) {
+                onDelete(commentInfo.id);
+            }
+        } catch (err) {
+            console.error("Ошибка при удалении комментария", err);
+        }
+    };
+
     const [replyText, setReplyText] = useState("")
     const [replyTextId, setReplyTextId] = useState(0)
     const [commentParent, setCommentParent] = useState([]);
@@ -176,14 +193,18 @@ const ShortComment = ({ commentInfo }: CommentInterface) => {
 
 
                 </div>
-                {
-                    commentInfo?.user?.id === userId ? (
-                        <div className="">
-                            <button className="cursor-pointer rounded-[15px] cursor-pointer text-[15px]  px-[20px] py-[7px] bg-[#FF5252] text-white">delete</button>
-                        </div>
-                    ) : ""
+                {commentInfo?.user?.id == userId ? (
+                    <div>
+                        <button
+                            onClick={deleteCommentHandler}
+                            className="cursor-pointer rounded-[15px] text-[15px] px-[20px] py-[7px] bg-[#FF5252] text-white"
+                        >
+                            delete
+                        </button>
+                    </div>
+                ) : null}
 
-                }
+
             </div>
         </>
     )

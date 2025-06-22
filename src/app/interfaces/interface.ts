@@ -31,7 +31,8 @@ export interface ConfigureInterface {
     linkName: string,
 }
 export interface CommentInterface {
-    commentInfo: object
+    commentInfo: object,
+    
     
 }
 
