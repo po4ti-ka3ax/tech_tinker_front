@@ -39,10 +39,9 @@ const Comment = ({ commentInfo }: CommentInterface) => {
     })
     const commentAnswerFunc = () => {
         try {
-            instanceAxios.post(`/reviews`, {
+            instanceAxios.post(`/comments`, {
                 "content":watch("textComment"),
-                "build_id":commentInfo.build_id,
-                "parent_id":commentInfo.id,
+                "review_id":commentInfo.id,
             }).then(res => {
                 setParentComment(res.data.data)
             })

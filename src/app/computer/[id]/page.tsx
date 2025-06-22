@@ -19,6 +19,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { BadgeInfo } from "lucide-react";
+import Link from "next/link";
 const Computer = () => {
     const Cookies = require('js-cookie');
     const userId = Cookies.get('user_id')
@@ -66,7 +67,7 @@ const Computer = () => {
     const saveFavorite = () => {
         try {
             instanceAxios.post(`/builds/favorites/${pc.id}`).then(res => {
-                if(res.status === 200) {
+                if (res.status === 200) {
                     setFavorite(true)
                 }
             })
@@ -77,7 +78,7 @@ const Computer = () => {
     const unsaveFavorite = () => {
         try {
             instanceAxios.delete(`/builds/favorites/${pc.id}`).then(res => {
-                if(res.status === 204) {
+                if (res.status === 204) {
                     setFavorite(false)
                 }
             })
@@ -272,6 +273,23 @@ const Computer = () => {
                                 </div>
                             )
                         }
+                        <div className="w-full border-b my-[40px] border-[#FFCC70]" />
+
+                        <div className=" mt-[10px] ">
+                            <Link href={`/profile/${pc.user?.id}`}>
+                            <div className="flex justify-center gap-[10px] items-center bg-[#3E3E3E] py-[10px] px-[20px] rounded-[10px]">
+                                <div className="">
+                                    <Avatar className="w-[60px] cursor-pointer h-[60px]">
+                                        <AvatarImage className="object-cover" src={`${process.env.NEXT_PUBLIC_API_URL_FOR_IMAGE}/${pc.user?.profile_img}`} />
+                                        <AvatarFallback className="text-[#000000] text-[40px] uppercase">{pc.user?.username?.slice(0, 2)}</AvatarFallback>
+                                    </Avatar>
+                                </div>
+                                <div className="">
+                                    <p className="text-[20px]">{pc.user?.username}</p>
+                                </div>
+                            </div>
+                            </Link>
+                        </div>
                     </div>
                 </div>
                 <div className="bg-[#2D2D2D] w-[85%] m-auto py-[5px] mt-[30px] rounded-[10px]">

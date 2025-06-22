@@ -284,7 +284,7 @@ const Profile = ({ params }: ProfilePageProps) => {
                 </div>
                 <div className="">
                     {
-                        urlUserId === userInfo.id ? (
+                        urlUserId === userId ? (
                             <div className="bg-[#3E3E3E] max-w-[900px] mt-[60px] m-auto py-[40px] rounded-[10px]">
                                 <p className="text-[30px] text-center">PC's favorites - {userInfo.username}</p>
                                 <div className="w-full border-b border-[#FFCC70] my-2" />
